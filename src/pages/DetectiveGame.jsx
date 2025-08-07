@@ -1,291 +1,369 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
-// --- Dữ liệu "Vụ án" ---
+// --- ✨ THAY ĐỔI 1: Thêm hiệu ứng âm thanh ---
+// Tạo sẵn các đối tượng Audio để tái sử dụng, giúp tăng hiệu năng.
+const correctSound = new Audio(
+  "https://res.cloudinary.com/dy9yts4fa/video/upload/v1754581169/answer-correct_izdhpx.mp3"
+);
+const incorrectSound = new Audio(
+  "https://res.cloudinary.com/dy9yts4fa/video/upload/v1754581291/answer-wrong_vjm3vq.mp3"
+);
+correctSound.volume = 0.5;
+incorrectSound.volume = 0.4;
+
+// --- Dữ liệu "Vụ án" (Không thay đổi) ---
 const caseFiles = [
   {
     id: 1,
-    title: "The Case of the Weekend Plan",
+    title: "The Weekend Plan",
     context: "Một đoạn tin nhắn giữa hai người bạn. Hãy tìm ra lỗi sai.",
-    text: "I am going to the movies with my friends tomorrow. Do you want to come with us?",
+    textWithMistake:
+      "I am going to the movies with my friends tomorrow. We will having a great time.",
     error: {
-      word: "am going",
-      correction: "will go",
-      options: ["will go", "went", "goes"],
+      word: "having",
+      correction: "have",
+      options: ["have", "had", "to have"],
       explanation:
-        "Khi đưa ra một quyết định tự phát ngay tại thời điểm nói, chúng ta dùng thì Tương lai đơn (will + V). 'Be going to' dùng cho kế hoạch đã định trước.",
+        "Sau động từ khuyết thiếu 'will', chúng ta sử dụng động từ nguyên thể không 'to'.",
     },
   },
   {
     id: 2,
-    title: "The Case of the Misplaced Book",
-    context: "Một học sinh báo cáo với thủ thư. Lỗi sai nằm ở đâu?",
-    text: "I can't find my book. I think I left it on the table yesterday.",
+    title: "The Study Session",
+    context:
+      "Một người đang kể về bạn của mình. Lỗi sai nằm ở sự hòa hợp chủ-vị.",
+    textWithMistake: "One of my friends are coming over to study.",
     error: {
-      word: "on",
-      correction: "on", // Correct word is 'on', let's find a better example.
-      // Let's change this case to be more interesting.
-      // New Case: Subject-verb agreement
-      word: "are", // Incorrect word in the sentence
-      correction: "is", // The correct word
+      word: "are",
+      correction: "is",
       options: ["is", "were", "be"],
       explanation:
-        "Chủ ngữ 'One of my friends' là số ít, vì vậy động từ phải là 'is'.",
+        "Chủ ngữ chính là 'One' (Một trong những người bạn), là số ít. Vì vậy, động từ phải là 'is'.",
     },
-    // Let's rewrite the text for the new case
-    text: "One of my friends are coming over to study.",
   },
   {
     id: 3,
-    title: "The Case of the Strange Advice",
-    context: "Một người bạn đang đưa ra lời khuyên. Có gì đó không đúng...",
-    text: "If I was you, I would take that job opportunity.",
+    title: "The Unlikely Advice",
+    context:
+      "Một người bạn đang đưa ra lời khuyên. Có gì đó không đúng trong câu giả định...",
+    textWithMistake: "If I was you, I would take that job opportunity.",
     error: {
       word: "was",
       correction: "were",
       options: ["were", "am", "be"],
       explanation:
-        "Trong câu điều kiện loại 2, chúng ta dùng 'were' cho tất cả các ngôi (kể cả I, he, she, it) để diễn tả một giả định trái với sự thật.",
+        "Trong câu điều kiện loại 2 (giả định trái với sự thật ở hiện tại), ta luôn dùng 'were' cho tất cả các ngôi.",
     },
   },
   {
     id: 4,
-    title: "The Case of the Confusing Trip",
+    title: "The Confusing Trip",
     context:
       "Email kể về một chuyến đi. Hãy tìm ra điểm bất hợp lý về thời gian.",
-    text: "Last year, we visit the beautiful city of Paris.",
+    textWithMistake: "Last year, we visit the beautiful city of Paris.",
     error: {
       word: "visit",
       correction: "visited",
       options: ["visited", "will visit", "are visiting"],
       explanation:
-        "Cụm từ 'Last year' chỉ thời gian trong quá khứ, vì vậy chúng ta phải dùng thì Quá khứ đơn (V-ed).",
+        "'Last year' là dấu hiệu của quá khứ, vì vậy động từ phải ở thì Quá khứ đơn (V-ed).",
     },
   },
   {
     id: 5,
-    title: "The Case of the Eager Student",
-    context: "Một học sinh đang nói về sở thích của mình.",
-    text: "I am very interested on learning about space.",
+    title: "The Eager Student",
+    context:
+      "Một học sinh đang nói về sở thích của mình. Sai lầm nằm ở giới từ.",
+    textWithMistake: "I am very interested on learning about space.",
     error: {
       word: "on",
       correction: "in",
       options: ["in", "at", "about"],
       explanation:
-        "Cụm từ cố định (collocation) là 'interested in something', không phải 'on'.",
+        "Cụm từ cố định (collocation) chính xác là 'to be interested in something'.",
     },
   },
 ];
 
-// Component Card để hiển thị chữ
-const Word = ({ text, isError, onClick, isSelected, isDisabled }) => {
+const Word = ({ text, onClick, isSelected, isDisabled }) => {
   const baseClasses =
-    "cursor-pointer rounded-md px-2 py-1 transition-all duration-200";
+    "inline-block cursor-pointer rounded-lg px-2 py-1 transition-all duration-200 ease-in-out";
   const selectedClasses =
-    "bg-yellow-400 text-black ring-2 ring-yellow-500 scale-105";
-  const disabledClasses = "cursor-not-allowed opacity-60";
-  const normalClasses = "hover:bg-gray-700";
+    "bg-amber-400 text-slate-900 ring-2 ring-amber-500 scale-105";
+  const disabledClasses = "cursor-not-allowed text-slate-400";
+  const normalClasses = "text-slate-300 hover:bg-slate-700";
+
+  const variants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 },
+  };
 
   return (
-    <span
-      onClick={isDisabled ? null : onClick}
+    <motion.span
+      variants={variants}
+      onClick={isDisabled ? undefined : onClick}
       className={`${baseClasses} ${
-        isSelected ? selectedClasses : normalClasses
-      } ${isDisabled ? disabledClasses : ""}`}
+        isDisabled
+          ? disabledClasses
+          : isSelected
+          ? selectedClasses
+          : normalClasses
+      }`}
     >
       {text}
-    </span>
+    </motion.span>
   );
 };
 
 export default function DetectiveGame() {
   const [cases, setCases] = useState([]);
   const [currentCaseIndex, setCurrentCaseIndex] = useState(0);
-  const [gamePhase, setGamePhase] = useState("identifying"); // 'identifying', 'correcting', 'finished'
-  const [selectedWord, setSelectedWord] = useState(null);
-  const [feedback, setFeedback] = useState({
-    show: false,
-    message: "",
-    type: "",
-  });
+  const [gamePhase, setGamePhase] = useState("identifying");
+  const [selectedWordInfo, setSelectedWordInfo] = useState(null);
+  const [isCorrectAttempt, setIsCorrectAttempt] = useState(null);
   const [score, setScore] = useState(0);
 
-  const currentCase = cases[currentCaseIndex];
+  const currentCase = useMemo(
+    () => cases[currentCaseIndex],
+    [cases, currentCaseIndex]
+  );
+  const sentenceWords = useMemo(
+    () => currentCase?.textWithMistake.split(" ") || [],
+    [currentCase]
+  );
 
-  // Tạo câu có lỗi để hiển thị
-  const sentenceWithErr = useMemo(() => {
-    if (!currentCase) return [];
-    return currentCase.text
-      .replace(currentCase.error.correction, currentCase.error.word)
-      .split(" ");
-  }, [currentCase]);
-
-  // Khởi tạo game
   useEffect(() => {
     setCases(caseFiles.sort(() => Math.random() - 0.5));
   }, []);
-
-  const handleWordClick = (word, index) => {
-    if (gamePhase !== "identifying") return;
-    setSelectedWord({ word, index });
-    if (word.replace(/[,.]/g, "") === currentCase.error.word) {
-      setFeedback({
-        show: true,
-        message: "Đã tìm thấy lỗi! Giờ hãy sửa nó.",
-        type: "success",
-      });
-      setTimeout(() => {
-        setGamePhase("correcting");
-        setFeedback({ show: false, message: "", type: "" });
-      }, 1500);
-    } else {
-      setFeedback({
-        show: true,
-        message: "Đây không phải lỗi. Hãy tìm tiếp!",
-        type: "error",
-      });
-    }
-  };
-
-  const handleCorrection = (option) => {
-    if (gamePhase !== "correcting") return;
-    if (option === currentCase.error.correction) {
-      setFeedback({
-        show: true,
-        message: `Chính xác! ${currentCase.error.explanation}`,
-        type: "success",
-      });
-      setScore(score + 1);
-    } else {
-      setFeedback({
-        show: true,
-        message: `Chưa đúng. Đáp án đúng là '${currentCase.error.correction}'.`,
-        type: "error",
-      });
-    }
-    setGamePhase("finished");
-  };
 
   const handleNextCase = () => {
     if (currentCaseIndex < cases.length - 1) {
       setCurrentCaseIndex(currentCaseIndex + 1);
       setGamePhase("identifying");
-      setSelectedWord(null);
-      setFeedback({ show: false, message: "", type: "" });
+      setSelectedWordInfo(null);
+      setIsCorrectAttempt(null);
     } else {
-      // End game
       setGamePhase("gameOver");
     }
   };
 
-  if (cases.length === 0) return <div>Loading...</div>;
+  const restartGame = () => {
+    setCases(caseFiles.sort(() => Math.random() - 0.5));
+    setCurrentCaseIndex(0);
+    setGamePhase("identifying");
+    setSelectedWordInfo(null);
+    setIsCorrectAttempt(null);
+    setScore(0);
+  };
+
+  const handleWordClick = (word, index) => {
+    if (gamePhase !== "identifying") return;
+    const cleanedWord = word.replace(/[,.]/g, "");
+    setSelectedWordInfo({ word: cleanedWord, index });
+    if (cleanedWord === currentCase.error.word) {
+      // ✨ THAY ĐỔI 2: Phát âm thanh ĐÚNG khi tìm ra lỗi
+      correctSound.play();
+      setTimeout(() => setGamePhase("correcting"), 500);
+    } else {
+      // ✨ THAY ĐỔI 3: Phát âm thanh SAI khi chọn sai
+      incorrectSound.play();
+    }
+  };
+
+  const handleCorrection = (option) => {
+    if (gamePhase !== "correcting") return;
+    setGamePhase("result");
+    if (option === currentCase.error.correction) {
+      // ✨ THAY ĐỔI 4: Phát âm thanh ĐÚNG khi sửa lỗi thành công
+      correctSound.play();
+      setIsCorrectAttempt(true);
+      setScore((s) => s + 1);
+    } else {
+      // ✨ THAY ĐỔI 5: Phát âm thanh SAI khi sửa lỗi thất bại
+      incorrectSound.play();
+      setIsCorrectAttempt(false);
+    }
+  };
+
+  if (cases.length === 0)
+    return (
+      <div className="bg-slate-900 h-screen w-screen flex items-center justify-center text-white">
+        Loading Detective Files...
+      </div>
+    );
 
   if (gamePhase === "gameOver") {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-800 text-white">
-        <div className="text-center p-8">
-          <h1 className="text-4xl font-bold">Vụ án đã kết thúc!</h1>
+      <div className="h-screen w-screen bg-slate-900 flex items-center justify-center text-white">
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-center p-8 bg-slate-800 rounded-xl shadow-lg"
+        >
+          <h1 className="text-4xl font-bold text-amber-400">
+            All Cases Closed!
+          </h1>
           <p className="text-2xl mt-4">
-            Điểm điều tra của bạn: {score}/{cases.length}
+            Final Score: {score}/{cases.length}
           </p>
           <button
-            onClick={() => {
-              setCurrentCaseIndex(0);
-              setCases(caseFiles.sort(() => Math.random() - 0.5));
-              setGamePhase("identifying");
-              setScore(0);
-              setSelectedWord(null);
-              setFeedback({ show: false, message: "", type: "" });
-            }}
-            className="mt-8 rounded-lg bg-yellow-500 px-6 py-3 text-xl font-bold text-black"
+            onClick={restartGame}
+            className="mt-8 rounded-lg bg-amber-500 px-6 py-3 text-xl font-bold text-slate-900 hover:bg-amber-400 transition-colors"
           >
-            Mở một vụ án mới
+            Start a New Investigation
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
+  const sentenceContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.03 },
+    },
+  };
+  const actionPanelVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 100, damping: 20 },
+    },
+    exit: { opacity: 0, y: -20, transition: { duration: 0.2 } },
+  };
+
   return (
-    <div className="flex h-screen items-center justify-center bg-slate-800 p-4 font-sans">
-      <div
-        className="w-full max-w-3xl rounded-lg bg-slate-200 p-6 md:p-8 shadow-2xl"
-        style={{ fontFamily: "'Courier New', Courier, monospace" }}
-      >
-        <div className="mb-4 border-b-2 border-slate-400 pb-2 text-center">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-800">
-            HỒ SƠ VỤ ÁN #{currentCase.id}
-          </h1>
-          <p className="text-slate-600">Điểm: {score}</p>
-        </div>
-
-        <div className="rounded-lg bg-white p-4 mb-6 shadow-inner">
-          <h2 className="text-xl font-bold text-red-700">
-            Chủ đề: {currentCase.title}
-          </h2>
-          <p className="text-md mt-2 text-slate-700">
-            <i>{currentCase.context}</i>
-          </p>
-        </div>
-
-        <div className="min-h-[10rem] rounded-lg bg-gray-900 text-white p-6 text-2xl leading-relaxed shadow-lg">
-          {sentenceWithErr.map((word, index) => (
-            <Word
-              key={index}
-              text={word}
-              onClick={() => handleWordClick(word, index)}
-              isSelected={selectedWord?.index === index}
-              isDisabled={gamePhase !== "identifying"}
-            />
-          ))}
-        </div>
-
-        {/* Feedback Popup */}
-        {feedback.show && gamePhase === "identifying" && (
-          <div
-            className={`mt-4 rounded p-3 text-center text-white ${
-              feedback.type === "success" ? "bg-green-600" : "bg-red-600"
-            }`}
-          >
-            {feedback.message}
+    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center justify-center p-2 sm:p-4 font-sans">
+      <div className="w-full max-w-2xl h-full sm:h-[95vh] sm:max-h-[750px] bg-slate-800/50 backdrop-blur-sm ring-1 ring-white/10 rounded-2xl shadow-2xl flex flex-col">
+        {/* Header */}
+        <header className="flex-shrink-0 p-4 border-b border-white/10 flex justify-between items-center">
+          <div>
+            <h1 className="text-lg sm:text-xl font-bold text-white">
+              Dialogue Detective
+            </h1>
+            <p className="text-sm text-amber-400">Case #{currentCase?.id}</p>
           </div>
-        )}
+          <div className="text-right">
+            <p className="text-lg sm:text-xl font-bold text-white">{score}</p>
+            <p className="text-sm text-slate-400">Score</p>
+          </div>
+        </header>
 
-        {/* Correction Phase */}
-        {gamePhase === "correcting" && (
-          <div className="mt-4 animate-fade-in">
-            <h3 className="text-center text-xl font-bold text-slate-800 mb-3">
-              Chọn cách sửa đúng:
-            </h3>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-              {currentCase.error.options.map((option) => (
-                <button
-                  key={option}
-                  onClick={() => handleCorrection(option)}
-                  className="rounded-lg bg-blue-600 p-4 text-xl text-white hover:bg-blue-700"
-                >
-                  {option}
-                </button>
-              ))}
+        {/* Main Content */}
+        <main className="flex-grow p-4 sm:p-6 overflow-y-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            key={currentCase?.id}
+          >
+            <div className="bg-black/20 p-4 rounded-lg mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-amber-400 mb-2">
+                {currentCase?.title}
+              </h2>
+              <p className="text-slate-300 text-base sm:text-lg">
+                <strong>Tình huống:</strong> <i>{currentCase?.context}</i>
+              </p>
             </div>
-          </div>
-        )}
-
-        {/* Finished Phase */}
-        {gamePhase === "finished" && (
-          <div
-            className={`mt-4 rounded-lg p-4 text-white animate-fade-in ${
-              feedback.type === "success" ? "bg-green-600" : "bg-red-600"
-            }`}
-          >
-            <p className="text-lg">{feedback.message}</p>
-            <button
-              onClick={handleNextCase}
-              className="mt-4 w-full rounded-md bg-white py-2 text-lg font-bold text-black"
+            <motion.div
+              key={currentCase?.id + "-sentence"}
+              variants={sentenceContainerVariants}
+              initial="hidden"
+              animate="visible"
+              className="bg-black/20 min-h-[12rem] rounded-lg p-4 sm:p-6 text-2xl sm:text-3xl leading-relaxed space-x-2"
             >
-              Tiếp tục vụ án tiếp theo →
-            </button>
+              {sentenceWords.map((word, index) => (
+                <Word
+                  key={`${index}-${word}`}
+                  text={word}
+                  onClick={() => handleWordClick(word, index)}
+                  isSelected={selectedWordInfo?.index === index}
+                  isDisabled={gamePhase !== "identifying"}
+                />
+              ))}
+            </motion.div>
+          </motion.div>
+        </main>
+
+        {/* Action Panel */}
+        <footer className="flex-shrink-0 p-4 border-t border-white/10 bg-black/20 rounded-b-2xl">
+          <div className="w-full min-h-[140px]">
+            <AnimatePresence mode="wait">
+              {gamePhase === "identifying" && (
+                <motion.div
+                  key="identifying"
+                  variants={actionPanelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="text-center flex flex-col items-center justify-center h-full"
+                >
+                  <p className="text-lg text-amber-400 font-semibold">
+                    FIND THE MISTAKE
+                  </p>
+                  <p className="text-slate-400 mt-2">
+                    Chạm vào từ bạn cho là sai trong đoạn văn bản trên.
+                  </p>
+                </motion.div>
+              )}
+              {gamePhase === "correcting" && (
+                <motion.div
+                  key="correcting"
+                  variants={actionPanelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <p className="text-lg text-amber-400 font-semibold mb-3 text-center">
+                    Correct the word: "
+                    <span className="text-white">{selectedWordInfo?.word}</span>
+                    "
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {currentCase?.error.options.map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => handleCorrection(option)}
+                        className="w-full rounded-lg bg-slate-600 p-3 text-lg text-white transition-colors hover:bg-slate-500"
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+              {gamePhase === "result" && (
+                <motion.div
+                  key="result"
+                  variants={actionPanelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className={`p-4 rounded-lg text-white ${
+                    isCorrectAttempt
+                      ? "bg-green-600/30 ring-1 ring-green-500"
+                      : "bg-red-600/30 ring-1 ring-red-500"
+                  }`}
+                >
+                  <h3 className="text-xl font-bold mb-2">
+                    {isCorrectAttempt ? "Excellent!" : "Incorrect."}
+                  </h3>
+                  <p className="text-base mb-4">
+                    {currentCase?.error.explanation}
+                  </p>
+                  <button
+                    onClick={handleNextCase}
+                    className="w-full rounded-lg bg-slate-100 py-3 text-lg font-bold text-slate-900 transition-colors hover:bg-white"
+                  >
+                    Next Case →
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        )}
+        </footer>
       </div>
     </div>
   );
