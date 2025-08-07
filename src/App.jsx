@@ -9,6 +9,10 @@ import SentenceScrambleGame from "./pages/SentenceScrambleGame";
 import ListeningGame from "./pages/ListeningGame";
 import TypingGame from "./pages/TypingGame";
 import GrammarGame from "./pages/GrammarGame";
+import MatchingGame from "./pages/MatchingGame";
+import WordfallGame from "./pages/WordfallGame";
+import GalaxyGrammarGame from "./pages/GalaxyGrammarGame";
+import DetectiveGame from "./pages/DetectiveGame";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -22,6 +26,10 @@ function App() {
         <Route path="/listening-game" element={<ListeningGame />} />
         <Route path="/typing-game" element={<TypingGame />} />
         <Route path="/grammar-game" element={<GrammarGame />} />
+        <Route path="/matching-game" element={<MatchingGame />} />
+        <Route path="/wordfall-game" element={<WordfallGame />} />
+        <Route path="/galaxy-grammar-game" element={<GalaxyGrammarGame />} />
+        <Route path="/detective-game" element={<DetectiveGame />} />
         <Route
           path="/about"
           element={
