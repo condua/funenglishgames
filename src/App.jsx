@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Home from "./pages/Home";
 import VocabularyGame from "./pages/VocabularyGame";
 import SentenceScrambleGame from "./pages/SentenceScrambleGame";
+import ListeningGame from "./pages/ListeningGame";
+import TypingGame from "./pages/TypingGame";
+import GrammarGame from "./pages/GrammarGame";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -16,6 +19,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/vocabulary-game" element={<VocabularyGame />} />
         <Route path="/game2" element={<SentenceScrambleGame />} />
+        <Route path="/listening-game" element={<ListeningGame />} />
+        <Route path="/typing-game" element={<TypingGame />} />
+        <Route path="/grammar-game" element={<GrammarGame />} />
         <Route
           path="/about"
           element={
