@@ -1,0 +1,45 @@
+  {
+            "name": "Animals 🐘",
+            "slug": "animals",
+            "words": [
+                {
+                    "word": "Elephant",
+                    "options": [
+                        "Elephant",
+                        "Elegant",
+                        "Element",
+                        "Elevant"
+                    ],
+                    "ipa": "/ˈelɪfənt/",
+                    "type": "noun",
+                    "meaning": "Con voi",
+                    "example": "The elephant is the largest land animal."
+                },
+                {
+                    "word": "Tiger",
+                    "options": [
+                        "Tiger",
+                        "Taller",
+                        "Tired",
+                        "Trigger"
+                    ],
+                    "ipa": "/ˈtaɪɡər/",
+                    "type": "noun",
+                    "meaning": "Con hổ",
+                    "example": "A tiger is a large carnivorous feline."
+                },
+                {
+                    "word": "Dolphin",
+                    "options": [
+                        "Dolphin",
+                        "Domain",
+                        "Doll-fin",
+                        "Door-pin"
+                    ],
+                    "ipa": "/ˈdɒlfɪn/",
+                    "type": "noun",
+                    "meaning": "Cá heo",
+                    "example": "Dolphins are known for their intelligence."
+                }
+            ]
+        }

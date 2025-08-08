@@ -1,0 +1,1273 @@
+{
+  "topics": [
+    {
+      "name": "Animals 🐘",
+      "slug": "animals",
+      "words": [
+        {
+          "word": "Elephant",
+          "options": [
+            "Elephant",
+            "Elegant",
+            "Element",
+            "Elevant"
+          ],
+          "ipa": "/ˈelɪfənt/",
+          "type": "noun",
+          "meaning": "Con voi",
+          "example": "The elephant is the largest land animal."
+        },
+        {
+          "word": "Tiger",
+          "options": [
+            "Tiger",
+            "Taller",
+            "Tired",
+            "Trigger"
+          ],
+          "ipa": "/ˈtaɪɡər/",
+          "type": "noun",
+          "meaning": "Con hổ",
+          "example": "A tiger is a large carnivorous feline."
+        },
+        {
+          "word": "Dolphin",
+          "options": [
+            "Dolphin",
+            "Domain",
+            "Doll-fin",
+            "Door-pin"
+          ],
+          "ipa": "/ˈdɒlfɪn/",
+          "type": "noun",
+          "meaning": "Cá heo",
+          "example": "Dolphins are known for their intelligence."
+        }
+      ]
+    },
+    {
+      "name": "Clothes & Accessories 👗",
+      "slug": "clothes-accessories",
+      "words": [
+        {
+          "word": "Shirt",
+          "options": [
+            "Shirt",
+            "Short",
+            "Shirtless",
+            "Shift"
+          ],
+          "ipa": "/ʃɜːt/",
+          "type": "noun",
+          "meaning": "Áo sơ mi",
+          "example": "He wore a white shirt to the meeting."
+        },
+        {
+          "word": "Pants",
+          "options": [
+            "Paints",
+            "Pants",
+            "Plants",
+            "Panes"
+          ],
+          "ipa": "/pænts/",
+          "type": "noun",
+          "meaning": "Quần dài",
+          "example": "She bought a new pair of black pants."
+        },
+        {
+          "word": "Dress",
+          "options": [
+            "Address",
+            "Dresser",
+            "Dress",
+            "Press"
+          ],
+          "ipa": "/dres/",
+          "type": "noun",
+          "meaning": "Váy liền",
+          "example": "She wore a red dress to the party."
+        },
+        {
+          "word": "Skirt",
+          "options": [
+            "Dirt",
+            "Skirt",
+            "Shirt",
+            "Skate"
+          ],
+          "ipa": "/skɜːt/",
+          "type": "noun",
+          "meaning": "Chân váy",
+          "example": "The skirt matches well with her blouse."
+        },
+        {
+          "word": "Blouse",
+          "options": [
+            "Blouse",
+            "Blose",
+            "Bliss",
+            "Blow"
+          ],
+          "ipa": "/blaʊz/",
+          "type": "noun",
+          "meaning": "Áo sơ mi nữ",
+          "example": "She tucked her blouse into her skirt."
+        },
+        {
+          "word": "T-shirt",
+          "options": [
+            "T-shirt",
+            "T-shade",
+            "T-shore",
+            "T-shire"
+          ],
+          "ipa": "/ˈtiː ʃɜːt/",
+          "type": "noun",
+          "meaning": "Áo phông",
+          "example": "He wore a graphic T-shirt and jeans."
+        },
+        {
+          "word": "Jeans",
+          "options": [
+            "Jeans",
+            "Gems",
+            "Jeens",
+            "Genes"
+          ],
+          "ipa": "/dʒiːnz/",
+          "type": "noun",
+          "meaning": "Quần bò",
+          "example": "She likes wearing ripped jeans."
+        },
+        {
+          "word": "Shorts",
+          "options": [
+            "Shouts",
+            "Shops",
+            "Shorts",
+            "Shoots"
+          ],
+          "ipa": "/ʃɔːts/",
+          "type": "noun",
+          "meaning": "Quần short",
+          "example": "It’s hot today, so I’ll wear shorts."
+        },
+        {
+          "word": "Jacket",
+          "options": [
+            "Jacket",
+            "Packet",
+            "Jackal",
+            "Jockey"
+          ],
+          "ipa": "/ˈdʒækɪt/",
+          "type": "noun",
+          "meaning": "Áo khoác",
+          "example": "He took off his jacket when he entered the room."
+        },
+        {
+          "word": "Coat",
+          "options": [
+            "Coat",
+            "Coast",
+            "Colt",
+            "Cart"
+          ],
+          "ipa": "/kəʊt/",
+          "type": "noun",
+          "meaning": "Áo choàng",
+          "example": "She put on a warm coat before going outside."
+        },
+        {
+          "word": "Sweater",
+          "options": [
+            "Sweater",
+            "Sweeper",
+            "Swatter",
+            "Swimmer"
+          ],
+          "ipa": "/ˈswetər/",
+          "type": "noun",
+          "meaning": "Áo len",
+          "example": "This sweater is made of wool."
+        },
+        {
+          "word": "Hoodie",
+          "options": [
+            "Hoodie",
+            "Hood",
+            "Hootie",
+            "Hooky"
+          ],
+          "ipa": "/ˈhʊdi/",
+          "type": "noun",
+          "meaning": "Áo hoodie",
+          "example": "He wore a black hoodie and sneakers."
+        },
+        {
+          "word": "Scarf",
+          "options": [
+            "Scarf",
+            "Scare",
+            "Scar",
+            "Scarfy"
+          ],
+          "ipa": "/skɑːf/",
+          "type": "noun",
+          "meaning": "Khăn choàng",
+          "example": "She wrapped a scarf around her neck."
+        },
+        {
+          "word": "Gloves",
+          "options": [
+            "Glows",
+            "Gloves",
+            "Globes",
+            "Gloes"
+          ],
+          "ipa": "/ɡlʌvz/",
+          "type": "noun",
+          "meaning": "Găng tay",
+          "example": "Wear gloves to keep your hands warm."
+        },
+        {
+          "word": "Hat",
+          "options": [
+            "Hut",
+            "Hit",
+            "Hat",
+            "Hot"
+          ],
+          "ipa": "/hæt/",
+          "type": "noun",
+          "meaning": "Mũ",
+          "example": "He tipped his hat to greet her."
+        },
+        {
+          "word": "Cap",
+          "options": [
+            "Cup",
+            "Cap",
+            "Cab",
+            "Cat"
+          ],
+          "ipa": "/kæp/",
+          "type": "noun",
+          "meaning": "Mũ lưỡi trai",
+          "example": "He wore a baseball cap."
+        },
+        {
+          "word": "Belt",
+          "options": [
+            "Belt",
+            "Built",
+            "Bald",
+            "Bolt"
+          ],
+          "ipa": "/belt/",
+          "type": "noun",
+          "meaning": "Thắt lưng",
+          "example": "He fastened his belt tightly."
+        },
+        {
+          "word": "Tie",
+          "options": [
+            "Tie",
+            "Tile",
+            "Tide",
+            "Tin"
+          ],
+          "ipa": "/taɪ/",
+          "type": "noun",
+          "meaning": "Cà vạt",
+          "example": "He wore a red tie to the wedding."
+        },
+        {
+          "word": "Bow tie",
+          "options": [
+            "Bow tie",
+            "Bow time",
+            "Bow tide",
+            "Bow tile"
+          ],
+          "ipa": "/ˈboʊ taɪ/",
+          "type": "noun",
+          "meaning": "Nơ đeo cổ",
+          "example": "He looked elegant in a bow tie."
+        },
+        {
+          "word": "Socks",
+          "options": [
+            "Socks",
+            "Sacks",
+            "Sicks",
+            "Sokes"
+          ],
+          "ipa": "/sɒks/",
+          "type": "noun",
+          "meaning": "Tất",
+          "example": "I need to buy new socks."
+        },
+        {
+          "word": "Shoes",
+          "options": [
+            "Shoes",
+            "Shows",
+            "Shops",
+            "Shocks"
+          ],
+          "ipa": "/ʃuːz/",
+          "type": "noun",
+          "meaning": "Giày",
+          "example": "She bought a new pair of running shoes."
+        },
+        {
+          "word": "Boots",
+          "options": [
+            "Boots",
+            "Boats",
+            "Bouts",
+            "Bots"
+          ],
+          "ipa": "/buːts/",
+          "type": "noun",
+          "meaning": "Ủng",
+          "example": "He wore boots to protect his feet from the snow."
+        },
+        {
+          "word": "Sandals",
+          "options": [
+            "Sandals",
+            "Handles",
+            "Candles",
+            "Sands"
+          ],
+          "ipa": "/ˈsændəlz/",
+          "type": "noun",
+          "meaning": "Dép quai hậu",
+          "example": "Sandals are perfect for summer."
+        },
+        {
+          "word": "Slippers",
+          "options": [
+            "Slippers",
+            "Slipperss",
+            "Sleepers",
+            "Slippery"
+          ],
+          "ipa": "/ˈslɪpərz/",
+          "type": "noun",
+          "meaning": "Dép đi trong nhà",
+          "example": "I wear slippers when I’m at home."
+        },
+        {
+          "word": "High heels",
+          "options": [
+            "High heels",
+            "High heal",
+            "High hills",
+            "High holes"
+          ],
+          "ipa": "/haɪ hiːlz/",
+          "type": "noun",
+          "meaning": "Giày cao gót",
+          "example": "She wore high heels to the party."
+        },
+        {
+          "word": "Sneakers",
+          "options": [
+            "Sneakers",
+            "Sneaks",
+            "Snickers",
+            "Speakers"
+          ],
+          "ipa": "/ˈsniːkərz/",
+          "type": "noun",
+          "meaning": "Giày thể thao",
+          "example": "He collects rare sneakers."
+        },
+        {
+          "word": "Suit",
+          "options": [
+            "Suit",
+            "Suite",
+            "Sweet",
+            "Soot"
+          ],
+          "ipa": "/suːt/",
+          "type": "noun",
+          "meaning": "Bộ vest",
+          "example": "He wore a black suit to the meeting."
+        },
+        {
+          "word": "Blazer",
+          "options": [
+            "Blazer",
+            "Blader",
+            "Baker",
+            "Blaster"
+          ],
+          "ipa": "/ˈbleɪzər/",
+          "type": "noun",
+          "meaning": "Áo khoác blazer",
+          "example": "A navy blazer goes well with khaki pants."
+        },
+        {
+          "word": "Overcoat",
+          "options": [
+            "Overcoat",
+            "Overload",
+            "Overcome",
+            "Overcast"
+          ],
+          "ipa": "/ˈoʊvərˌkoʊt/",
+          "type": "noun",
+          "meaning": "Áo măng tô",
+          "example": "The overcoat kept him warm in winter."
+        },
+        {
+          "word": "Raincoat",
+          "options": [
+            "Raincoat",
+            "Rancoat",
+            "Raincast",
+            "Raincart"
+          ],
+          "ipa": "/ˈreɪnˌkoʊt/",
+          "type": "noun",
+          "meaning": "Áo mưa",
+          "example": "Don’t forget your raincoat, it’s going to rain."
+        },
+        {
+          "word": "Vest",
+          "options": [
+            "Vest",
+            "Vast",
+            "Vase",
+            "Best"
+          ],
+          "ipa": "/vest/",
+          "type": "noun",
+          "meaning": "Áo gi-lê",
+          "example": "He wore a vest under his suit jacket."
+        },
+        {
+          "word": "Cardigan",
+          "options": [
+            "Cardigan",
+            "Guardian",
+            "Carpigan",
+            "Cartigan"
+          ],
+          "ipa": "/ˈkɑːrdɪɡən/",
+          "type": "noun",
+          "meaning": "Áo len cài khuy",
+          "example": "She knitted a cardigan for her daughter."
+        },
+        {
+          "word": "Necklace",
+          "options": [
+            "Necklace",
+            "Necklass",
+            "Neckless",
+            "Nacklace"
+          ],
+          "ipa": "/ˈnekləs/",
+          "type": "noun",
+          "meaning": "Vòng cổ",
+          "example": "He gave her a gold necklace."
+        },
+        {
+          "word": "Bracelet",
+          "options": [
+            "Bracelet",
+            "Braclet",
+            "Braiselet",
+            "Brasslet"
+          ],
+          "ipa": "/ˈbreɪslət/",
+          "type": "noun",
+          "meaning": "Vòng tay",
+          "example": "She wore a silver bracelet."
+        },
+        {
+          "word": "Earrings",
+          "options": [
+            "Earrings",
+            "Earing",
+            "Earwings",
+            "Earrangs"
+          ],
+          "ipa": "/ˈɪərɪŋz/",
+          "type": "noun",
+          "meaning": "Hoa tai",
+          "example": "She bought a pair of diamond earrings."
+        },
+        {
+          "word": "Ring",
+          "options": [
+            "Ring",
+            "Rang",
+            "Rung",
+            "Rink"
+          ],
+          "ipa": "/rɪŋ/",
+          "type": "noun",
+          "meaning": "Nhẫn",
+          "example": "He gave her an engagement ring."
+        },
+        {
+          "word": "Sunglasses",
+          "options": [
+            "Sunglasses",
+            "Sungrasses",
+            "Sunclass",
+            "Sunglases"
+          ],
+          "ipa": "/ˈsʌnˌɡlæsɪz/",
+          "type": "noun",
+          "meaning": "Kính râm",
+          "example": "She wears sunglasses at the beach."
+        }
+      ]
+    },
+    {
+      "name": "Healthy Food 🥗",
+      "slug": "healthy-food",
+      "words": [
+        {
+          "word": "Nutrition",
+          "options": [
+            "Nutrition",
+            "Nutrient",
+            "Notion",
+            "Natation"
+          ],
+          "ipa": "/njuːˈtrɪʃən/",
+          "type": "noun",
+          "meaning": "Dinh dưỡng",
+          "example": "Good nutrition is essential for a growing teen."
+        },
+        {
+          "word": "Protein",
+          "options": [
+            "Protect",
+            "Proton",
+            "Protein",
+            "Protain"
+          ],
+          "ipa": "/ˈprəʊtiːn/",
+          "type": "noun",
+          "meaning": "Chất đạm",
+          "example": "Chicken, beans, and tofu are good sources of protein."
+        }
+      ]
+    },
+    {
+      "name": "Good Habits 💤",
+      "slug": "good-habits",
+      "words": [
+        {
+          "word": "Sleep",
+          "options": [
+            "Sleep",
+            "Slip",
+            "Sheep",
+            "Spleen"
+          ],
+          "ipa": "/sliːp/",
+          "type": "noun",
+          "meaning": "Giấc ngủ",
+          "example": "Teens need about 8 to 10 hours of sleep per night."
+        },
+        {
+          "word": "Routine",
+          "options": [
+            "Routine",
+            "Route",
+            "Rotate",
+            "Ruining"
+          ],
+          "ipa": "/ruːˈtiːn/",
+          "type": "noun",
+          "meaning": "Thói quen, lịch trình",
+          "example": "A consistent morning routine can make your day more productive."
+        },
+        {
+          "word": "Hygiene",
+          "options": [
+            "Hygiene",
+            "High gene",
+            "Hydrogen",
+            "Highly"
+          ],
+          "ipa": "/ˈhaɪdʒiːn/",
+          "type": "noun",
+          "meaning": "Vệ sinh cá nhân",
+          "example": "Good personal hygiene is an important part of a healthy lifestyle."
+        },
+        {
+          "word": "Hobby",
+          "options": [
+            "Hobby",
+            "Lobby",
+            "Hobbit",
+            "Horribly"
+          ],
+          "ipa": "/ˈhɒbi/",
+          "type": "noun",
+          "meaning": "Sở thích",
+          "example": "Having a creative hobby is a great way to relax."
+        },
+        {
+          "word": "Consistency",
+          "options": [
+            "Consistency",
+            "Consist",
+            "Conscious",
+            "Consequence"
+          ],
+          "ipa": "/kənˈsɪstənsi/",
+          "type": "noun",
+          "meaning": "Sự nhất quán",
+          "example": "Consistency is key to forming a new good habit."
+        },
+        {
+          "word": "Productive",
+          "options": [
+            "Productive",
+            "Protective",
+            "Producing",
+            "Proactive"
+          ],
+          "ipa": "/prəˈdʌktɪv/",
+          "type": "adjective",
+          "meaning": "Năng suất",
+          "example": "Breaking down a big task into smaller steps can make you more productive."
+        },
+        {
+          "word": "Organize",
+          "options": [
+            "Organize",
+            "Origami",
+            "Organic",
+            "Origin"
+          ],
+          "ipa": "/ˈɔːɡənaɪz/",
+          "type": "verb",
+          "meaning": "Sắp xếp",
+          "example": "You should organize your desk to create a better study space."
+        },
+        {
+          "word": "Punctual",
+          "options": [
+            "Punctual",
+            "Puncture",
+            "Painful",
+            "Puntual"
+          ],
+          "ipa": "/ˈpʌŋktʃuəl/",
+          "type": "adjective",
+          "meaning": "Đúng giờ",
+          "example": "Being punctual shows respect for other people's time."
+        }
+      ]
+    },
+    {
+      "name": "Healthy Food 🥗",
+      "slug": "healthy-food",
+      "words": [
+        {
+          "word": "Nutrition",
+          "options": [
+            "Nutrition",
+            "Nutrient",
+            "Notion",
+            "Natation"
+          ],
+          "ipa": "/njuːˈtrɪʃən/",
+          "type": "noun",
+          "meaning": "Dinh dưỡng",
+          "example": "Good nutrition is essential for a growing teen."
+        },
+        {
+          "word": "Hydration",
+          "options": [
+            "Hydration",
+            "Hydrogen",
+            "Hidration",
+            "Headation"
+          ],
+          "ipa": "/haɪˈdreɪʃən/",
+          "type": "noun",
+          "meaning": "Sự cấp nước",
+          "example": "Proper hydration is important, so drink plenty of water."
+        },
+        {
+          "word": "Protein",
+          "options": [
+            "Protein",
+            "Protect",
+            "Proton",
+            "Protain"
+          ],
+          "ipa": "/ˈprəʊtiːn/",
+          "type": "noun",
+          "meaning": "Chất đạm",
+          "example": "Chicken, beans, and tofu are good sources of protein."
+        },
+        {
+          "word": "Vegetable",
+          "options": [
+            "Vegetable",
+            "Visible",
+            "Valuable",
+            "Eligible"
+          ],
+          "ipa": "/ˈvɛdʒtəbəl/",
+          "type": "noun",
+          "meaning": "Rau củ",
+          "example": "Eating a variety of vegetables is great for your health."
+        },
+        {
+          "word": "Calorie",
+          "options": [
+            "Calorie",
+            "Gallery",
+            "Celery",
+            "Colony"
+          ],
+          "ipa": "/ˈkæləri/",
+          "type": "noun",
+          "meaning": "Ca-lo",
+          "example": "This meal is low in calories but high in nutrients."
+        },
+        {
+          "word": "Vitamin",
+          "options": [
+            "Vitamin",
+            "Vitality",
+            "Villain",
+            "Violin"
+          ],
+          "ipa": "/ˈvɪtəmɪn/",
+          "type": "noun",
+          "meaning": "Vi-ta-min",
+          "example": "Oranges are a great source of Vitamin C."
+        },
+        {
+          "word": "Mineral",
+          "options": [
+            "Mineral",
+            "Minimal",
+            "Mirror",
+            "Miracle"
+          ],
+          "ipa": "/ˈmɪnərəl/",
+          "type": "noun",
+          "meaning": "Chất khoáng",
+          "example": "Milk is rich in the mineral calcium, which is good for bones."
+        },
+        {
+          "word": "Fiber",
+          "options": [
+            "Fiber",
+            "Fever",
+            "Viper",
+            "Fighter"
+          ],
+          "ipa": "/ˈfaɪbər/",
+          "type": "noun",
+          "meaning": "Chất xơ",
+          "example": "Whole grains and fruits are high in dietary fiber."
+        }
+      ]
+    },
+    {
+      "name": "Mental Wellness 😊",
+      "slug": "mental-wellness",
+      "words": [
+        {
+          "word": "Mindfulness",
+          "options": [
+            "Mindfulness",
+            "Mindless",
+            "Mightiness",
+            "Mind files"
+          ],
+          "ipa": "/ˈmaɪndfəlnəs/",
+          "type": "noun",
+          "meaning": "Chánh niệm",
+          "example": "Practicing mindfulness can help reduce stress and anxiety."
+        },
+        {
+          "word": "Resilience",
+          "options": [
+            "Resilience",
+            "Resistance",
+            "Residence",
+            "Recital"
+          ],
+          "ipa": "/rɪˈzɪliəns/",
+          "type": "noun",
+          "meaning": "Sự kiên cường",
+          "example": "Building resilience helps you bounce back from difficult situations."
+        },
+        {
+          "word": "Balance",
+          "options": [
+            "Balance",
+            "Ballast",
+            "Palace",
+            "Valance"
+          ],
+          "ipa": "/ˈbæləns/",
+          "type": "noun",
+          "meaning": "Sự cân bằng",
+          "example": "It's important to find a balance between school, friends, and hobbies."
+        },
+        {
+          "word": "Gratitude",
+          "options": [
+            "Gratitude",
+            "Graduate",
+            "Altitude",
+            "Latitude"
+          ],
+          "ipa": "/ˈɡrætɪtjuːd/",
+          "type": "noun",
+          "meaning": "Lòng biết ơn",
+          "example": "Keeping a gratitude journal can improve your mental wellness."
+        },
+        {
+          "word": "Anxiety",
+          "options": [
+            "Anxiety",
+            "Angiety",
+            "Ancsiety",
+            "Anxyety"
+          ],
+          "ipa": "/æŋˈzaɪəti/",
+          "type": "noun",
+          "meaning": "Sự lo lắng",
+          "example": "It's normal to feel some anxiety before a big exam."
+        },
+        {
+          "word": "Stress",
+          "options": [
+            "Stress",
+            "Stressed",
+            "Strait",
+            "Stripe"
+          ],
+          "ipa": "/stres/",
+          "type": "noun",
+          "meaning": "Căng thẳng",
+          "example": "Deep breathing is a simple way to relieve stress."
+        },
+        {
+          "word": "Emotion",
+          "options": [
+            "Emotion",
+            "E-motion",
+            "Motion",
+            "Omission"
+          ],
+          "ipa": "/ɪˈməʊʃən/",
+          "type": "noun",
+          "meaning": "Cảm xúc",
+          "example": "It's healthy to talk about your emotions with someone you trust."
+        },
+        {
+          "word": "Relaxation",
+          "options": [
+            "Relaxation",
+            "Relation",
+            "Realization",
+            "Relegation"
+          ],
+          "ipa": "/ˌriːlækˈseɪʃən/",
+          "type": "noun",
+          "meaning": "Sự thư giãn",
+          "example": "Listening to calm music is a good relaxation technique."
+        }
+      ]
+    },
+    {
+      "name": "Common Objects 💻",
+      "slug": "objects",
+      "words": [
+        {
+          "word": "Computer",
+          "options": [
+            "Computer",
+            "Commuter",
+            "Competitor",
+            "Compiler"
+          ],
+          "ipa": "/kəmˈpjuːtər/",
+          "type": "noun",
+          "meaning": "Máy tính",
+          "example": "I use my computer for both work and gaming."
+        },
+        {
+          "word": "Bicycle",
+          "options": [
+            "Bicycle",
+            "Article",
+            "Vehicle",
+            "Icicle"
+          ],
+          "ipa": "/ˈbaɪsɪkl/",
+          "type": "noun",
+          "meaning": "Xe đạp",
+          "example": "He rides his bicycle to work every day."
+        },
+        {
+          "word": "Library",
+          "options": [
+            "Library",
+            "Liberty",
+            "Lingerie",
+            "Littery"
+          ],
+          "ipa": "/ˈlaɪbrəri/",
+          "type": "noun",
+          "meaning": "Thư viện",
+          "example": "I need to return these books to the library."
+        }
+      ]
+    },
+    {
+      "name": "Physical Activity 🏃‍♀️",
+      "slug": "physical-activity",
+      "words": [
+        {
+          "word": "Exercise",
+          "options": [
+            "Exercise",
+            "Exorcise",
+            "Excess",
+            "Excite"
+          ],
+          "ipa": "/ˈeksəsaɪz/",
+          "type": "noun/verb",
+          "meaning": "Tập thể dục",
+          "example": "Regular exercise helps improve your mood and energy."
+        },
+        {
+          "word": "Stretching",
+          "options": [
+            "Stretching",
+            "Sketching",
+            "Stressing",
+            "Searching"
+          ],
+          "ipa": "/ˈstretʃɪŋ/",
+          "type": "noun",
+          "meaning": "Giãn cơ",
+          "example": "Stretching before a workout can help prevent injuries."
+        },
+        {
+          "word": "Cardio",
+          "options": [
+            "Cardio",
+            "Cargo",
+            "Cartoon",
+            "Cardinal"
+          ],
+          "ipa": "/ˈkɑːdiəʊ/",
+          "type": "noun",
+          "meaning": "Bài tập tim mạch",
+          "example": "Running, swimming, and cycling are all forms of cardio."
+        },
+        {
+          "word": "Teamwork",
+          "options": [
+            "Teamwork",
+            "Teapot",
+            "Dreamwork",
+            "Teaware"
+          ],
+          "ipa": "/ˈtiːmwɜːk/",
+          "type": "noun",
+          "meaning": "Làm việc nhóm",
+          "example": "Playing sports teaches you the importance of teamwork."
+        },
+        {
+          "word": "Strength",
+          "options": [
+            "Strength",
+            "Straight",
+            "Strait",
+            "Stretch"
+          ],
+          "ipa": "/streŋθ/",
+          "type": "noun",
+          "meaning": "Sức mạnh",
+          "example": "Weightlifting is a great way to build muscle strength."
+        },
+        {
+          "word": "Flexibility",
+          "options": [
+            "Flexibility",
+            "Facility",
+            "Feasibility",
+            "Fatality"
+          ],
+          "ipa": "/ˌfleksəˈbɪləti/",
+          "type": "noun",
+          "meaning": "Sự dẻo dai",
+          "example": "Yoga and Pilates are excellent for improving flexibility."
+        },
+        {
+          "word": "Endurance",
+          "options": [
+            "Endurance",
+            "Insurance",
+            "Entrance",
+            "Hindrance"
+          ],
+          "ipa": "/ɪnˈdjʊərəns/",
+          "type": "noun",
+          "meaning": "Sức bền",
+          "example": "Long-distance running requires a lot of endurance."
+        },
+        {
+          "word": "Workout",
+          "options": [
+            "Workout",
+            "Work out",
+            "Walkout",
+            "Work on"
+          ],
+          "ipa": "/ˈwɜːkaʊt/",
+          "type": "noun",
+          "meaning": "Buổi tập",
+          "example": "I had a great workout at the gym this morning."
+        }
+      ]
+    },
+    {
+      "name": "School & Study 📚",
+      "slug": "school-study",
+      "words": [
+        {
+          "word": "Homework",
+          "options": [
+            "Homework",
+            "Housework",
+            "Teamwork",
+            "Framework"
+          ],
+          "ipa": "/ˈhəʊmwɜːk/",
+          "type": "noun",
+          "meaning": "Bài tập về nhà",
+          "example": "I have a lot of math homework to do tonight."
+        },
+        {
+          "word": "Examination",
+          "options": [
+            "Examination",
+            "Excitement",
+            "Explanation",
+            "Exclamation"
+          ],
+          "ipa": "/ɪɡˌzæmɪˈneɪʃən/",
+          "type": "noun",
+          "meaning": "Kỳ thi",
+          "example": "The final examination will cover all the topics from this semester."
+        },
+        {
+          "word": "Knowledge",
+          "options": [
+            "Knowledge",
+            "Acknowledge",
+            "College",
+            "No-ledge"
+          ],
+          "ipa": "/ˈnɒlɪdʒ/",
+          "type": "noun",
+          "meaning": "Kiến thức",
+          "example": "Reading books is a great way to gain knowledge."
+        },
+        {
+          "word": "Concentrate",
+          "options": [
+            "Concentrate",
+            "Congratulate",
+            "Consecrate",
+            "Concertrate"
+          ],
+          "ipa": "/ˈkɒnsəntreɪt/",
+          "type": "verb",
+          "meaning": "Tập trung",
+          "example": "It's hard to concentrate when there is a lot of noise."
+        },
+        {
+          "word": "Timetable",
+          "options": [
+            "Timetable",
+            "Time-table",
+            "Timeline",
+            "Time travel"
+          ],
+          "ipa": "/ˈtaɪmˌteɪbəl/",
+          "type": "noun",
+          "meaning": "Thời khóa biểu",
+          "example": "According to the timetable, our next class is history."
+        },
+        {
+          "word": "Assignment",
+          "options": [
+            "Assignment",
+            "Assistance",
+            "Assessment",
+            "Alignment"
+          ],
+          "ipa": "/əˈsaɪnmənt/",
+          "type": "noun",
+          "meaning": "Bài tập lớn",
+          "example": "The teacher gave us a new writing assignment."
+        },
+        {
+          "word": "Research",
+          "options": [
+            "Research",
+            "Re-search",
+            "Resurge",
+            "Resource"
+          ],
+          "ipa": "/rɪˈsɜːtʃ/",
+          "type": "noun",
+          "meaning": "Nghiên cứu",
+          "example": "She is doing research for her science project."
+        },
+        {
+          "word": "Deadline",
+          "options": [
+            "Deadline",
+            "Headline",
+            "Redline",
+            "Dead-line"
+          ],
+          "ipa": "/ˈdedlaɪn/",
+          "type": "noun",
+          "meaning": "Hạn chót",
+          "example": "The deadline for submitting the essay is this Friday."
+        }
+      ]
+    },
+    {
+      "name": "Technology & Innovation 💻",
+      "slug": "tech-innovation",
+      "words": [
+        {
+          "word": "Internet",
+          "options": [
+            "Internet",
+            "Internal",
+            "Internship",
+            "Interpret"
+          ],
+          "ipa": "/ˈɪntənet/",
+          "type": "noun",
+          "meaning": "Mạng Internet",
+          "example": "The internet has changed the way we live and work."
+        },
+        {
+          "word": "Smartphone",
+          "options": [
+            "Smartphone",
+            "Smart phone",
+            "Smart-phone",
+            "Smarphone"
+          ],
+          "ipa": "/ˈsmɑːtfəʊn/",
+          "type": "noun",
+          "meaning": "Điện thoại thông minh",
+          "example": "Most teens today own a smartphone."
+        },
+        {
+          "word": "Application",
+          "options": [
+            "Application",
+            "Applicant",
+            "Appliance",
+            "Applicable"
+          ],
+          "ipa": "/ˌæplɪˈkeɪʃən/",
+          "type": "noun",
+          "meaning": "Ứng dụng",
+          "example": "There's a mobile application for almost everything now."
+        },
+        {
+          "word": "Innovation",
+          "options": [
+            "Innovation",
+            "Invitation",
+            "Renovation",
+            "Invasion"
+          ],
+          "ipa": "/ˌɪnəˈveɪʃən/",
+          "type": "noun",
+          "meaning": "Sự đổi mới",
+          "example": "The company is known for its innovation in technology."
+        },
+        {
+          "word": "Digital",
+          "options": [
+            "Digital",
+            "Digit",
+            "Dignity",
+            "Digging"
+          ],
+          "ipa": "/ˈdɪdʒɪtəl/",
+          "type": "adjective",
+          "meaning": "Kỹ thuật số",
+          "example": "We are living in a digital age."
+        },
+        {
+          "word": "Artificial",
+          "options": [
+            "Artificial",
+            "Artifice",
+            "Artful",
+            "Artist"
+          ],
+          "ipa": "/ˌɑːtɪˈfɪʃəl/",
+          "type": "adjective",
+          "meaning": "Nhân tạo",
+          "example": "Artificial Intelligence (AI) is a rapidly growing field."
+        },
+        {
+          "word": "Social Media",
+          "options": [
+            "Social Media",
+            "Social Medium",
+            "Society Media",
+            "Social Medial"
+          ],
+          "ipa": "/ˌsəʊʃəl ˈmiːdiə/",
+          "type": "noun",
+          "meaning": "Mạng xã hội",
+          "example": "It's important to use social media responsibly."
+        },
+        {
+          "word": "Algorithm",
+          "options": [
+            "Algorithm",
+            "Alligator",
+            "Logarithm",
+            "Algae-rhythm"
+          ],
+          "ipa": "/ˈælɡərɪðəm/",
+          "type": "noun",
+          "meaning": "Thuật toán",
+          "example": "Recommendation systems use a complex algorithm."
+        }
+      ]
+    }
+  ]
+}

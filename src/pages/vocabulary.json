@@ -1,0 +1,94 @@
+{
+  "topics": [
+    {
+      "name": "Fruits 🍎",
+      "slug": "fruits",
+      "words": [
+        {
+          "word": "Apple",
+          "options": ["Apple", "Ample", "Apply", "Angle"],
+          "ipa": "/ˈæpəl/",
+          "type": "noun",
+          "meaning": "Quả táo",
+          "example": "An apple a day keeps the doctor away."
+        },
+        {
+          "word": "Banana",
+          "options": ["Banana", "Bandana", "Panama", "Bahama"],
+          "ipa": "/bəˈnɑːnə/",
+          "type": "noun",
+          "meaning": "Quả chuối",
+          "example": "Monkeys love to eat bananas."
+        },
+        {
+          "word": "Strawberry",
+          "options": ["Strawberry", "Rosemary", "Blackberry", "Library"],
+          "ipa": "/ˈstrɔːbəri/",
+          "type": "noun",
+          "meaning": "Quả dâu tây",
+          "example": "She loves eating fresh strawberry with cream."
+        }
+      ]
+    },
+    {
+      "name": "Animals 🐘",
+      "slug": "animals",
+      "words": [
+        {
+          "word": "Elephant",
+          "options": ["Elephant", "Elegant", "Element", "Elevant"],
+          "ipa": "/ˈelɪfənt/",
+          "type": "noun",
+          "meaning": "Con voi",
+          "example": "The elephant is the largest land animal."
+        },
+        {
+          "word": "Tiger",
+          "options": ["Tiger", "Taller", "Tired", "Trigger"],
+          "ipa": "/ˈtaɪɡər/",
+          "type": "noun",
+          "meaning": "Con hổ",
+          "example": "A tiger is a large carnivorous feline."
+        },
+        {
+          "word": "Dolphin",
+          "options": ["Dolphin", "Domain", "Doll-fin", "Door-pin"],
+          "ipa": "/ˈdɒlfɪn/",
+          "type": "noun",
+          "meaning": "Cá heo",
+          "example": "Dolphins are known for their intelligence."
+        }
+      ]
+    },
+    {
+      "name": "Common Objects 💻",
+      "slug": "objects",
+      "words": [
+        {
+          "word": "Computer",
+          "options": ["Computer", "Commuter", "Competitor", "Compiler"],
+          "ipa": "/kəmˈpjuːtər/",
+          "type": "noun",
+          "meaning": "Máy tính",
+          "example": "I use my computer for both work and gaming."
+        },
+        {
+          "word": "Bicycle",
+          "options": ["Bicycle", "Article", "Vehicle", "Icicle"],
+          "ipa": "/ˈbaɪsɪkl/",
+          "type": "noun",
+          "meaning": "Xe đạp",
+          "example": "He rides his bicycle to work every day."
+        },
+        {
+          "word": "Library",
+          "options": ["Library", "Liberty", "Lingerie", "Littery"],
+          "ipa": "/ˈlaɪbrəri/",
+          "type": "noun",
+          "meaning": "Thư viện",
+          "example": "I need to return these books to the library."
+        }
+      ]
+    }
+  ]
+}
