@@ -13,6 +13,8 @@ import MatchingGame from "./pages/MatchingGame";
 import WordfallGame from "./pages/WordfallGame";
 import GalaxyGrammarGame from "./pages/GalaxyGrammarGame";
 import DetectiveGame from "./pages/DetectiveGame";
+import EnglishWordSprint from "./pages/EnglishWordSprint";
+import MillionaireGame from "./pages/MillionaireGame ";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -30,6 +32,10 @@ function App() {
         <Route path="/wordfall-game" element={<WordfallGame />} />
         <Route path="/galaxy-grammar-game" element={<GalaxyGrammarGame />} />
         <Route path="/detective-game" element={<DetectiveGame />} />
+        <Route path="/english-word-sprint" element={<EnglishWordSprint />} />
+        <Route path="/millionaire-game" element={<MillionaireGame />} />
+
+        {/* Additional routes for other pages */}
         <Route
           path="/about"
           element={
