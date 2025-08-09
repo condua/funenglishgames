@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // --- Âm thanh ---
@@ -7,7 +13,7 @@ const playSound = (src, volume = 0.5) => {
   sound.volume = volume;
   sound.play().catch((e) => console.error("Audio play failed:", e));
 };
-
+import allQuestions from "./milionaire";
 const sounds = {
   incorrect:
     "https://res.cloudinary.com/dy9yts4fa/video/upload/v1754581291/answer-wrong_vjm3vq.mp3",
@@ -38,101 +44,19 @@ const prizeLevels = [
   "150.000.000",
 ].reverse();
 
-const questions = [
-  // Cấp 1-5 (Dễ)
-  {
-    question: "Thủ đô của Việt Nam là gì?",
-    options: ["Hà Nội", "Đà Nẵng", "TP. Hồ Chí Minh", "Hải Phòng"],
-    answer: "Hà Nội",
-  },
-  {
-    question: "Đâu là một loại trái cây?",
-    options: ["Cà rốt", "Khoai tây", "Táo", "Bắp cải"],
-    answer: "Táo",
-  },
-  {
-    question: "Mặt trời mọc ở hướng nào?",
-    options: ["Tây", "Đông", "Bắc", "Nam"],
-    answer: "Đông",
-  },
-  {
-    question: "Một năm có bao nhiêu tháng?",
-    options: ["10", "11", "12", "13"],
-    answer: "12",
-  },
-  {
-    question: "Loài vật nào sau đây sống dưới nước?",
-    options: ["Gà", "Chó", "Cá", "Mèo"],
-    answer: "Cá",
-  },
-  // Cấp 6-10 (Trung bình)
-  {
-    question: "Ai là người viết 'Truyện Kiều'?",
-    options: [
-      "Hồ Xuân Hương",
-      "Nguyễn Du",
-      "Nguyễn Trãi",
-      "Bà Huyện Thanh Quan",
-    ],
-    answer: "Nguyễn Du",
-  },
-  {
-    question: "Hành tinh nào gần Mặt trời nhất?",
-    options: ["Trái Đất", "Sao Hỏa", "Sao Kim", "Sao Thủy"],
-    answer: "Sao Thủy",
-  },
-  {
-    question: "Công thức hóa học của nước là gì?",
-    options: ["O2", "CO2", "H2O", "N2"],
-    answer: "H2O",
-  },
-  {
-    question: "Dãy núi dài nhất thế giới là gì?",
-    options: ["Himalaya", "Andes", "Rocky", "Alps"],
-    answer: "Andes",
-  },
-  {
-    question: "Tác phẩm 'Mona Lisa' được vẽ bởi ai?",
-    options: [
-      "Vincent van Gogh",
-      "Pablo Picasso",
-      "Leonardo da Vinci",
-      "Claude Monet",
-    ],
-    answer: "Leonardo da Vinci",
-  },
-  // Cấp 11-15 (Khó)
-  {
-    question: "Nguyên tố nào có ký hiệu hóa học là 'Au'?",
-    options: ["Bạc", "Chì", "Vàng", "Sắt"],
-    answer: "Vàng",
-  },
-  {
-    question: "Năm nào con người lần đầu tiên đặt chân lên Mặt trăng?",
-    options: ["1965", "1969", "1972", "1975"],
-    answer: "1969",
-  },
-  {
-    question: "Trong thần thoại Hy Lạp, vị thần nào là vua của các vị thần?",
-    options: ["Apollo", "Hades", "Poseidon", "Zeus"],
-    answer: "Zeus",
-  },
-  {
-    question: "Thành phố nào được mệnh danh là 'Thành phố vĩnh cửu'?",
-    options: ["Athens", "Rome", "Jerusalem", "Cairo"],
-    answer: "Rome",
-  },
-  {
-    question: "Lý thuyết tương đối được phát triển bởi nhà khoa học nào?",
-    options: [
-      "Isaac Newton",
-      "Galileo Galilei",
-      "Nikola Tesla",
-      "Albert Einstein",
-    ],
-    answer: "Albert Einstein",
-  },
-];
+const easyQuestions = allQuestions.slice(0, 10);
+const mediumQuestions = allQuestions.slice(10, 30);
+const hardQuestions = allQuestions.slice(30, 50);
+
+// Hàm xáo trộn mảng (Fisher-Yates shuffle)
+const shuffleArray = (array) => {
+  const newArr = [...array];
+  for (let i = newArr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+  return newArr;
+};
 
 export default function MillionaireGame() {
   const [gameState, setGameState] = useState("ready"); // ready, playing, gameOver, won
@@ -145,8 +69,68 @@ export default function MillionaireGame() {
   });
   const [disabledOptions, setDisabledOptions] = useState([]);
   const [audiencePoll, setAudiencePoll] = useState(null);
+  const [gameQuestions, setGameQuestions] = useState([]);
 
-  const currentQuestion = useMemo(() => questions[level], [level]);
+  // Dùng useRef để lưu trữ kho câu hỏi và không bị reset giữa các lần render
+  const availableQuestionsRef = useRef(null);
+
+  // Hàm khởi tạo hoặc reset lại kho câu hỏi
+  const resetQuestionPools = () => {
+    availableQuestionsRef.current = {
+      easy: shuffleArray(easyQuestions),
+      medium: shuffleArray(mediumQuestions),
+      hard: shuffleArray(hardQuestions),
+    };
+  };
+
+  // Khởi tạo kho câu hỏi lần đầu tiên
+  if (availableQuestionsRef.current === null) {
+    resetQuestionPools();
+  }
+  // Hàm tạo bộ câu hỏi ngẫu nhiên cho mỗi lượt chơi
+  const generateAndSetQuestions = useCallback(() => {
+    const pools = availableQuestionsRef.current;
+
+    // Kiểm tra nếu không đủ câu hỏi, thì reset lại kho và thông báo
+    if (
+      pools.easy.length < 5 ||
+      pools.medium.length < 5 ||
+      pools.hard.length < 5
+    ) {
+      // alert(
+      //   "Bạn đã chơi hết tất cả câu hỏi! Vòng chơi mới sẽ sử dụng lại bộ câu hỏi từ đầu."
+      // );
+      resetQuestionPools();
+    }
+
+    const currentPools = availableQuestionsRef.current;
+
+    // Dùng splice để LẤY và XÓA câu hỏi khỏi kho
+    const easyBatch = currentPools.easy.splice(0, 5);
+    const mediumBatch = currentPools.medium.splice(0, 5);
+    const hardBatch = currentPools.hard.splice(0, 5);
+
+    const questionsForGame = [...easyBatch, ...mediumBatch, ...hardBatch];
+
+    // Đảm bảo luôn có 15 câu hỏi
+    if (questionsForGame.length < 15) {
+      console.error("Không thể tạo đủ 15 câu hỏi, đang reset lại...");
+      resetGame(); // Gọi lại hàm reset game nếu có lỗi
+      return;
+    }
+
+    setGameQuestions(questionsForGame);
+  }, []);
+
+  // Tạo bộ câu hỏi khi game được tải lần đầu
+  useEffect(() => {
+    generateAndSetQuestions();
+  }, [generateAndSetQuestions]);
+
+  const currentQuestion = useMemo(
+    () => gameQuestions[level],
+    [gameQuestions, level]
+  );
 
   const resetForNextLevel = useCallback(() => {
     setSelectedAnswer(null);
@@ -166,26 +150,39 @@ export default function MillionaireGame() {
 
   const handleLockAnswer = useCallback(() => {
     if (!selectedAnswer) return;
-    playSound(sounds.suspense, 0.3);
-    setLockedAnswer(selectedAnswer);
 
+    setLockedAnswer(selectedAnswer);
+    playSound(sounds.suspense, 0.3);
+
+    // Tạo một timeout để mô phỏng sự hồi hộp
     setTimeout(() => {
       const isCorrect = selectedAnswer === currentQuestion.answer;
+
       if (isCorrect) {
+        // Xử lý khi trả lời đúng
         playSound(sounds.correct);
-        setTimeout(() => {
-          if (level === questions.length - 1) {
+
+        // Kiểm tra xem đây có phải là câu hỏi cuối cùng không
+        if (level === 14) {
+          // Nếu đúng, chờ một chút rồi chuyển sang trạng thái thắng cuộc
+          setTimeout(() => {
             setGameState("won");
-          } else {
-            setLevel((l) => l + 1);
+          }, 1500);
+        } else {
+          // Nếu không phải câu cuối, chờ một chút rồi tăng level
+          setTimeout(() => {
+            setLevel((prevLevel) => prevLevel + 1);
             resetForNextLevel();
-          }
-        }, 1500);
+          }, 1500);
+        }
       } else {
+        // Xử lý khi trả lời sai
         playSound(sounds.incorrect);
-        setTimeout(() => setGameState("gameOver"), 1500);
+        setTimeout(() => {
+          setGameState("gameOver");
+        }, 1500);
       }
-    }, 3500);
+    }, 3500); // Thời gian hồi hộp trước khi tiết lộ kết quả
   }, [selectedAnswer, currentQuestion, level, resetForNextLevel]);
 
   const useLifeline = useCallback(
@@ -235,11 +232,12 @@ export default function MillionaireGame() {
 
   const resetGame = useCallback(() => {
     playSound(sounds.start);
+    generateAndSetQuestions(); // Tạo bộ câu hỏi mới khi chơi lại
     setGameState("playing");
     setLevel(0);
     resetForNextLevel();
     setLifelines({ fiftyFifty: true, audience: true });
-  }, [resetForNextLevel]);
+  }, [resetForNextLevel, generateAndSetQuestions]);
 
   const getOptionClass = (option) => {
     if (lockedAnswer) {
@@ -252,6 +250,15 @@ export default function MillionaireGame() {
       return "opacity-40 pointer-events-none";
     return "bg-blue-800 hover:bg-blue-700";
   };
+
+  // Màn hình chờ nếu câu hỏi chưa sẵn sàng
+  if (!currentQuestion) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-slate-900 text-white font-sans">
+        <p className="text-2xl animate-pulse">Đang tải câu hỏi...</p>
+      </div>
+    );
+  }
 
   // --- Màn hình Bắt đầu / Kết thúc ---
   if (gameState !== "playing") {
