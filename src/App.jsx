@@ -16,6 +16,7 @@ import DetectiveGame from "./pages/DetectiveGame";
 import EnglishWordSprint from "./pages/EnglishWordSprint";
 import MillionaireGame from "./pages/MillionaireGame ";
 import SentenceArchitectGame from "./pages/SentenceArchitectGame";
+import CultureCrosswalkGame from "./pages/CultureCrosswalkGame";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -35,6 +36,10 @@ function App() {
         <Route path="/detective-game" element={<DetectiveGame />} />
         <Route path="/english-word-sprint" element={<EnglishWordSprint />} />
         <Route path="/millionaire-game" element={<MillionaireGame />} />
+        <Route
+          path="/culture-crosswalk-game"
+          element={<CultureCrosswalkGame />}
+        />
         <Route
           path="/sentence-architect-game"
           element={<SentenceArchitectGame />}

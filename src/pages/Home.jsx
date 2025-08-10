@@ -45,6 +45,14 @@ const GAMES = [
     blurb: "Luyện ngữ pháp qua câu hỏi tương tác.",
   },
   {
+    key: "culture-crosswalk",
+    title: "Culture Crosswalk",
+    path: "/culture-crosswalk-game",
+    emoji: "🌍",
+    skills: ["Sentece"],
+    blurb: "Học giao tiếp tiếng Anh qua tình huống thực tế.",
+  },
+  {
     key: "matching",
     title: "Matching Game",
     path: "/matching-game",
