@@ -1,196 +1,308 @@
-// src/App.jsx
+// src/pages/Home.jsx
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
-import React from "react";
-
-// Giả lập dữ liệu cho các trò chơi
-const games = [
+const GAMES = [
   {
-    title: "Vocabulary Victor",
-    description:
-      "Mở rộng vốn từ vựng của bạn qua các câu đố hình ảnh vui nhộn.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1593349480503-685d873b8f60?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1Nzc0MTR8MHwxfHNlYXJjaHw0fHx2b2NhYnVsYXJ5JTIwZ2FtZXxlbnwwfHx8fDE3MjMwMjY0NTR8MA&ixlib=rb-4.0.3&q=80&w=1080",
+    key: "vocabulary",
+    title: "Vocabulary Game",
+    path: "/vocabulary-game",
+    emoji: "🧠",
+    skills: ["Vocabulary"],
+    blurb: "Ôn từ vựng qua minigame nhanh và vui.",
   },
   {
-    title: "Grammar Guardian",
-    description:
-      "Trở thành người hùng ngữ pháp bằng cách sửa lỗi trong các câu.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1516979187457-637abb4f9353?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1Nzc0MTR8MHwxfHNlYXJjaHwxfHxsZWFybmluZyUyMGJvb2tzfGVufDB8fHx8fDE3MjMwMjY1MzR8MA&ixlib=rb-4.0.3&q=80&w=1080",
+    key: "scramble",
+    title: "Sentence Scramble",
+    path: "/game2",
+    emoji: "🧩",
+    skills: ["Grammar", "Sentence"],
+    blurb: "Xếp lại trật tự câu chính xác.",
   },
   {
-    title: "Listening Legend",
-    description: "Luyện kỹ năng nghe hiểu qua các đoạn hội thoại thực tế.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1505664194779-8be62b6d3cf6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1Nzc0MTR8MHwxfHNlYXJjaHwxfHxsaXN0ZW5pbmclMjBoZWFkcGhvbmVzfGVufDB8fHx8fDE3MjMwMjY1NjJ8MA&ixlib=rb-4.0.3&q=80&w=1080",
+    key: "listening",
+    title: "Listening Game",
+    path: "/listening-game",
+    emoji: "🎧",
+    skills: ["Listening"],
+    blurb: "Nghe – hiểu – chọn đáp án đúng.",
   },
   {
-    title: "Pronunciation Pro",
-    description: "Cải thiện phát âm với công nghệ nhận dạng giọng nói AI.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1589999099234-a82f3de3513a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1Nzc0MTR8MHwxfHNlYXJjaHwxfHxtaWNyb3Bob25lJTIwc291bmQlMjB3YXZlc3xlbnwwfHx8fDE3MjMwMjY1ODh8MA&ixlib=rb-4.0.3&q=80&w=1080",
+    key: "typing",
+    title: "Typing Game",
+    path: "/typing-game",
+    emoji: "⌨️",
+    skills: ["Spelling", "Typing"],
+    blurb: "Đua tốc độ gõ và chính tả.",
+  },
+  {
+    key: "grammar",
+    title: "Grammar Game",
+    path: "/grammar-game",
+    emoji: "📘",
+    skills: ["Grammar"],
+    blurb: "Luyện ngữ pháp qua câu hỏi tương tác.",
+  },
+  {
+    key: "matching",
+    title: "Matching Game",
+    path: "/matching-game",
+    emoji: "🃏",
+    skills: ["Vocabulary", "Memory"],
+    blurb: "Ghép cặp từ và nghĩa, rèn trí nhớ.",
+  },
+  {
+    key: "wordfall",
+    title: "Wordfall",
+    path: "/wordfall-game",
+    emoji: "🌧️",
+    skills: ["Spelling", "Reflex"],
+    blurb: "Bắt chữ rơi – luyện phản xạ ngôn ngữ.",
+  },
+  {
+    key: "galaxy",
+    title: "Galaxy Grammar",
+    path: "/galaxy-grammar-game",
+    emoji: "🪐",
+    skills: ["Grammar", "Sentence"],
+    blurb: "Chinh phục ngữ pháp giữa dải ngân hà.",
+  },
+  {
+    key: "detective",
+    title: "Detective Game",
+    path: "/detective-game",
+    emoji: "🕵️",
+    skills: ["Reading", "Logic"],
+    blurb: "Suy luận từ manh mối ngôn ngữ.",
+  },
+  {
+    key: "sprint",
+    title: "English Word Sprint",
+    path: "/english-word-sprint",
+    emoji: "🏃",
+    skills: ["Vocabulary", "Listening"],
+    blurb: "60 giây bứt tốc vốn từ.",
+  },
+  {
+    key: "millionaire",
+    title: "Millionaire Game",
+    path: "/millionaire-game",
+    emoji: "💰",
+    skills: ["Mixed"],
+    blurb: "Ai là Triệu Phú – phiên bản học tiếng Anh.",
+  },
+  {
+    key: "architect",
+    title: "Sentence Architect",
+    path: "/sentence-architect-game",
+    emoji: "🏗️",
+    skills: ["Grammar", "Sentence"],
+    blurb: "Kéo – thả block để xây câu đúng chuẩn.",
   },
 ];
 
-// Component Icon cho phần tính năng
-const FeatureIcon = ({ children }) => (
-  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-100 text-teal-600">
-    {children}
-  </div>
-);
+const SKILL_TAGS = [
+  "All",
+  "Vocabulary",
+  "Grammar",
+  "Sentence",
+  "Listening",
+  "Spelling",
+  "Typing",
+  "Reading",
+  "Memory",
+  "Reflex",
+  "Logic",
+  "Mixed",
+];
 
-function HomePage() {
+export default function Home() {
+  const [query, setQuery] = useState("");
+  const [skill, setSkill] = useState("All");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return GAMES.filter((g) => {
+      const okSkill = skill === "All" || g.skills.includes(skill);
+      const okQuery =
+        !q ||
+        g.title.toLowerCase().includes(q) ||
+        g.blurb.toLowerCase().includes(q) ||
+        g.skills.join(" ").toLowerCase().includes(q);
+      return okSkill && okQuery;
+    });
+  }, [query, skill]);
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.06, delayChildren: 0.05 },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 14, scale: 0.98 },
+    show: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { type: "spring", stiffness: 120, damping: 14 },
+    },
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
-      {/* ===== Thanh điều hướng (Navbar) ===== */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <a href="#" className="text-2xl font-bold text-teal-600">
-              LingoPlay 🚀
-            </a>
-            <div className="hidden items-center space-x-6 md:flex">
-              <a href="#" className="text-gray-600 hover:text-teal-500">
-                Games
-              </a>
-              <a href="#" className="text-gray-600 hover:text-teal-500">
-                About
-              </a>
-              <a href="#" className="text-gray-600 hover:text-teal-500">
-                Pricing
-              </a>
+    <div className="min-h-screen bg-slate-950 text-white">
+      {/* Header / Hero */}
+      <header className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-cyan-600/20 via-indigo-600/10 to-slate-950 pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-4 py-10 sm:py-16">
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl sm:text-5xl font-extrabold tracking-tight"
+          >
+            English Learning <span className="text-cyan-400">Games Hub</span>
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+            className="mt-3 text-slate-300 max-w-2xl"
+          >
+            Chọn một trò chơi để luyện từ vựng, ngữ pháp, nghe – nói – đọc –
+            viết. Mọi thứ đều tương tác và siêu vui!
+          </motion.p>
+
+          {/* Search + Filters */}
+          <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            <div className="flex-1">
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Tìm kiếm game theo tên, kỹ năng…"
+                className="w-full rounded-xl bg-slate-800/60 border border-slate-700 px-4 py-3 outline-none focus:ring-2 focus:ring-cyan-500"
+              />
             </div>
-            <div className="flex items-center space-x-4">
-              <a href="#" className="text-gray-600 hover:text-teal-500">
-                Login
-              </a>
-              <a
-                href="#"
-                className="rounded-full bg-teal-500 px-5 py-2 text-white shadow-lg hover:bg-teal-600 transition-colors"
+            <div>
+              <select
+                value={skill}
+                onChange={(e) => setSkill(e.target.value)}
+                className="rounded-xl bg-slate-800/60 border border-slate-700 px-4 py-3 outline-none focus:ring-2 focus:ring-cyan-500"
               >
-                Sign Up
-              </a>
+                {SKILL_TAGS.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
-      </nav>
+      </header>
 
-      {/* ===== Phần Hero Section ===== */}
-      <main className="container mx-auto px-6 py-24 text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight md:text-6xl">
-          Learn English The{" "}
-          <span className="bg-gradient-to-r from-teal-400 to-blue-500 bg-clip-text text-transparent">
-            Fun Way
-          </span>
-        </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-600">
-          Master vocabulary, grammar, and pronunciation through exciting games
-          designed for all learning levels. Stop memorizing, start playing!
-        </p>
-        <div className="mt-8 flex justify-center space-x-4">
-          <a
-            href="#"
-            className="rounded-full bg-teal-500 px-8 py-3 text-lg font-semibold text-white shadow-xl hover:bg-teal-600 transition-all transform hover:scale-105"
-          >
-            Start Playing for Free
-          </a>
-        </div>
-        <div className="mt-16">
-          {/*  */}
-          <img
-            src="https://cdni.iconscout.com/illustration/premium/thumb/kids-learning-online-5683933-4731295.png"
-            alt="Kids learning English with games"
-            className="mx-auto w-full max-w-3xl"
-          />
-        </div>
+      {/* Cards Grid */}
+      <main className="max-w-6xl mx-auto px-4 pb-16">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+        >
+          <AnimatePresence>
+            {filtered.map((g) => (
+              <motion.div
+                key={g.key}
+                variants={item}
+                whileHover={{ y: -4 }}
+                className="group relative rounded-2xl border border-slate-800/80 bg-gradient-to-br from-slate-900/70 to-slate-900/30 p-5"
+              >
+                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-cyan-500/10 via-indigo-500/10 to-fuchsia-500/10" />
+                <div className="relative">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="text-4xl">{g.emoji}</div>
+                    <div className="flex gap-2 flex-wrap justify-end">
+                      {g.skills.map((s) => (
+                        <span
+                          key={s}
+                          className="text-xs px-2 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <h3 className="mt-3 text-xl font-bold">{g.title}</h3>
+                  <p className="mt-1 text-slate-400 text-sm">{g.blurb}</p>
+
+                  <div className="mt-4 flex items-center justify-between">
+                    <Link
+                      to={g.path}
+                      className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 text-slate-900 font-semibold px-4 py-2 transition-transform active:scale-95"
+                    >
+                      Play
+                      <motion.span
+                        initial={{ x: 0 }}
+                        whileHover={{ x: 3 }}
+                        className="inline-block"
+                      >
+                        →
+                      </motion.span>
+                    </Link>
+
+                    <motion.div
+                      aria-hidden
+                      initial={{ rotate: -2, scale: 1 }}
+                      whileHover={{ rotate: 0, scale: 1.03 }}
+                      className="text-xs text-slate-500"
+                    >
+                      {g.path}
+                    </motion.div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Empty State */}
+        {filtered.length === 0 && (
+          <div className="mt-16 text-center text-slate-400">
+            Không tìm thấy game phù hợp. Thử từ khóa khác hoặc đổi bộ lọc.
+          </div>
+        )}
       </main>
 
-      {/* ===== Phần Tính năng (Features) ===== */}
-      <section className="bg-white py-20">
-        <div className="container mx-auto px-6">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold">Why You'll Love LingoPlay</h2>
-            <p className="mt-2 text-gray-500">
-              The best way to make learning stick.
-            </p>
+      {/* Footer */}
+      <footer className="border-t border-slate-800/60">
+        <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>© {new Date().getFullYear()} MLPA English Games.</span>
+          <div className="flex gap-4">
+            <Link to="/" className="hover:text-slate-300">
+              Home
+            </Link>
+            <a
+              href="https://react.dev"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-slate-300"
+            >
+              React
+            </a>
+            <a
+              href="https://www.framer.com/motion/"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-slate-300"
+            >
+              Framer Motion
+            </a>
           </div>
-          <div className="mt-16 grid gap-12 md:grid-cols-3">
-            <div className="text-center">
-              <div className="flex justify-center">
-                <FeatureIcon>🎮</FeatureIcon>
-              </div>
-              <h3 className="mt-4 text-xl font-semibold">Engaging Games</h3>
-              <p className="mt-2 text-gray-500">
-                Our games are so fun, you'll forget you're even studying.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="flex justify-center">
-                <FeatureIcon>📈</FeatureIcon>
-              </div>
-              <h3 className="mt-4 text-xl font-semibold">
-                Track Your Progress
-              </h3>
-              <p className="mt-2 text-gray-500">
-                Watch your skills grow with our detailed progress tracking.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="flex justify-center">
-                <FeatureIcon>🌍</FeatureIcon>
-              </div>
-              <h3 className="mt-4 text-xl font-semibold">
-                Real-World Scenarios
-              </h3>
-              <p className="mt-2 text-gray-500">
-                Learn practical language you can use in everyday conversations.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Phần Game Showcase ===== */}
-      <section className="py-20">
-        <div className="container mx-auto px-6">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold">Explore Our Games</h2>
-            <p className="mt-2 text-gray-500">
-              Pick a skill and start your adventure.
-            </p>
-          </div>
-          <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {games.map((game, index) => (
-              <div
-                key={index}
-                className="overflow-hidden rounded-xl bg-white shadow-lg transition-transform duration-300 hover:-translate-y-2"
-              >
-                <img
-                  src={game.imageUrl}
-                  alt={game.title}
-                  className="h-48 w-full object-cover"
-                />
-                <div className="p-6">
-                  <h3 className="text-xl font-bold">{game.title}</h3>
-                  <p className="mt-2 text-gray-600">{game.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Footer ===== */}
-      <footer className="bg-gray-800 py-12 text-white">
-        <div className="container mx-auto px-6 text-center">
-          <p className="text-gray-400">
-            &copy; {new Date().getFullYear()} LingoPlay. All rights reserved.
-            Let the games begin!
-          </p>
         </div>
       </footer>
     </div>
   );
 }
-
-export default HomePage;

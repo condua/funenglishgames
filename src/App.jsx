@@ -39,17 +39,6 @@ function App() {
           path="/sentence-architect-game"
           element={<SentenceArchitectGame />}
         />
-
-        {/* Additional routes for other pages */}
-        <Route
-          path="/about"
-          element={
-            <div>
-              <h2>About</h2>
-              <p>This is the about page.</p>
-            </div>
-          }
-        />
       </Routes>
     </BrowserRouter>
   );
