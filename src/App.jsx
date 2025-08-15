@@ -17,6 +17,8 @@ import EnglishWordSprint from "./pages/EnglishWordSprint";
 import MillionaireGame from "./pages/MillionaireGame ";
 import SentenceArchitectGame from "./pages/SentenceArchitectGame";
 import CultureCrosswalkGame from "./pages/CultureCrosswalkGame";
+import SpellingApp from "./pages/SpellingApp";
+import CodeSandbox from "./pages/CodeSandbox";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -36,6 +38,7 @@ function App() {
         <Route path="/detective-game" element={<DetectiveGame />} />
         <Route path="/english-word-sprint" element={<EnglishWordSprint />} />
         <Route path="/millionaire-game" element={<MillionaireGame />} />
+        <Route path="/spelling-app" element={<SpellingApp />} />
         <Route
           path="/culture-crosswalk-game"
           element={<CultureCrosswalkGame />}
@@ -44,6 +47,8 @@ function App() {
           path="/sentence-architect-game"
           element={<SentenceArchitectGame />}
         />
+        <Route path="/code-sandbox" element={<CodeSandbox />} />
+        {/* Add more routes as needed */}
       </Routes>
     </BrowserRouter>
   );
