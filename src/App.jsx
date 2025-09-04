@@ -19,7 +19,8 @@ import SentenceArchitectGame from "./pages/SentenceArchitectGame";
 import CultureCrosswalkGame from "./pages/CultureCrosswalkGame";
 import SpellingApp from "./pages/SpellingApp";
 import CodeSandbox from "./pages/CodeSandbox";
-
+import DSAReviewPage from "./pages/dsaPages/DSAReviewPage";
+import FlashcardGame from "./pages/FlashcardGame";
 function App() {
   const [count, setCount] = useState(0);
 
@@ -47,8 +48,10 @@ function App() {
           path="/sentence-architect-game"
           element={<SentenceArchitectGame />}
         />
+        <Route path="/flashcard-game" element={<FlashcardGame />} />
         <Route path="/code-sandbox" element={<CodeSandbox />} />
         {/* Add more routes as needed */}
+        <Route path="/dsa-review" element={<DSAReviewPage />} />
       </Routes>
     </BrowserRouter>
   );
