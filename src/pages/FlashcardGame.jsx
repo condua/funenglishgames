@@ -1,6 +1,12 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Shuffle, Volume2 } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Shuffle,
+  Volume2,
+  ArrowLeft,
+} from "lucide-react";
 import { decks } from "./flashcardData.js"; // Import dữ liệu từ file riêng
 
 // --- Component Card chính ---
@@ -46,7 +52,7 @@ const Flashcard = ({ card, isFlipped, onFlip, onSpeak }) => {
             </div>
             <motion.button
               onClick={(e) => {
-                e.stopPropagation(); // Ngăn việc lật thẻ khi bấm nút loa
+                e.stopPropagation();
                 onSpeak(card.word);
               }}
               whileHover={{ scale: 1.1 }}
@@ -68,7 +74,9 @@ const Flashcard = ({ card, isFlipped, onFlip, onSpeak }) => {
 
 // --- Component chính của Game ---
 export default function FlashcardGame() {
-  const [deck, setDeck] = useState(decks[0].cards);
+  const [gameState, setGameState] = useState("topic_selection"); // topic_selection, playing
+  const [activeTopic, setActiveTopic] = useState(null);
+  const [deck, setDeck] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [direction, setDirection] = useState(0);
@@ -82,6 +90,22 @@ export default function FlashcardGame() {
     }
   }, []);
 
+  const handleTopicSelect = (topicSlug) => {
+    const selectedDeck = decks.find((d) => d.slug === topicSlug);
+    if (selectedDeck) {
+      setActiveTopic(selectedDeck.topic);
+      setDeck([...selectedDeck.cards].sort(() => Math.random() - 0.5));
+      setCurrentIndex(0);
+      setIsFlipped(false);
+      setGameState("playing");
+    }
+  };
+
+  const handleBackToTopics = () => {
+    setGameState("topic_selection");
+    setActiveTopic(null);
+  };
+
   const shuffleDeck = useCallback(() => {
     setDeck((prevDeck) => [...prevDeck].sort(() => Math.random() - 0.5));
     setCurrentIndex(0);
@@ -92,7 +116,6 @@ export default function FlashcardGame() {
     (offset) => {
       setIsFlipped(false);
       setDirection(offset);
-      // Dùng timeout nhỏ để thẻ kịp lật úp lại trước khi chuyển
       setTimeout(() => {
         setCurrentIndex((prev) => {
           const newIndex = prev + offset;
@@ -111,12 +134,7 @@ export default function FlashcardGame() {
       opacity: 0,
       scale: 0.8,
     }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1,
-      scale: 1,
-    },
+    center: { zIndex: 1, x: 0, opacity: 1, scale: 1 },
     exit: (direction) => ({
       zIndex: 0,
       x: direction < 0 ? 300 : -300,
@@ -125,14 +143,46 @@ export default function FlashcardGame() {
     }),
   };
 
+  // Màn hình chọn chủ đề
+  if (gameState === "topic_selection") {
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-900 text-white p-4 font-sans">
+        <h1 className="text-4xl md:text-5xl font-bold mb-8">
+          Choose a TOEIC Topic
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+          {decks.map((deck) => (
+            <motion.button
+              key={deck.slug}
+              onClick={() => handleTopicSelect(deck.slug)}
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm ring-1 ring-white/10 text-2xl font-semibold hover:bg-cyan-500/20 hover:ring-cyan-400 transition-all"
+            >
+              {deck.topic}
+            </motion.button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Màn hình chơi game
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-900 text-white p-4 font-sans overflow-hidden">
       <div className="w-full max-w-xl">
-        <h1 className="text-center text-3xl font-bold mb-4">
-          English Flashcards
-        </h1>
+        <div className="flex justify-between items-center mb-4">
+          <motion.button
+            onClick={handleBackToTopics}
+            whileHover={{ scale: 1.1 }}
+            className="flex items-center gap-2 text-cyan-300 hover:text-cyan-100"
+          >
+            <ArrowLeft size={20} /> Back to Topics
+          </motion.button>
+          <h1 className="text-xl sm:text-2xl font-bold text-center">
+            {activeTopic}
+          </h1>
+        </div>
 
-        {/* Thanh tiến trình */}
         <div className="w-full bg-white/10 rounded-full h-2 mb-6">
           <motion.div
             className="bg-cyan-400 h-2 rounded-full"
@@ -141,7 +191,6 @@ export default function FlashcardGame() {
           />
         </div>
 
-        {/* Khu vực Flashcard */}
         <AnimatePresence initial={false} custom={direction}>
           <motion.div
             key={currentIndex}
@@ -173,7 +222,6 @@ export default function FlashcardGame() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Bảng điều khiển */}
         <div className="mt-8 flex items-center justify-between">
           <motion.button
             whileHover={{ scale: 1.1 }}
