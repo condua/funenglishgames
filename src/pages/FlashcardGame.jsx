@@ -8,7 +8,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { decks } from "./flashcardData.js"; // Import dữ liệu từ file riêng
-
+//flashcard
 // --- Component Card chính ---
 const Flashcard = ({ card, isFlipped, onFlip, onSpeak }) => {
   return (
@@ -29,15 +29,28 @@ const Flashcard = ({ card, isFlipped, onFlip, onSpeak }) => {
           className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-white/10 backdrop-blur-lg ring-1 ring-white/20 rounded-2xl shadow-2xl"
           style={{ backfaceVisibility: "hidden" }}
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-            {card.word}
-          </h2>
+          <div className="flex items-center gap-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+              {card.word}
+            </h2>
+            <motion.button
+              onClick={(e) => {
+                e.stopPropagation(); // Ngăn việc lật thẻ khi bấm nút loa
+                onSpeak(card.word);
+              }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="p-2 rounded-full bg-black/20 hover:bg-black/40"
+            >
+              <Volume2 className="h-7 w-7 text-cyan-300" />
+            </motion.button>
+          </div>
           <p className="mt-2 text-lg text-cyan-300 font-mono">{card.ipa}</p>
         </div>
 
         {/* Mặt sau của thẻ */}
         <div
-          className="absolute inset-0 flex flex-col p-6 bg-white/10 backdrop-blur-lg ring-1 ring-white/20 rounded-2xl shadow-2xl space-y-4"
+          className="absolute inset-0 flex flex-col p-6 bg-white/10 backdrop-blur-lg ring-1 ring-white/20 rounded-2xl shadow-2xl space-y-3"
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
@@ -62,10 +75,18 @@ const Flashcard = ({ card, isFlipped, onFlip, onSpeak }) => {
               <Volume2 className="h-6 w-6 text-cyan-300" />
             </motion.button>
           </div>
-          <p className="text-base text-slate-200 flex-grow">
-            <span className="font-semibold text-slate-400">Example: </span>
-            <i>"{card.example}"</i>
-          </p>
+          <div className="text-base text-slate-200 flex-grow space-y-2">
+            <div>
+              <span className="font-semibold text-slate-400">Example: </span>
+              <i>"{card.example}"</i>
+            </div>
+            {card.exampleMeaning && (
+              <div>
+                <span className="font-semibold text-slate-400">Nghĩa: </span>
+                <i className="text-slate-300">"{card.exampleMeaning}"</i>
+              </div>
+            )}
+          </div>
         </div>
       </motion.div>
     </div>
