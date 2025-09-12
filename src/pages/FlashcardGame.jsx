@@ -8,7 +8,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { decks } from "./flashcardData.js"; // Import dữ liệu từ file riêng
-//flashcard games
+//flashcard game
 // --- Component Card chính ---
 const Flashcard = ({ card, isFlipped, onFlip, onSpeak }) => {
   return (
