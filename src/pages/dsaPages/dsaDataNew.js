@@ -370,7 +370,7 @@ graph.bfs('A'); // A, B, C`,
       },
     },
   },
-  // --- CÁC GIẢI THUẬT QUAN TRỌNG ---
+  // --- CÁC GIẢI THUẬT QUAN TRỌNG cần giải ---
   {
     id: "binary-search",
     title: "Tìm kiếm nhị phân (Binary Search)",
@@ -418,7 +418,7 @@ console.log(binarySearch(arr, 8)); // Output: -1`,
     title: "Sắp xếp trộn (Merge Sort)",
     content: {
       description:
-        "Sắp xếp trộn là một thuật toán sắp xếp theo kiểu \"chia để trị\" (divide and conquer). Nó chia mảng thành hai nửa, đệ quy sắp xếp từng nửa, sau đó trộn (merge) hai nửa đã sắp xếp lại với nhau để tạo thành một mảng hoàn chỉnh đã được sắp xếp.",
+        'Sắp xếp trộn là một thuật toán sắp xếp theo kiểu "chia để trị" (divide and conquer). Nó chia mảng thành hai nửa, đệ quy sắp xếp từng nửa, sau đó trộn (merge) hai nửa đã sắp xếp lại với nhau để tạo thành một mảng hoàn chỉnh đã được sắp xếp.',
       complexity: {
         access: "Trường hợp tốt nhất",
         search: "O(n log n)",
