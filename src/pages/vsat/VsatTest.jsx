@@ -441,19 +441,21 @@ const VsatTestPage = () => {
   }, []);
 
   useEffect(() => {
+    if (!submitted) {
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
+      }, 1000);
+    }
+
+    return () => clearInterval(timerRef.current);
+  }, [submitted]);
+
+  useEffect(() => {
     if (timeLeft <= 0) {
       clearInterval(timerRef.current);
       handleSubmit();
     }
   }, [timeLeft]);
-
-  useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
-    }, 1000);
-
-    return () => clearInterval(timerRef.current);
-  }, []);
 
   const handleAnswerChange = (questionId, statementId, value) => {
     if (submitted) return;
@@ -509,9 +511,6 @@ const VsatTestPage = () => {
     setScore(0);
     setSubmitted(false);
     setTimeLeft(testData.duration * 60);
-    timerRef.current = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
-    }, 1000);
   };
 
   const formatTime = (seconds) => {
@@ -694,6 +693,12 @@ const VsatTestPage = () => {
                         {q.items.map((item, index) => {
                           const userAnswer = answers[q.id]?.[index];
                           const isCorrect = q.answers[index] === userAnswer;
+
+                          const currentQuestionAnswers = answers[q.id] || {};
+                          const selectedByOthers = Object.values(
+                            currentQuestionAnswers
+                          ).filter((val) => val !== userAnswer);
+
                           let classes =
                             "border-gray-300 focus:border-blue-500 focus:ring-blue-500";
                           if (submitted) {
@@ -701,6 +706,7 @@ const VsatTestPage = () => {
                               ? "bg-green-100 border-green-500"
                               : "bg-red-100 border-red-500";
                           }
+
                           return (
                             <div
                               key={index}
@@ -724,11 +730,19 @@ const VsatTestPage = () => {
                                 >
                                   <option value="">Chọn đáp án...</option>
                                   {Object.entries(q.options).map(
-                                    ([key, value]) => (
-                                      <option key={key} value={key}>
-                                        {key}. {value}
-                                      </option>
-                                    )
+                                    ([key, value]) => {
+                                      const isDisabled =
+                                        selectedByOthers.includes(key);
+                                      return (
+                                        <option
+                                          key={key}
+                                          value={key}
+                                          disabled={isDisabled}
+                                        >
+                                          {key}. {value}
+                                        </option>
+                                      );
+                                    }
                                   )}
                                 </select>
                                 {submitted && !isCorrect && (
