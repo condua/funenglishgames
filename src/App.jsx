@@ -21,6 +21,7 @@ import SpellingApp from "./pages/SpellingApp";
 import CodeSandbox from "./pages/CodeSandbox";
 import DSAReviewPage from "./pages/dsaPages/DSAReviewPage";
 import ReviewPage from "./pages/dsaPages/ReviewPage";
+import VsatTestPage from "./pages/vsat/VsatTest";
 // import FlashcardGame from "./pages/FlashcardGame";
 function App() {
   const [count, setCount] = useState(0);
@@ -54,6 +55,7 @@ function App() {
         {/* Add more routes as needed */}
         <Route path="/dsa-review" element={<DSAReviewPage />} />
         <Route path="/dsa-review-new" element={<ReviewPage />} />
+        <Route path="/vsat-test" element={<VsatTestPage />} />
       </Routes>
     </BrowserRouter>
   );
