@@ -427,17 +427,21 @@ const VsatTestPage = () => {
     testData.parts.forEach((part) => {
       part.questions.forEach((q) => {
         if (q.type === "true-false") {
-          total += q.statements.length;
+          // Mỗi câu Đúng/Sai (gồm 4 tiểu mục) tối đa 6 điểm
+          total += 6;
         } else if (q.type === "fill-in-the-blank") {
-          total += Object.keys(q.answers).length;
+          // Mỗi ô điền từ (trả lời ngắn) được 6 điểm
+          total += Object.keys(q.answers).length * 6;
         } else if (q.type === "matching") {
-          total += q.items.length;
-        } else {
-          total += 1;
+          // Mỗi câu ghép (4 tiểu mục * 1.5 điểm) tối đa 6 điểm
+          total += q.items.length * 1.5;
+        } else if (q.type === "multiple-choice") {
+          // Mỗi câu trắc nghiệm được 6 điểm
+          total += 6;
         }
       });
     });
-    setTotalPossibleScore(total);
+    setTotalPossibleScore(total); // Tổng sẽ là 150
   }, []);
 
   useEffect(() => {
@@ -468,6 +472,7 @@ const VsatTestPage = () => {
     }));
   };
 
+  // [CẬP NHẬT] Tính điểm của người dùng theo thang 150
   const handleSubmit = () => {
     if (submitted) return;
 
@@ -475,26 +480,42 @@ const VsatTestPage = () => {
     testData.parts.forEach((part) => {
       part.questions.forEach((q) => {
         const userAnswers = answers[q.id] || {};
+
         if (q.type === "true-false") {
+          // Tính điểm cho câu Đúng/Sai
+          let correctCount = 0;
           q.statements.forEach((stmt) => {
             if (userAnswers[stmt.id] === stmt.answer) {
-              currentScore++;
+              correctCount++;
             }
-          });
+          }); // Áp dụng luật tính điểm
+
+          if (correctCount === 1) {
+            currentScore += 1;
+          } else if (correctCount === 2) {
+            currentScore += 2;
+          } else if (correctCount === 3) {
+            currentScore += 3;
+          } else if (correctCount === 4) {
+            currentScore += 6;
+          }
         } else if (q.type === "multiple-choice") {
+          // Tính điểm Trắc nghiệm (6 điểm/câu)
           if (userAnswers[0] === q.answer) {
-            currentScore++;
+            currentScore += 6;
           }
         } else if (q.type === "matching") {
+          // Tính điểm Ghép hợp (1.5 điểm/tiểu mục)
           Object.keys(q.answers).forEach((key) => {
             if (userAnswers[key] === q.answers[key]) {
-              currentScore++;
+              currentScore += 1.5;
             }
           });
         } else if (q.type === "fill-in-the-blank") {
+          // Tính điểm Trả lời ngắn (6 điểm/câu)
           Object.keys(q.answers).forEach((key) => {
             if (userAnswers[key]?.toLowerCase().trim() === q.answers[key]) {
-              currentScore++;
+              currentScore += 6;
             }
           });
         }
