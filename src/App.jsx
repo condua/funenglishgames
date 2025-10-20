@@ -23,6 +23,8 @@ import DSAReviewPage from "./pages/dsaPages/DSAReviewPage";
 import ReviewPage from "./pages/dsaPages/ReviewPage";
 import VsatTestPage from "./pages/vsat/VsatTest";
 import VsatCreatorPage from "./pages/vsat/VsatCreatorPage";
+import WomenDayRosePage from "./pages/WomenDayRosePage";
+
 // import FlashcardGame from "./pages/FlashcardGame";
 function App() {
   const [count, setCount] = useState(0);
@@ -58,6 +60,7 @@ function App() {
         <Route path="/dsa-review-new" element={<ReviewPage />} />
         <Route path="/vsat-test" element={<VsatTestPage />} />
         <Route path="/vsat-creator" element={<VsatCreatorPage />} />
+        <Route path="/women-day-rose" element={<WomenDayRosePage />} />
       </Routes>
     </BrowserRouter>
   );
