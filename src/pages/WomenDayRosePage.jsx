@@ -206,7 +206,7 @@ function RoseScene() {
     </>
   );
 }
-
+//main function
 export default function WomenDayRosePage() {
   const [randomWish, setRandomWish] = useState(null);
 
