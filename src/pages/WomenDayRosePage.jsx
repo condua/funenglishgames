@@ -207,6 +207,7 @@ function RoseScene() {
   );
 }
 //main function
+// gg
 export default function WomenDayRosePage() {
   const [randomWish, setRandomWish] = useState(null);
 
