@@ -24,6 +24,7 @@ import ReviewPage from "./pages/dsaPages/ReviewPage";
 import VsatTestPage from "./pages/vsat/VsatTest";
 import VsatCreatorPage from "./pages/vsat/VsatCreatorPage";
 import WomenDayRosePage from "./pages/WomenDayRosePage";
+import MagicLoveCameraCanvas from "./pages/IloveYou";
 
 // import FlashcardGame from "./pages/FlashcardGame";
 function App() {
@@ -61,6 +62,7 @@ function App() {
         <Route path="/vsat-test" element={<VsatTestPage />} />
         <Route path="/vsat-creator" element={<VsatCreatorPage />} />
         <Route path="/women-day-rose" element={<WomenDayRosePage />} />
+        <Route path="/magic-love-camera" element={<MagicLoveCameraCanvas />} />
       </Routes>
     </BrowserRouter>
   );
