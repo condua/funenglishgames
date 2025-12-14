@@ -11,7 +11,7 @@ const MagicLoveCameraCanvas = () => {
 
   // --- CẤU HÌNH ---
   const NEON_COLORS = ["#00FFFF", "#FF00FF", "#FFFFFF", "#FFFF00", "#00FF00"];
-  const TEXT_MESSAGE = "I LOVE YOU";
+  const [text_Message, setText_Message] = useState("I Love You");
   const MP_VERSION = "0.4.1646424915";
 
   // --- HỆ THỐNG HẠT CLASSIC ---
@@ -155,7 +155,7 @@ const MagicLoveCameraCanvas = () => {
       tempCtx.font = `900 ${fontSize}px sans-serif`;
       tempCtx.textAlign = "center";
       tempCtx.textBaseline = "middle";
-      tempCtx.fillText(TEXT_MESSAGE, w / 2, h / 2);
+      tempCtx.fillText(text_Message, w / 2, h / 2);
 
       // Thêm trái tim nhỏ ở dưới
       tempCtx.font = `${fontSize * 0.5}px sans-serif`;
@@ -167,7 +167,7 @@ const MagicLoveCameraCanvas = () => {
       particles.length = 0;
 
       // Quét pixel để tạo hạt (Gap càng nhỏ hạt càng dày)
-      const gap = 7;
+      const gap = 12;
       for (let y = 0; y < textData.height; y += gap) {
         for (let x = 0; x < textData.width; x += gap) {
           // Lấy điểm ảnh có độ trong suốt > 128
@@ -305,7 +305,7 @@ const MagicLoveCameraCanvas = () => {
   };
 
   const getStatusText = () => {
-    if (handState === "open") return "Phát hiện tình yêu!";
+    if (handState === "open") return "Phát hiện xòe tay!";
     if (handState === "closed") return "Đang khóa";
     return "Chờ tay bạn...";
   };
@@ -320,6 +320,13 @@ const MagicLoveCameraCanvas = () => {
 
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden font-sans bg-black">
+      <input
+        type="text"
+        value={text_Message}
+        onChange={(e) => setText_Message(e.target.value)}
+        className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 p-2 rounded-md bg-white/20 text-white placeholder-white/50 border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        placeholder="Nhập tin nhắn của bạn..."
+      />
       {/* 1. LỚP NỀN GALAXY */}
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-950 to-black z-0"></div>
 
