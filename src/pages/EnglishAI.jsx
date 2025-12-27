@@ -21,6 +21,8 @@ import {
   X,
   Search,
   ThumbsUp,
+  Menu,
+  MoreHorizontal,
 } from "lucide-react";
 
 // --- STYLES & ANIMATIONS ---
@@ -30,32 +32,57 @@ const styles = `
     to { opacity: 1; transform: translateY(0); }
   }
   @keyframes slideIn {
-    from { opacity: 0; transform: translateX(-20px); }
+    from { opacity: 0; transform: translateX(20px); }
     to { opacity: 1; transform: translateX(0); }
   }
-  .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
-  .animate-slide-in { animation: slideIn 0.4s ease-out forwards; }
-  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-  .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-  .custom-scrollbar::-webkit-scrollbar-thumb { background: #c7c7c7; border-radius: 10px; }
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a0a0a0; }
+  .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+  .animate-slide-in { animation: slideIn 0.3s ease-out forwards; }
+  
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  
+  /* Hide Scrollbar but keep functionality for Horizontal Nav */
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 `;
-// --- CONFIGURATION & API ---
-// --- CONFIGURATION & API ---
-// --- CONFIGURATION & API ---
-const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-const SITE_URL = "";
-const SITE_NAME = "";
 
-const MODEL = "tngtech/deepseek-r1t2-chimera:free";
+// --- CONFIGURATION & API ---
+const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY; // Đảm bảo bạn đã cấu hình file .env
+const SITE_URL = "https://your-site.com"; // Thay thế bằng URL thực tế của bạn nếu có
+const SITE_NAME = "LinguaAI";
+
+const MODEL = "tngtech/deepseek-r1t2-chimera:free"; // Hoặc model khác tùy chọn
+
 // Helper to clean JSON response
 const cleanAndParseJSON = (text) => {
   try {
     let cleaned = text.replace(/```json\n?|```/g, "").trim();
+    // Tìm JSON object/array đầu tiên và cuối cùng
     const firstBrace = cleaned.indexOf("{");
+    const firstBracket = cleaned.indexOf("[");
     const lastBrace = cleaned.lastIndexOf("}");
-    if (firstBrace !== -1 && lastBrace !== -1) {
-      cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+    const lastBracket = cleaned.lastIndexOf("]");
+
+    let start = -1;
+    let end = -1;
+
+    // Xác định xem nó là Object {} hay Array []
+    if (
+      firstBrace !== -1 &&
+      (firstBracket === -1 || firstBrace < firstBracket)
+    ) {
+      start = firstBrace;
+      end = lastBrace;
+    } else if (firstBracket !== -1) {
+      start = firstBracket;
+      end = lastBracket;
+    }
+
+    if (start !== -1 && end !== -1) {
+      cleaned = cleaned.substring(start, end + 1);
     }
     return JSON.parse(cleaned);
   } catch (e) {
@@ -63,6 +90,7 @@ const cleanAndParseJSON = (text) => {
     return null;
   }
 };
+
 const generateContent = async (prompt, systemInstruction = "") => {
   try {
     const response = await fetch(
@@ -88,18 +116,17 @@ const generateContent = async (prompt, systemInstruction = "") => {
     );
 
     if (!response.ok) throw new Error("Kết nối API thất bại");
-
     const data = await response.json();
 
-    // --- SỬA DÒNG NÀY ---
-    // Cũ (Sai với OpenRouter): return cleanAndParseJSON(data.candidates[0].content.parts[0].text);
-    // Mới (Đúng):
-    return cleanAndParseJSON(data.choices[0].message.content);
+    // Deepseek đôi khi trả về text lẫn lộn, hàm clean rất quan trọng
+    const content = data.choices[0]?.message?.content || "";
+    return cleanAndParseJSON(content);
   } catch (error) {
     console.error("AI Error:", error);
     throw error;
   }
 };
+
 const generateTextContent = async (prompt, systemInstruction = "") => {
   try {
     const response = await fetch(
@@ -125,39 +152,38 @@ const generateTextContent = async (prompt, systemInstruction = "") => {
     );
 
     if (!response.ok) throw new Error("Kết nối API thất bại");
-
     const data = await response.json();
-    return data.choices[0].message.content;
+    return data.choices[0]?.message?.content || "";
   } catch (error) {
     console.error("AI Text Error:", error);
     throw error;
   }
 };
 
-// --- SHARED COMPONENTS ---
-
-// --- COMPONENTS ---
+// --- UI COMPONENTS ---
 
 const ToastContainer = ({ toasts, removeToast }) => (
-  <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-[90vw]">
+  <div className="fixed top-4 right-4 z-[100] flex flex-col gap-3 max-w-[90vw] w-full sm:w-auto pointer-events-none">
     {toasts.map((toast) => (
       <div
         key={toast.id}
-        className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white animate-slide-in ${
-          toast.type === "error" ? "bg-red-500" : "bg-green-600"
+        className={`pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl backdrop-blur-sm animate-slide-in border transition-all ${
+          toast.type === "error"
+            ? "bg-red-50/90 border-red-200 text-red-800"
+            : "bg-emerald-50/90 border-emerald-200 text-emerald-800"
         }`}
       >
         {toast.type === "error" ? (
-          <AlertCircle size={18} />
+          <AlertCircle size={20} className="shrink-0" />
         ) : (
-          <CheckCircle size={18} />
+          <CheckCircle size={20} className="shrink-0" />
         )}
-        <span className="text-sm font-medium">{toast.message}</span>
+        <span className="text-sm font-semibold">{toast.message}</span>
         <button
           onClick={() => removeToast(toast.id)}
-          className="ml-2 opacity-80 hover:opacity-100"
+          className="ml-auto p-1 hover:bg-black/5 rounded-full"
         >
-          <X size={14} />
+          <X size={16} />
         </button>
       </div>
     ))}
@@ -180,53 +206,63 @@ const useToast = () => {
 };
 
 const Navbar = ({ currentView, setView }) => (
-  <nav className="bg-gradient-to-r from-indigo-700 to-purple-700 text-white shadow-lg sticky top-0 z-40 backdrop-blur-md bg-opacity-95">
-    <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap gap-y-3 justify-between items-center">
-      <div
-        className="flex items-center space-x-2 font-bold text-xl cursor-pointer hover:opacity-90"
-        onClick={() => setView("home")}
-      >
-        <div className="bg-white/20 p-1.5 rounded-lg">
-          <Sparkles className="w-5 h-5 text-yellow-300" />
+  <nav className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-40">
+    <div className="max-w-7xl mx-auto px-4">
+      <div className="flex items-center justify-between h-16">
+        {/* Logo */}
+        <div
+          className="flex items-center gap-2 cursor-pointer group"
+          onClick={() => setView("home")}
+        >
+          <div className="bg-gradient-to-br from-indigo-600 to-violet-600 p-2 rounded-xl shadow-lg shadow-indigo-200 group-hover:scale-105 transition-transform">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-gray-800 to-gray-600">
+            Lingua<span className="text-indigo-600">AI</span>
+          </span>
         </div>
-        <span className="hidden sm:inline">
-          Lingua<span className="text-yellow-300">AI</span>
-        </span>
+
+        {/* Desktop Title (Hidden on mobile) */}
+        <div className="hidden md:block text-sm font-medium text-gray-500">
+          Trợ lý học tiếng Anh toàn diện
+        </div>
       </div>
-      <div className="flex space-x-2 text-xs sm:text-sm font-medium overflow-x-auto pb-1 sm:pb-0 scrollbar-hide w-full sm:w-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+
+      {/* Scrollable Navigation Menu */}
+      <div className="flex overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1 gap-2 md:gap-4 border-t md:border-t-0 border-gray-100 py-2 md:py-0 md:h-12 items-center">
         <NavButton
           view="listening"
           current={currentView}
           setView={setView}
-          icon={<Headphones size={16} />}
+          icon={<Headphones size={18} />}
           label="Nghe"
         />
         <NavButton
           view="writing"
           current={currentView}
           setView={setView}
-          icon={<PenTool size={16} />}
+          icon={<PenTool size={18} />}
           label="Viết"
         />
         <NavButton
           view="speaking"
           current={currentView}
           setView={setView}
-          icon={<MessageSquare size={16} />}
+          icon={<MessageSquare size={18} />}
           label="Hội Thoại"
         />
         <NavButton
           view="vocabulary"
           current={currentView}
           setView={setView}
-          icon={<List size={16} />}
+          icon={<BookOpen size={18} />}
           label="Từ Vựng"
         />
         <NavButton
           view="checker"
           current={currentView}
           setView={setView}
-          icon={<Search size={16} />}
+          icon={<Search size={18} />}
           label="Check Câu"
         />
       </div>
@@ -234,92 +270,105 @@ const Navbar = ({ currentView, setView }) => (
   </nav>
 );
 
-const NavButton = ({ view, current, setView, icon, label }) => (
-  <button
-    onClick={() => setView(view)}
-    className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full transition-all whitespace-nowrap shrink-0 ${
-      current === view
-        ? "bg-white text-indigo-700 shadow-md font-bold"
-        : "hover:bg-white/10 text-indigo-100"
-    }`}
-  >
-    {icon} <span>{label}</span>
-  </button>
-);
+const NavButton = ({ view, current, setView, icon, label }) => {
+  const isActive = current === view;
+  return (
+    <button
+      onClick={() => setView(view)}
+      className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+        isActive
+          ? "bg-indigo-600 text-white shadow-md shadow-indigo-200"
+          : "text-gray-600 hover:bg-gray-100 hover:text-indigo-600"
+      }`}
+    >
+      {icon}
+      <span>{label}</span>
+    </button>
+  );
+};
 
-// --- FEATURES ---
+// --- FEATURE VIEWS ---
 
 const HomeView = ({ setView }) => (
-  <div className="flex flex-col items-center justify-center py-12 space-y-12 animate-fade-in px-4">
-    <div className="text-center space-y-4">
-      <div className="inline-block px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-700 text-sm font-semibold">
-        ✨ Phiên bản Ổn định 2025
+  <div className="flex flex-col items-center justify-center py-12 px-4 animate-fade-in space-y-12">
+    <div className="text-center max-w-2xl mx-auto space-y-6">
+      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider">
+        <Zap size={14} className="fill-indigo-700" /> AI Powered 2025
       </div>
-      <h1 className="text-3xl sm:text-5xl font-extrabold text-gray-800">
-        Học Tiếng Anh{" "}
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-          Thông Minh
+      <h1 className="text-4xl md:text-6xl font-black text-gray-900 tracking-tight">
+        Học Tiếng Anh <br className="md:hidden" />
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">
+          Thông Minh Hơn
         </span>
       </h1>
-      <p className="text-gray-600 max-w-xl mx-auto">
-        Cải thiện toàn diện 4 kỹ năng với sự hỗ trợ từ Gemini AI.
+      <p className="text-lg text-gray-600 leading-relaxed">
+        Không chỉ là công cụ, đây là người bạn đồng hành giúp bạn cải thiện 4 kỹ
+        năng Nghe, Nói, Đọc, Viết với sức mạnh của Gemini AI.
       </p>
     </div>
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 w-full max-w-7xl">
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 w-full max-w-7xl px-2">
       <FeatureCard
         onClick={() => setView("listening")}
-        icon={<Headphones className="text-white" />}
-        bg="bg-blue-500"
+        icon={<Headphones className="w-8 h-8 text-white" />}
+        color="bg-blue-500"
         title="Luyện Nghe"
-        desc="Chép chính tả"
+        desc="Chép chính tả & Audio"
       />
       <FeatureCard
         onClick={() => setView("writing")}
-        icon={<PenTool className="text-white" />}
-        bg="bg-purple-500"
+        icon={<PenTool className="w-8 h-8 text-white" />}
+        color="bg-violet-500"
         title="Luyện Viết"
-        desc="Sửa bài luận"
+        desc="Sửa lỗi IELTS & Essay"
       />
       <FeatureCard
         onClick={() => setView("speaking")}
-        icon={<MessageSquare className="text-white" />}
-        bg="bg-green-500"
+        icon={<MessageSquare className="w-8 h-8 text-white" />}
+        color="bg-emerald-500"
         title="Hội Thoại"
-        desc="Roleplay AI"
+        desc="Roleplay ngữ cảnh thực"
       />
       <FeatureCard
         onClick={() => setView("vocabulary")}
-        icon={<List className="text-white" />}
-        bg="bg-orange-500"
+        icon={<List className="w-8 h-8 text-white" />}
+        color="bg-amber-500"
         title="Từ Vựng"
-        desc="Flashcards"
+        desc="Flashcards thông minh"
       />
       <FeatureCard
         onClick={() => setView("checker")}
-        icon={<Search className="text-white" />}
-        bg="bg-pink-500"
+        icon={<Search className="w-8 h-8 text-white" />}
+        color="bg-pink-500"
         title="Check Câu"
-        desc="Sửa ngữ pháp"
+        desc="Sửa ngữ pháp tức thì"
       />
     </div>
   </div>
 );
 
-const FeatureCard = ({ onClick, icon, bg, title, desc }) => (
+const FeatureCard = ({ onClick, icon, color, title, desc }) => (
   <div
     onClick={onClick}
-    className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl cursor-pointer border border-gray-100 flex flex-col items-center text-center h-full transition-all hover:-translate-y-1"
+    className="group bg-white p-6 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 cursor-pointer transition-all duration-300 hover:-translate-y-2 relative overflow-hidden"
   >
     <div
-      className={`${bg} w-12 h-12 rounded-2xl flex items-center justify-center mb-4 shadow-md`}
+      className={`absolute top-0 right-0 w-24 h-24 ${color} opacity-10 rounded-bl-[100px] -mr-4 -mt-4 transition-transform group-hover:scale-150`}
+    ></div>
+    <div
+      className={`${color} w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-gray-200 group-hover:scale-110 transition-transform`}
     >
       {icon}
     </div>
-    <h3 className="font-bold text-gray-800">{title}</h3>
-    <p className="text-gray-500 text-xs">{desc}</p>
+    <h3 className="text-xl font-bold text-gray-800 mb-2">{title}</h3>
+    <p className="text-gray-500 text-sm font-medium">{desc}</p>
+    <div className="mt-4 flex items-center text-sm font-semibold text-gray-400 group-hover:text-indigo-600 transition-colors">
+      Bắt đầu ngay <ArrowRight size={16} className="ml-1" />
+    </div>
   </div>
 );
 
+// --- LISTENING COMPONENT ---
 const ListeningPractice = ({ addToast }) => {
   const [topic, setTopic] = useState("Daily Routine");
   const [level, setLevel] = useState("Intermediate");
@@ -331,6 +380,11 @@ const ListeningPractice = ({ addToast }) => {
   const [rate, setRate] = useState(1);
   const synth = useRef(window.speechSynthesis);
 
+  // Stop audio on unmount
+  useEffect(() => {
+    return () => synth.current.cancel();
+  }, []);
+
   const generate = async () => {
     setLoading(true);
     setExercise(null);
@@ -338,14 +392,16 @@ const ListeningPractice = ({ addToast }) => {
     setUserInput("");
     try {
       if (synth.current.speaking) synth.current.cancel();
-      const prompt = `Topic: ${topic}. Level: ${level}. Generate short paragraph (30-50 words). Output JSON: {"text": "English...", "translation": "Vietnamese...", "difficult_words": ["word"]}`;
+      const prompt = `Topic: ${topic}. Level: ${level}. Generate a short paragraph (30-50 words) for dictation practice. Output strict JSON: {"text": "English text here", "translation": "Vietnamese translation here", "difficult_words": ["word1", "word2"]}`;
       const data = await generateContent(prompt, "You are an English teacher.");
-      if (data) {
+      if (data && data.text) {
         setExercise(data);
-        addToast("Đã tạo bài tập!", "success");
+        addToast("Đã tạo bài tập thành công!", "success");
+      } else {
+        throw new Error("Dữ liệu không hợp lệ");
       }
     } catch (e) {
-      addToast("Lỗi tạo bài tập.", "error");
+      addToast("Lỗi tạo bài tập. Thử lại nhé!", "error");
     }
     setLoading(false);
   };
@@ -353,85 +409,123 @@ const ListeningPractice = ({ addToast }) => {
   const toggleAudio = () => {
     if (!exercise) return;
     if (isPlaying) {
-      synth.current.pause();
+      synth.current.cancel(); // Cancel stops completely is safer than pause for short texts
       setIsPlaying(false);
     } else {
-      if (synth.current.paused && synth.current.speaking)
-        synth.current.resume();
-      else {
-        const u = new SpeechSynthesisUtterance(exercise.text);
-        u.rate = rate;
-        u.lang = "en-US";
-        u.onend = () => setIsPlaying(false);
-        synth.current.speak(u);
-      }
+      const u = new SpeechSynthesisUtterance(exercise.text);
+      u.rate = rate;
+      u.lang = "en-US";
+      u.onend = () => setIsPlaying(false);
+      u.onerror = () => setIsPlaying(false);
+      synth.current.speak(u);
       setIsPlaying(true);
     }
   };
 
   const check = () => {
+    if (!exercise) return;
     const clean = (s) =>
       s
         .replace(/[^\w\s]/g, "")
         .toLowerCase()
-        .split(/\s+/);
+        .split(/\s+/)
+        .filter((w) => w);
     const org = clean(exercise.text);
     const usr = clean(userInput);
-    let c = 0;
+
+    let matches = 0;
     org.forEach((w, i) => {
-      if (usr[i] === w) c++;
+      if (usr[i] === w) matches++;
     });
-    setResult({ acc: Math.round((c / org.length) * 100) });
-    addToast("Đã chấm điểm!", "success");
+
+    const accuracy =
+      org.length > 0 ? Math.round((matches / org.length) * 100) : 0;
+    setResult({ acc: accuracy });
+    addToast(`Độ chính xác: ${accuracy}%`, accuracy > 80 ? "success" : "error");
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <input
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-          className="border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Topic"
-        />
-        <select
-          value={level}
-          onChange={(e) => setLevel(e.target.value)}
-          className="border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option>Beginner {"A1-A2"}</option>
-          <option>Intermediate {"B1-B2"}</option>
-          <option>Advanced {"C1-C2"}</option>
-        </select>
-        <button
-          onClick={generate}
-          disabled={loading}
-          className="bg-blue-600 text-white rounded-lg flex justify-center items-center gap-2 hover:bg-blue-700 disabled:opacity-50 font-medium"
-        >
-          {loading ? "..." : "Tạo Bài"}
-        </button>
+    <div className="max-w-4xl mx-auto space-y-6 animate-fade-in pb-10">
+      {/* Controls Card */}
+      <div className="bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase ml-1">
+              Chủ đề
+            </label>
+            <input
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              className="w-full mt-1 border border-gray-200 bg-gray-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+              placeholder="Ví dụ: Technology..."
+            />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase ml-1">
+              Trình độ
+            </label>
+            <select
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+              className="w-full mt-1 border border-gray-200 bg-gray-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+            >
+              <option>Beginner (A1-A2)</option>
+              <option>Intermediate (B1-B2)</option>
+              <option>Advanced (C1-C2)</option>
+            </select>
+          </div>
+          <div className="flex items-end">
+            <button
+              onClick={generate}
+              disabled={loading}
+              className="w-full bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed font-semibold shadow-lg shadow-blue-200 transition-all active:scale-95 flex justify-center items-center gap-2"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  <Sparkles size={18} /> Tạo Bài Mới
+                </>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
+
       {exercise && (
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-blue-500">
-            <div className="flex gap-4 mb-4 items-center">
-              <button
-                onClick={toggleAudio}
-                className={`w-12 h-12 rounded-full flex items-center justify-center transition ${
-                  isPlaying
-                    ? "bg-red-100 text-red-600"
-                    : "bg-blue-100 text-blue-600"
-                }`}
-              >
-                {isPlaying ? <Pause /> : <Play />}
-              </button>
-              <div className="flex gap-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Audio & Input Section */}
+          <div className="bg-white p-6 rounded-3xl shadow-lg border-l-8 border-blue-500 flex flex-col h-full">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={toggleAudio}
+                  className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-md ${
+                    isPlaying
+                      ? "bg-red-500 text-white rotate-180"
+                      : "bg-blue-500 text-white hover:scale-110"
+                  }`}
+                >
+                  {isPlaying ? (
+                    <Pause size={24} />
+                  ) : (
+                    <Play size={24} className="ml-1" />
+                  )}
+                </button>
+                <div className="text-sm font-medium text-gray-500">
+                  {isPlaying ? "Đang đọc..." : "Nhấn để nghe"}
+                </div>
+              </div>
+
+              <div className="flex bg-gray-100 p-1 rounded-lg">
                 {[0.7, 1, 1.2].map((r) => (
                   <button
                     key={r}
                     onClick={() => setRate(r)}
-                    className={`text-xs px-2 py-1 rounded ${
-                      rate === r ? "bg-blue-600 text-white" : "bg-gray-100"
+                    className={`text-xs font-bold px-3 py-1.5 rounded-md transition ${
+                      rate === r
+                        ? "bg-white text-blue-600 shadow-sm"
+                        : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
                     {r}x
@@ -439,153 +533,230 @@ const ListeningPractice = ({ addToast }) => {
                 ))}
               </div>
             </div>
+
             <textarea
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
-              className="w-full h-32 p-4 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Nghe và chép lại..."
+              className="flex-1 w-full min-h-[150px] p-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-gray-700 text-lg leading-relaxed custom-scrollbar resize-none"
+              placeholder="Nghe và chép lại những gì bạn nghe được..."
             />
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={check}
-                className="bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 flex items-center gap-2 font-bold"
-              >
-                <CheckCircle size={18} /> Kiểm tra
-              </button>
-            </div>
+
+            <button
+              onClick={check}
+              className="mt-4 w-full bg-emerald-500 text-white py-3 rounded-xl hover:bg-emerald-600 font-bold shadow-md shadow-emerald-200 transition-all flex items-center justify-center gap-2"
+            >
+              <CheckCircle size={20} /> Kiểm tra kết quả
+            </button>
           </div>
-          {result && (
-            <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-2">
-              <div className="flex justify-between font-bold text-lg">
-                <span>Kết quả</span>
-                <span
-                  className={
-                    result.acc >= 80 ? "text-green-600" : "text-orange-600"
-                  }
-                >
-                  {result.acc}%
-                </span>
+
+          {/* Result Section */}
+          <div className="space-y-4">
+            {result ? (
+              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-200 animate-slide-in h-full">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold text-gray-800">
+                    Kết quả chi tiết
+                  </h3>
+                  <span
+                    className={`px-4 py-1 rounded-full text-sm font-bold ${
+                      result.acc >= 80
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-orange-100 text-orange-700"
+                    }`}
+                  >
+                    {result.acc}% Chính xác
+                  </span>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-xs font-bold text-gray-400 uppercase">
+                      Văn bản gốc
+                    </span>
+                    <div className="mt-1 p-4 bg-indigo-50 rounded-2xl text-gray-800 border border-indigo-100 text-base leading-relaxed">
+                      {exercise.text}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-gray-400 uppercase">
+                      Dịch nghĩa
+                    </span>
+                    <div className="mt-1 p-4 bg-gray-50 rounded-2xl text-gray-600 border border-gray-100 italic">
+                      {exercise.translation}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <p className="bg-green-50 p-3 rounded-lg border-green-100 border text-gray-800">
-                {exercise.text}
-              </p>
-              <p className="text-gray-500 italic">{exercise.translation}</p>
-            </div>
-          )}
+            ) : (
+              <div className="h-full min-h-[200px] flex flex-col items-center justify-center bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl text-gray-400 p-6 text-center">
+                <Headphones size={48} className="mb-3 opacity-50" />
+                <p>Kết quả so sánh sẽ hiển thị tại đây sau khi bạn nộp bài.</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
   );
 };
 
+// --- WRITING COMPONENT ---
 const WritingPractice = ({ addToast }) => {
   const [essay, setEssay] = useState("");
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
   const review = async () => {
-    if (!essay.trim()) return;
+    if (!essay.trim()) {
+      addToast("Hãy viết gì đó trước nhé!", "error");
+      return;
+    }
     setLoading(true);
     setFeedback(null);
     try {
-      const prompt = `Analyze IELTS writing. Output JSON: { "score": "Band", "corrected_version": "Text", "general_feedback": "VN", "mistakes": [{ "original": "", "correction": "", "explanation": "" }] }`;
-      const data = await generateContent(`Essay: ${essay}`, prompt);
+      const prompt = `Analyze this writing text. Output strictly JSON: { "score": "Estimated Band score (if IELTS) or Level", "corrected_version": "Full corrected text", "general_feedback": "Vietnamese feedback summary", "mistakes": [{ "original": "wrong phrase", "correction": "right phrase", "explanation": "Vietnamese explanation" }] }`;
+      const data = await generateContent(
+        `Text to check: """${essay}"""`,
+        prompt
+      );
       if (data) {
         setFeedback(data);
-        addToast("Đã chấm xong!", "success");
+        addToast("Đã chấm xong bài viết!", "success");
       }
     } catch (e) {
-      addToast("Lỗi chấm bài.", "error");
+      addToast("Lỗi khi chấm bài. Vui lòng thử lại.", "error");
     }
     setLoading(false);
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[80vh] animate-fade-in">
-      <div className="flex flex-col bg-white p-1 rounded-2xl shadow-lg border overflow-hidden">
+    <div className="h-[calc(100vh-140px)] flex flex-col lg:flex-row gap-4 animate-fade-in pb-2">
+      {/* Writing Area */}
+      <div className="flex-1 flex flex-col bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden relative">
+        <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+          <div className="flex items-center gap-2 text-gray-500">
+            <PenTool size={16} />
+            <span className="text-sm font-medium">Writing Editor</span>
+          </div>
+          <div className="text-xs font-bold bg-white border px-2 py-1 rounded text-gray-500">
+            {essay.split(/\s+/).filter((w) => w).length} Words
+          </div>
+        </div>
         <textarea
           value={essay}
           onChange={(e) => setEssay(e.target.value)}
-          className="flex-1 w-full p-6 text-lg outline-none resize-none custom-scrollbar"
-          placeholder="Viết bài luận tiếng Anh..."
+          className="flex-1 w-full p-6 text-base lg:text-lg outline-none resize-none custom-scrollbar leading-relaxed"
+          placeholder="Viết bài luận hoặc đoạn văn tiếng Anh của bạn vào đây..."
         />
-        <div className="flex justify-between items-center p-4 bg-gray-50 border-t">
-          <span className="text-xs font-semibold text-gray-500">
-            {essay.split(/\s+/).filter((w) => w).length} words
-          </span>
+        <div className="p-4 bg-white border-t border-gray-100 flex justify-end">
           <button
             onClick={review}
             disabled={loading || !essay}
-            className="bg-purple-600 text-white px-6 py-2 rounded-xl hover:bg-purple-700 disabled:opacity-50 font-bold flex gap-2 items-center"
+            className="bg-violet-600 text-white px-6 py-3 rounded-xl hover:bg-violet-700 disabled:opacity-50 font-bold flex gap-2 items-center shadow-lg shadow-violet-200 transition-all active:scale-95"
           >
             {loading ? (
-              "..."
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
               <>
-                <Sparkles size={18} /> Chấm Bài
+                <Sparkles size={18} /> Chấm Bài Ngay
               </>
             )}
           </button>
         </div>
       </div>
-      <div className="overflow-y-auto custom-scrollbar pr-2 space-y-4">
+
+      {/* Feedback Area */}
+      <div
+        className={`flex-1 lg:max-w-[45%] bg-gray-50/50 rounded-3xl border border-gray-200 overflow-hidden flex flex-col ${
+          !feedback ? "justify-center items-center" : ""
+        }`}
+      >
         {!feedback ? (
-          <div className="h-full flex items-center justify-center text-gray-400 border-2 border-dashed rounded-2xl bg-gray-50/50">
-            Kết quả sẽ hiện ở đây
+          <div className="text-center text-gray-400 p-8">
+            <div className="bg-white p-4 rounded-full inline-block shadow-sm mb-4">
+              <Search size={32} className="text-violet-300" />
+            </div>
+            <p className="font-medium">
+              Kết quả phân tích và sửa lỗi <br /> sẽ hiển thị tại đây.
+            </p>
           </div>
         ) : (
-          <>
-            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center">
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+            {/* Score Card */}
+            <div className="bg-gradient-to-br from-violet-600 to-indigo-600 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center">
               <div>
-                <h3 className="font-bold">Kết quả</h3>
-                <p className="text-xs opacity-75">từ MLPA AI</p>
+                <h3 className="font-bold text-lg opacity-90">
+                  Đánh giá tổng quan
+                </h3>
+                <p className="text-sm opacity-75">AI Corrector</p>
               </div>
-              <div className="text-4xl font-extrabold bg-white/20 px-4 py-2 rounded-xl">
+              <div className="text-3xl font-black bg-white/20 px-4 py-2 rounded-xl backdrop-blur-sm">
                 {feedback.score}
               </div>
             </div>
-            <div className="bg-white p-5 rounded-2xl shadow-sm border">
-              <p className="text-gray-700">{feedback.general_feedback}</p>
+
+            {/* General Feedback */}
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+              <h4 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <MessageSquare size={16} /> Nhận xét chung
+              </h4>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                {feedback.general_feedback}
+              </p>
             </div>
-            {feedback.mistakes.map((m, i) => (
-              <div
-                key={i}
-                className="bg-red-50 p-4 rounded-xl border-l-4 border-red-400 text-sm"
-              >
-                <div className="flex gap-2 mb-1">
-                  <span className="line-through text-red-500">
-                    {m.original}
-                  </span>{" "}
-                  <ArrowRight size={14} className="text-gray-400 mt-1" />{" "}
-                  <span className="font-bold text-green-600">
-                    {m.correction}
-                  </span>
+
+            {/* Mistakes */}
+            <div className="space-y-3">
+              <h4 className="font-bold text-gray-800 ml-1">
+                Chi tiết lỗi ({feedback.mistakes?.length || 0})
+              </h4>
+              {feedback.mistakes?.map((m, i) => (
+                <div
+                  key={i}
+                  className="bg-white p-4 rounded-xl border-l-4 border-red-400 shadow-sm text-sm"
+                >
+                  <div className="flex flex-wrap gap-2 mb-2 items-center">
+                    <span className="line-through text-red-500 bg-red-50 px-2 py-0.5 rounded decoration-red-500/50">
+                      {m.original}
+                    </span>
+                    <ArrowRight size={14} className="text-gray-300" />
+                    <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                      {m.correction}
+                    </span>
+                  </div>
+                  <p className="text-gray-500 italic text-xs border-t pt-2 mt-2">
+                    {m.explanation}
+                  </p>
                 </div>
-                <p className="text-gray-500 italic">{m.explanation}</p>
-              </div>
-            ))}
-            <div className="bg-white p-5 rounded-2xl shadow-sm border relative">
+              ))}
+            </div>
+
+            {/* Corrected Version */}
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-emerald-100 relative group">
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(feedback.corrected_version);
-                  addToast("Copied!", "success");
+                  addToast("Đã copy bài sửa!", "success");
                 }}
-                className="absolute top-4 right-4 text-gray-400 hover:text-purple-600"
+                className="absolute top-4 right-4 text-gray-300 hover:text-emerald-600 p-2 hover:bg-emerald-50 rounded-lg transition"
               >
                 <Copy size={18} />
               </button>
-              <h4 className="font-bold mb-2">Bài sửa:</h4>
-              <p className="text-gray-700 whitespace-pre-line">
+              <h4 className="font-bold text-emerald-800 mb-3 flex items-center gap-2">
+                <CheckCircle size={16} /> Phiên bản hoàn chỉnh
+              </h4>
+              <div className="text-gray-700 whitespace-pre-line leading-relaxed text-sm">
                 {feedback.corrected_version}
-              </p>
+              </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
   );
 };
 
+// --- CONVERSATION COMPONENT ---
 const ConversationPractice = ({ addToast }) => {
   const [scenario, setScenario] = useState("Job Interview");
   const [messages, setMessages] = useState([]);
@@ -593,17 +764,22 @@ const ConversationPractice = ({ addToast }) => {
   const [loading, setLoading] = useState(false);
   const endRef = useRef(null);
 
+  // Auto scroll to bottom
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
+
   const start = async () => {
     setMessages([]);
     setLoading(true);
     try {
       const text = await generateTextContent(
-        `Roleplay: ${scenario}. Start with greeting & question.`,
-        "Roleplay partner."
+        `Roleplay Scenario: ${scenario}. Initiate the conversation as the other person. Start with a greeting and a relevant opening question. Keep it short and natural.`,
+        "You are a helpful English roleplay partner."
       );
       setMessages([{ role: "ai", text }]);
     } catch (e) {
-      addToast("Lỗi bắt đầu.", "error");
+      addToast("Lỗi khởi tạo hội thoại.", "error");
     }
     setLoading(false);
   };
@@ -614,13 +790,14 @@ const ConversationPractice = ({ addToast }) => {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setLoading(true);
+
     try {
       const hist = [...messages, userMsg]
-        .map((m) => `${m.role}: ${m.text}`)
+        .map((m) => `${m.role === "user" ? "User" : "Partner"}: ${m.text}`)
         .join("\n");
       const text = await generateTextContent(
-        `History:\n${hist}\nRespond to user in ${scenario}. Short.`,
-        "Roleplay partner."
+        `History:\n${hist}\nUser just said: "${input}".\nRespond naturally in the role of ${scenario}. Keep response concise (under 40 words).`,
+        "You are a helpful English roleplay partner."
       );
       setMessages((prev) => [...prev, { role: "ai", text }]);
     } catch (e) {
@@ -629,76 +806,109 @@ const ConversationPractice = ({ addToast }) => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
   return (
-    <div className="max-w-4xl mx-auto h-[80vh] flex flex-col gap-4 animate-fade-in">
-      <div className="bg-white p-4 rounded-2xl shadow-sm border flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <MessageSquare className="text-green-600" />
-          <select
-            value={scenario}
-            onChange={(e) => setScenario(e.target.value)}
-            className="font-bold outline-none bg-transparent"
-          >
-            {["Job Interview", "Coffee", "Hotel", "Date"].map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
+    <div className="max-w-3xl mx-auto h-[calc(100vh-140px)] flex flex-col animate-fade-in bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-200">
+      {/* Header */}
+      <div className="p-4 bg-white border-b flex items-center justify-between shrink-0 z-10 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+            <Bot size={24} />
+          </div>
+          <div>
+            <div className="text-xs text-gray-500 font-bold uppercase">
+              Tình huống
+            </div>
+            <select
+              value={scenario}
+              onChange={(e) => setScenario(e.target.value)}
+              className="font-bold text-gray-800 outline-none bg-transparent cursor-pointer hover:text-emerald-600 transition"
+            >
+              <option value="Job Interview">Phỏng vấn xin việc</option>
+              <option value="Coffee Shop">Gọi đồ tại cafe</option>
+              <option value="Hotel Check-in">Check-in Khách sạn</option>
+              <option value="First Date">Buổi hẹn hò đầu</option>
+              <option value="Immigration">Hải quan sân bay</option>
+            </select>
+          </div>
         </div>
         <button
           onClick={start}
-          className="bg-green-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-green-700"
+          className="bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-gray-800 transition shadow-lg shadow-gray-200"
         >
-          Bắt đầu
+          Làm mới
         </button>
       </div>
-      <div className="flex-1 bg-white rounded-2xl shadow-lg border overflow-hidden flex flex-col">
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-gray-50/50">
-          {messages.map((m, i) => (
+
+      {/* Chat Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-slate-50">
+        {messages.length === 0 && !loading && (
+          <div className="flex flex-col items-center justify-center h-full text-gray-400 space-y-2 opacity-60">
+            <MessageSquare size={48} />
+            <p>Chọn tình huống và nhấn "Làm mới" để bắt đầu</p>
+          </div>
+        )}
+
+        {messages.map((m, i) => (
+          <div
+            key={i}
+            className={`flex ${
+              m.role === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
+            {m.role === "ai" && (
+              <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mr-2 shrink-0 mt-2">
+                <Bot size={16} />
+              </div>
+            )}
             <div
-              key={i}
-              className={`flex ${
-                m.role === "user" ? "justify-end" : "justify-start"
+              className={`max-w-[80%] p-3.5 rounded-2xl text-sm md:text-base shadow-sm leading-relaxed ${
+                m.role === "user"
+                  ? "bg-indigo-600 text-white rounded-tr-none"
+                  : "bg-white text-gray-800 border border-gray-200 rounded-tl-none"
               }`}
             >
-              <div
-                className={`max-w-[85%] p-3 rounded-2xl text-sm ${
-                  m.role === "user"
-                    ? "bg-indigo-600 text-white rounded-br-none"
-                    : "bg-white border rounded-bl-none"
-                }`}
-              >
-                {m.text}
-              </div>
+              {m.text}
             </div>
-          ))}
-          {loading && (
-            <div className="text-xs text-gray-400 ml-4 animate-pulse">
-              Typing...
+          </div>
+        ))}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mr-2 mt-1">
+              <Bot size={16} />
             </div>
-          )}
-          <div ref={endRef} />
-        </div>
-        <div className="p-4 bg-white border-t flex gap-2">
-          <input
+            <div className="bg-white border p-3 rounded-2xl rounded-tl-none flex gap-1 items-center">
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-75"></div>
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></div>
+            </div>
+          </div>
+        )}
+        <div ref={endRef} />
+      </div>
+
+      {/* Input Area */}
+      <div className="p-4 bg-white border-t shrink-0">
+        <div className="flex gap-2 items-end bg-gray-50 border border-gray-200 p-2 rounded-3xl focus-within:ring-2 focus-within:ring-emerald-500 focus-within:bg-white transition-all">
+          <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && send()}
-            placeholder="Type..."
-            className="flex-1 border rounded-xl px-4 outline-none focus:ring-2 focus:ring-green-500"
+            onKeyPress={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send();
+              }
+            }}
+            placeholder="Nhập tin nhắn..."
+            className="flex-1 bg-transparent px-4 py-2.5 outline-none resize-none max-h-32 custom-scrollbar text-sm md:text-base"
+            rows={1}
             disabled={loading}
           />
           <button
             onClick={send}
             disabled={loading || !input}
-            className="bg-green-600 text-white p-3 rounded-xl"
+            className="bg-emerald-600 text-white p-2.5 rounded-full hover:bg-emerald-700 disabled:opacity-50 disabled:hover:bg-emerald-600 transition shadow-md"
           >
-            <Send size={20} />
+            <Send size={18} className={input ? "ml-0.5" : ""} />
           </button>
         </div>
       </div>
@@ -706,24 +916,22 @@ const ConversationPractice = ({ addToast }) => {
   );
 };
 
-// --- FIXED VOCABULARY COMPONENT ---
+// --- VOCABULARY COMPONENT ---
 const VocabularyBuilder = ({ addToast }) => {
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // FIX: Lazy initialization to prevent localStorage race conditions and null crashes
+  // Load from localStorage safely
   const [savedWords, setSavedWords] = useState(() => {
     try {
       const saved = localStorage.getItem("linguaAI_vocab");
       const parsed = saved ? JSON.parse(saved) : [];
       return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
-      console.error("Resetting vocab due to error", e);
       return [];
     }
   });
 
-  // Only run when savedWords changes (skip on mount if no change)
   useEffect(() => {
     try {
       localStorage.setItem("linguaAI_vocab", JSON.stringify(savedWords));
@@ -736,84 +944,131 @@ const VocabularyBuilder = ({ addToast }) => {
     if (!topic.trim()) return;
     setLoading(true);
     try {
-      const prompt = `Topic: ${topic}. Generate 4 English words. Output JSON: [{ "word": "", "type": "n/v", "definition": "", "example": "" }]`;
+      const prompt = `Topic: ${topic}. Generate 4 useful English words related to this topic. Output strict JSON array: [{ "word": "Word", "ipa": "/ipa/", "type": "n/v/adj", "definition": "Vietnamese meaning", "example": "English example sentence" }]`;
       const newWords = await generateContent(prompt);
       if (Array.isArray(newWords)) {
-        setSavedWords((prev) => [...newWords, ...prev].slice(0, 50));
-        addToast(`Thêm ${newWords.length} từ mới!`, "success");
+        setSavedWords((prev) => [...newWords, ...prev].slice(0, 100)); // Keep max 100 words
+        addToast(`Đã thêm ${newWords.length} từ vựng mới!`, "success");
         setTopic("");
       } else {
         throw new Error("Invalid format");
       }
     } catch (e) {
-      addToast("Lỗi tạo từ.", "error");
+      addToast("Lỗi khi tạo từ vựng.", "error");
     }
     setLoading(false);
   };
 
+  const removeWord = (index) => {
+    setSavedWords((prev) => prev.filter((_, i) => i !== index));
+  };
+
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-fade-in pb-10">
-      <div className="bg-white p-8 rounded-3xl shadow-sm border text-center relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-red-500"></div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          Mở rộng Vốn Từ
-        </h2>
-        <div className="flex flex-col sm:flex-row max-w-lg mx-auto gap-3">
-          <input
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="Topic (e.g., Space)"
-            className="flex-1 border p-3 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
-          />
-          <button
-            onClick={generate}
-            disabled={loading || !topic}
-            className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-3 rounded-xl font-bold disabled:opacity-50"
-          >
-            {loading ? "..." : "Tạo Thẻ"}
-          </button>
+    <div className="max-w-6xl mx-auto space-y-8 animate-fade-in pb-10">
+      {/* Header Generator */}
+      <div className="bg-gradient-to-r from-amber-500 to-orange-600 p-6 md:p-10 rounded-3xl shadow-lg text-center text-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-white opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div className="relative z-10 max-w-xl mx-auto space-y-6">
+          <h2 className="text-2xl md:text-3xl font-black">
+            Mở rộng Vốn Từ Vựng
+          </h2>
+          <div className="flex flex-col sm:flex-row gap-3 bg-white/20 p-2 rounded-2xl backdrop-blur-md border border-white/30">
+            <input
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="Nhập chủ đề (VD: Môi trường, Công nghệ...)"
+              className="flex-1 bg-white text-gray-800 placeholder-gray-400 px-4 py-3 rounded-xl outline-none"
+            />
+            <button
+              onClick={generate}
+              disabled={loading || !topic}
+              className="bg-gray-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-black disabled:opacity-50 transition shadow-lg whitespace-nowrap"
+            >
+              {loading ? "Đang tạo..." : "Tạo Thẻ"}
+            </button>
+          </div>
         </div>
       </div>
-      <div className="flex justify-between items-center px-2">
-        <h3 className="font-bold text-lg flex items-center gap-2">
-          <BookOpen className="text-orange-500" /> Bộ sưu tập (
-          {savedWords.length})
+
+      {/* List Header */}
+      <div className="flex justify-between items-end px-2 border-b border-gray-200 pb-2">
+        <h3 className="font-bold text-xl text-gray-800 flex items-center gap-2">
+          <BookOpen className="text-amber-500" /> Bộ sưu tập của bạn
+          <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
+            {savedWords.length}
+          </span>
         </h3>
         {savedWords.length > 0 && (
           <button
             onClick={() => {
-              if (confirm("Xóa hết?")) setSavedWords([]);
+              if (confirm("Xóa toàn bộ từ vựng đã lưu?")) setSavedWords([]);
             }}
-            className="text-red-500 flex gap-1 text-sm items-center"
+            className="text-red-500 text-xs font-bold hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
           >
-            <Trash2 size={14} /> Xóa
+            Xóa tất cả
           </button>
         )}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {savedWords.map((w, i) => (
-          <div
-            key={i}
-            className="bg-white p-6 rounded-2xl shadow-sm border hover:shadow-lg transition"
-          >
-            <div className="flex justify-between mb-2">
-              <h3 className="font-bold text-xl">{w.word}</h3>
-              <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                {w.type}
-              </span>
-            </div>
-            <p className="text-sm text-gray-600 mb-3">{w.definition}</p>
-            <div className="bg-orange-50 p-3 rounded text-sm italic text-orange-800 border-l-2 border-orange-300">
-              "{w.example}"
-            </div>
+
+      {/* Grid Cards */}
+      {savedWords.length === 0 ? (
+        <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
+          <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-600">
+            <List size={32} />
           </div>
-        ))}
-      </div>
+          <p className="text-gray-500 font-medium">
+            Chưa có từ vựng nào.
+            <br />
+            Nhập chủ đề phía trên để AI tạo giúp bạn!
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {savedWords.map((w, i) => (
+            <div
+              key={i}
+              className="group bg-white p-5 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 relative flex flex-col h-full"
+            >
+              <button
+                onClick={() => removeWord(i)}
+                className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition"
+              >
+                <X size={16} />
+              </button>
+
+              <div className="flex justify-between items-baseline mb-1">
+                <h3 className="font-bold text-xl text-gray-900">{w.word}</h3>
+                <span className="text-xs font-mono text-gray-400">
+                  {w.type}
+                </span>
+              </div>
+
+              <div className="text-sm text-amber-600 mb-3 font-medium">
+                {w.ipa}
+              </div>
+
+              <p
+                className="text-gray-600 text-sm mb-4 flex-1 line-clamp-3"
+                title={w.definition}
+              >
+                {w.definition}
+              </p>
+
+              <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 text-xs text-gray-500 italic relative">
+                <span className="absolute -top-2 -left-1 text-2xl text-gray-300 leading-none">
+                  “
+                </span>
+                {w.example}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
-// --- FIXED CHECKER COMPONENT ---
+// --- CHECKER COMPONENT ---
 const SentenceChecker = ({ addToast }) => {
   const [sentence, setSentence] = useState("");
   const [result, setResult] = useState(null);
@@ -824,11 +1079,14 @@ const SentenceChecker = ({ addToast }) => {
     setLoading(true);
     setResult(null);
     try {
-      const prompt = `Check grammar: "${sentence}". Output JSON: {"is_correct": bool, "corrected": "", "explanation": "VN", "translation": "VN", "alternatives": [""]}`;
-      const data = await generateContent(prompt, "Grammar expert.");
+      const prompt = `Analyze grammar for sentence: "${sentence}". Output strict JSON: {"is_correct": boolean, "corrected": "Correct version", "explanation": "Vietnamese explanation why", "translation": "Vietnamese translation", "alternatives": ["Alternative way 1", "Alternative way 2"]}`;
+      const data = await generateContent(
+        prompt,
+        "You are an expert Grammar checker."
+      );
       if (data) {
         setResult(data);
-        addToast("Đã kiểm tra!", "success");
+        addToast("Đã kiểm tra xong!", "success");
       }
     } catch (e) {
       addToast("Lỗi kiểm tra.", "error");
@@ -837,26 +1095,29 @@ const SentenceChecker = ({ addToast }) => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
-      <div className="bg-white p-6 rounded-2xl shadow-sm border text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in pb-10">
+      <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-pink-100 text-center relative overflow-hidden">
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-pink-100 rounded-full blur-3xl opacity-50"></div>
+
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 relative z-10">
           Kiểm tra Ngữ pháp
         </h2>
-        <div className="flex gap-3">
+
+        <div className="flex flex-col md:flex-row gap-3 relative z-10">
           <input
             value={sentence}
             onChange={(e) => setSentence(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && check()}
-            placeholder="Ví dụ: She go home..."
-            className="flex-1 border p-3 rounded-xl outline-none focus:ring-2 focus:ring-pink-500"
+            placeholder="Nhập câu tiếng Anh cần kiểm tra..."
+            className="flex-1 border-2 border-gray-100 bg-gray-50 p-4 rounded-xl outline-none focus:border-pink-500 focus:bg-white transition text-lg"
           />
           <button
             onClick={check}
             disabled={loading || !sentence}
-            className="bg-pink-500 text-white px-6 rounded-xl font-bold hover:bg-pink-600 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[120px]"
+            className="bg-pink-500 text-white px-8 py-4 rounded-xl font-bold hover:bg-pink-600 disabled:opacity-50 transition shadow-lg shadow-pink-200 whitespace-nowrap flex items-center justify-center gap-2"
           >
             {loading ? (
-              "..."
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
               <>
                 <Search size={20} /> Check
@@ -865,67 +1126,104 @@ const SentenceChecker = ({ addToast }) => {
           </button>
         </div>
       </div>
+
       {result && (
-        <div className="bg-white p-6 rounded-2xl shadow-lg border border-pink-100">
+        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-gray-100 animate-slide-in">
+          {/* Status Banner */}
           <div
-            className={`flex items-center gap-3 mb-4 p-4 rounded-xl ${
+            className={`flex items-center gap-4 p-4 rounded-2xl mb-6 ${
               result.is_correct
-                ? "bg-green-50 text-green-700"
-                : "bg-red-50 text-red-700"
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-100"
+                : "bg-red-50 text-red-800 border border-red-100"
             }`}
           >
-            {result.is_correct ? (
-              <ThumbsUp size={24} />
-            ) : (
-              <AlertCircle size={24} />
-            )}
-            <span className="font-bold text-lg">
-              {result.is_correct ? "Chính xác!" : "Cần sửa lại"}
-            </span>
-          </div>
-          {!result.is_correct && (
-            <div className="mb-4">
-              <div className="text-xs font-bold text-gray-400 uppercase mb-1">
-                Sửa lỗi:
-              </div>
-              <div className="text-xl font-bold text-green-600 bg-green-50 p-3 rounded-lg border border-green-200">
-                {result.corrected}
-              </div>
-            </div>
-          )}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <div className="text-xs font-bold text-gray-400 uppercase mb-1">
-                Giải thích:
-              </div>
-              <p className="bg-gray-50 p-3 rounded-lg">{result.explanation}</p>
+            <div
+              className={`p-2 rounded-full ${
+                result.is_correct ? "bg-emerald-200" : "bg-red-200"
+              }`}
+            >
+              {result.is_correct ? (
+                <ThumbsUp size={24} />
+              ) : (
+                <AlertCircle size={24} />
+              )}
             </div>
             <div>
-              <div className="text-xs font-bold text-gray-400 uppercase mb-1">
-                Dịch nghĩa:
-              </div>
-              <p className="bg-gray-50 p-3 rounded-lg italic">
-                {result.translation}
-              </p>
+              <h3 className="font-bold text-lg">
+                {result.is_correct
+                  ? "Tuyệt vời! Câu chính xác."
+                  : "Cần chỉnh sửa một chút."}
+              </h3>
+              {!result.is_correct && (
+                <p className="text-sm opacity-90">
+                  Chúng tôi tìm thấy lỗi ngữ pháp trong câu của bạn.
+                </p>
+              )}
             </div>
           </div>
-          {result.alternatives?.length > 0 && (
-            <div className="mt-4">
-              <div className="text-xs font-bold text-gray-400 uppercase mb-1">
-                Gợi ý khác:
-              </div>
-              <ul className="space-y-1">
-                {result.alternatives.map((a, i) => (
-                  <li
-                    key={i}
-                    className="text-gray-600 bg-pink-50/50 p-2 rounded flex gap-2 items-center"
+
+          <div className="space-y-6">
+            {!result.is_correct && (
+              <div className="group">
+                <div className="text-xs font-bold text-gray-400 uppercase mb-2 ml-1">
+                  Câu đã sửa
+                </div>
+                <div className="text-xl md:text-2xl font-bold text-emerald-600 bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100 shadow-sm flex justify-between items-center">
+                  {result.corrected}
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(result.corrected);
+                      addToast("Copied!", "success");
+                    }}
+                    className="text-emerald-300 hover:text-emerald-600 transition"
                   >
-                    <ArrowRight size={14} className="text-pink-400" /> {a}
-                  </li>
-                ))}
-              </ul>
+                    <Copy size={20} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <div className="text-xs font-bold text-gray-400 uppercase mb-2 ml-1">
+                  Giải thích chi tiết
+                </div>
+                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 text-gray-700 leading-relaxed h-full">
+                  {result.explanation}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs font-bold text-gray-400 uppercase mb-2 ml-1">
+                  Dịch nghĩa
+                </div>
+                <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 text-indigo-900 italic h-full">
+                  "{result.translation}"
+                </div>
+              </div>
             </div>
-          )}
+
+            {result.alternatives?.length > 0 && (
+              <div>
+                <div className="text-xs font-bold text-gray-400 uppercase mb-2 ml-1">
+                  Cách diễn đạt khác tự nhiên hơn
+                </div>
+                <ul className="space-y-2">
+                  {result.alternatives.map((alt, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-3 bg-white border border-gray-100 p-3 rounded-xl shadow-sm text-gray-600 hover:border-pink-200 transition"
+                    >
+                      <Sparkles
+                        size={16}
+                        className="text-pink-400 mt-1 shrink-0"
+                      />
+                      <span>{alt}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -938,38 +1236,46 @@ const EnglishAI = () => {
   const { toasts, addToast, removeToast } = useToast();
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-gray-900 pb-10">
+    <div className="min-h-screen bg-slate-50 font-sans text-gray-900 selection:bg-indigo-100 selection:text-indigo-900">
       <style>{styles}</style>
+
       <Navbar currentView={currentView} setView={setCurrentView} />
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {currentView === "home" ? (
-          <HomeView setView={setCurrentView} />
-        ) : (
-          <div className="animate-fade-in">
+
+      <main className="max-w-7xl mx-auto p-4 md:py-8">
+        {currentView !== "home" && (
+          <div className="mb-6 flex items-center justify-between animate-fade-in">
             <button
               onClick={() => setCurrentView("home")}
-              className="mb-6 flex items-center text-sm font-medium text-gray-500 hover:text-indigo-600 bg-white px-3 py-1.5 rounded-lg shadow-sm border"
+              className="flex items-center gap-1 text-sm font-bold text-gray-500 hover:text-indigo-600 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-200 transition-all hover:shadow-md"
             >
-              <ChevronLeft size={16} /> Quay lại
+              <ChevronLeft size={18} /> Quay lại
             </button>
-            {currentView === "listening" && (
-              <ListeningPractice addToast={addToast} />
-            )}
-            {currentView === "writing" && (
-              <WritingPractice addToast={addToast} />
-            )}
-            {currentView === "speaking" && (
-              <ConversationPractice addToast={addToast} />
-            )}
-            {currentView === "vocabulary" && (
-              <VocabularyBuilder addToast={addToast} />
-            )}
-            {currentView === "checker" && (
-              <SentenceChecker addToast={addToast} />
-            )}
+            <span className="text-xs font-bold text-gray-300 uppercase tracking-widest hidden md:inline-block">
+              LinguaAI Workspace
+            </span>
           </div>
         )}
+
+        <div className="min-h-[60vh]">
+          {currentView === "home" && <HomeView setView={setCurrentView} />}
+          {currentView === "listening" && (
+            <ListeningPractice addToast={addToast} />
+          )}
+          {currentView === "writing" && <WritingPractice addToast={addToast} />}
+          {currentView === "speaking" && (
+            <ConversationPractice addToast={addToast} />
+          )}
+          {currentView === "vocabulary" && (
+            <VocabularyBuilder addToast={addToast} />
+          )}
+          {currentView === "checker" && <SentenceChecker addToast={addToast} />}
+        </div>
       </main>
+
+      <footer className="py-6 text-center text-gray-400 text-sm border-t border-gray-200 bg-white/50">
+        <p>&copy; 2025 LinguaAI. Powered by DeepSeek & OpenRouter.</p>
+      </footer>
+
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
   );
