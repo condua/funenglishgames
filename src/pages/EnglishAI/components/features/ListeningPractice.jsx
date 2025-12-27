@@ -1,6 +1,13 @@
 // src/components/features/ListeningPractice.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { Play, Pause, Sparkles, CheckCircle, Headphones } from "lucide-react";
+import {
+  Play,
+  Pause,
+  Sparkles,
+  CheckCircle,
+  Headphones,
+  RotateCcw,
+} from "lucide-react";
 import { generateContent } from "../../api/aiService";
 
 export const ListeningPractice = ({ addToast }) => {
@@ -12,46 +19,161 @@ export const ListeningPractice = ({ addToast }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [result, setResult] = useState(null);
   const [rate, setRate] = useState(1);
+
+  // --- STATE AUDIO ---
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  // -------------------
+
   const synth = useRef(window.speechSynthesis);
+  const timerRef = useRef(null);
+  const startTimeRef = useRef(0); // Lưu thời điểm bắt đầu của đoạn hiện tại
+  const startOffsetRef = useRef(0); // Lưu offset thời gian (khi tua)
 
   useEffect(() => {
-    return () => synth.current.cancel();
+    return () => {
+      stopAudio();
+    };
   }, []);
+
+  // Ước tính thời lượng tổng dựa trên số từ và tốc độ
+  useEffect(() => {
+    if (exercise?.text) {
+      const wordCount = exercise.text.split(/\s+/).length;
+      // Ước tính: 150 từ/phút là tốc độ trung bình (1.0x)
+      const baseSeconds = (wordCount / 150) * 60;
+      const estimatedDuration = Math.ceil(baseSeconds / rate) + 2;
+      setDuration(estimatedDuration);
+    }
+  }, [exercise, rate]);
+
+  const formatTime = (seconds) => {
+    const s = Math.min(Math.max(0, seconds), duration); // Clamp
+    const mins = Math.floor(s / 60);
+    const secs = Math.floor(s % 60);
+    return `${mins < 10 ? "0" : ""}${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  };
 
   const generate = async () => {
     setLoading(true);
+    stopAudio();
     setExercise(null);
     setResult(null);
     setUserInput("");
+
     try {
-      if (synth.current.speaking) synth.current.cancel();
       const prompt = `Topic: ${topic}. Level: ${level}. Generate a short paragraph (30-50 words) for dictation practice. Output strict JSON: {"text": "English text here", "translation": "Vietnamese translation here", "difficult_words": ["word1", "word2"]}`;
       const data = await generateContent(prompt, "You are an English teacher.");
       if (data && data.text) {
         setExercise(data);
         addToast("Đã tạo bài tập thành công!", "success");
       } else {
-        throw new Error("Dữ liệu không hợp lệ");
+        throw new Error("Dữ liệu lỗi");
       }
     } catch (e) {
-      addToast("Lỗi tạo bài tập. Thử lại nhé!", "error");
+      addToast("Lỗi tạo bài tập.", "error");
     }
     setLoading(false);
   };
 
-  const toggleAudio = () => {
+  const stopAudio = () => {
+    synth.current.cancel();
+    setIsPlaying(false);
+    if (timerRef.current) clearInterval(timerRef.current);
+  };
+
+  // Hàm phát audio (có hỗ trợ bắt đầu từ một đoạn text cụ thể)
+  const playAudio = (startTime = 0) => {
     if (!exercise) return;
-    if (isPlaying) {
-      synth.current.cancel();
+
+    // 1. Dừng audio cũ
+    synth.current.cancel();
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    // 2. Tính toán đoạn text cần đọc dựa trên startTime (kỹ thuật Slicing)
+    const ratio = Math.min(startTime / duration, 1);
+    const charIndex = Math.floor(exercise.text.length * ratio);
+
+    // Tìm khoảng trắng gần nhất để không cắt giữa từ
+    let safeIndex = charIndex === 0 ? 0 : exercise.text.indexOf(" ", charIndex);
+    if (safeIndex === -1) safeIndex = charIndex; // Fallback nếu gần cuối
+
+    const textToSpeak = exercise.text.substring(safeIndex).trim();
+    if (!textToSpeak) {
       setIsPlaying(false);
-    } else {
-      const u = new SpeechSynthesisUtterance(exercise.text);
-      u.rate = rate;
-      u.lang = "en-US";
-      u.onend = () => setIsPlaying(false);
-      u.onerror = () => setIsPlaying(false);
-      synth.current.speak(u);
+      setCurrentTime(duration);
+      return;
+    }
+
+    // 3. Thiết lập Utterance
+    const u = new SpeechSynthesisUtterance(textToSpeak);
+    u.rate = rate;
+    u.lang = "en-US";
+
+    u.onstart = () => {
       setIsPlaying(true);
+      startOffsetRef.current = startTime; // Lưu mốc thời gian đã tua tới
+      startTimeRef.current = Date.now(); // Lưu thời gian thực tế bắt đầu chạy
+
+      // Chạy timer cập nhật UI
+      timerRef.current = setInterval(() => {
+        const now = Date.now();
+        // Thời gian hiện tại = Thời gian đã tua + Thời gian trôi qua từ lúc play
+        const elapsed = (now - startTimeRef.current) / 1000;
+        const actualTime = startOffsetRef.current + elapsed;
+
+        if (actualTime >= duration) {
+          setCurrentTime(duration);
+          stopAudio();
+        } else {
+          setCurrentTime(actualTime);
+        }
+      }, 100);
+    };
+
+    u.onend = () => {
+      // Chỉ stop nếu tự nhiên kết thúc (không phải do bị cancel để tua)
+      // Sự kiện onend của speech synthesis đôi khi fire khi cancel, cần cẩn thận
+      // Logic ở timer sẽ handle việc hiển thị hết giờ
+      setIsPlaying(false);
+      if (timerRef.current) clearInterval(timerRef.current);
+      // Nếu đọc hết thì set về 0 sau 1s
+      if (Math.abs(currentTime - duration) < 2) {
+        setTimeout(() => setCurrentTime(0), 1000);
+      }
+    };
+
+    u.onerror = () => stopAudio();
+
+    synth.current.speak(u);
+  };
+
+  const togglePlay = () => {
+    if (isPlaying) {
+      stopAudio();
+    } else {
+      // Nếu đang ở cuối bài thì phát lại từ đầu, ngược lại phát tiếp từ vị trí hiện tại
+      const startFrom = currentTime >= duration - 1 ? 0 : currentTime;
+      playAudio(startFrom);
+    }
+  };
+
+  // Xử lý khi người dùng kéo thanh trượt
+  const handleSeekChange = (e) => {
+    const newTime = parseFloat(e.target.value);
+    setCurrentTime(newTime); // Cập nhật UI mượt mà ngay lập tức
+  };
+
+  // Xử lý khi người dùng thả chuột ra (mới thực sự tua audio)
+  const handleSeekCommit = (e) => {
+    const newTime = parseFloat(e.target.value);
+    setCurrentTime(newTime);
+    if (isPlaying) {
+      // Nếu đang play thì tua và play tiếp
+      playAudio(newTime);
+    } else {
+      // Nếu đang pause thì chỉ tua mốc thời gian (lần tới bấm play sẽ play từ đây)
+      startOffsetRef.current = newTime;
     }
   };
 
@@ -65,12 +187,10 @@ export const ListeningPractice = ({ addToast }) => {
         .filter((w) => w);
     const org = clean(exercise.text);
     const usr = clean(userInput);
-
     let matches = 0;
     org.forEach((w, i) => {
       if (usr[i] === w) matches++;
     });
-
     const accuracy =
       org.length > 0 ? Math.round((matches / org.length) * 100) : 0;
     setResult({ acc: accuracy });
@@ -79,7 +199,7 @@ export const ListeningPractice = ({ addToast }) => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in pb-10">
-      {/* Controls Card */}
+      {/* Controls Card - Giữ nguyên */}
       <div className="bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
@@ -89,7 +209,7 @@ export const ListeningPractice = ({ addToast }) => {
             <input
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              className="w-full mt-1 border border-gray-200 bg-gray-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+              className="w-full mt-1 border border-gray-200 bg-gray-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"
               placeholder="Ví dụ: Technology..."
             />
           </div>
@@ -100,7 +220,7 @@ export const ListeningPractice = ({ addToast }) => {
             <select
               value={level}
               onChange={(e) => setLevel(e.target.value)}
-              className="w-full mt-1 border border-gray-200 bg-gray-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+              className="w-full mt-1 border border-gray-200 bg-gray-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"
             >
               <option>Beginner (A1-A2)</option>
               <option>Intermediate (B1-B2)</option>
@@ -111,7 +231,7 @@ export const ListeningPractice = ({ addToast }) => {
             <button
               onClick={generate}
               disabled={loading}
-              className="w-full bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed font-semibold shadow-lg shadow-blue-200 transition-all active:scale-95 flex justify-center items-center gap-2"
+              className="w-full bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 disabled:opacity-70 font-semibold shadow-lg shadow-blue-200 transition-all active:scale-95 flex justify-center items-center gap-2"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -128,48 +248,95 @@ export const ListeningPractice = ({ addToast }) => {
       {exercise && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white p-6 rounded-3xl shadow-lg border-l-8 border-blue-500 flex flex-col h-full">
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-3">
+            {/* --- AUDIO PLAYER CÓ SEEK BAR --- */}
+            <div className="mb-6 bg-blue-50 rounded-2xl p-4 border border-blue-100 select-none">
+              <div className="flex items-center gap-4">
                 <button
-                  onClick={toggleAudio}
-                  className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-md ${
+                  onClick={togglePlay}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md shrink-0 ${
                     isPlaying
-                      ? "bg-red-500 text-white rotate-180"
-                      : "bg-blue-500 text-white hover:scale-110"
+                      ? "bg-red-500 text-white"
+                      : "bg-blue-600 text-white hover:scale-105"
                   }`}
                 >
                   {isPlaying ? (
-                    <Pause size={24} />
+                    <Pause size={20} fill="currentColor" />
                   ) : (
-                    <Play size={24} className="ml-1" />
+                    <Play size={20} fill="currentColor" className="ml-1" />
                   )}
                 </button>
-                <div className="text-sm font-medium text-gray-500">
-                  {isPlaying ? "Đang đọc..." : "Nhấn để nghe"}
+
+                <div className="flex-1 space-y-1">
+                  <div className="flex justify-between items-center text-xs font-bold text-gray-500">
+                    <span>{isPlaying ? "Đang đọc..." : "Tạm dừng"}</span>
+                    <span className="font-mono">
+                      {formatTime(currentTime)} / {formatTime(duration)}
+                    </span>
+                  </div>
+
+                  {/* Slider Input thay vì div tĩnh */}
+                  <div className="relative w-full h-4 flex items-center">
+                    <input
+                      type="range"
+                      min="0"
+                      max={duration}
+                      step="0.1"
+                      value={currentTime}
+                      onChange={handleSeekChange}
+                      onMouseUp={handleSeekCommit}
+                      onTouchEnd={handleSeekCommit}
+                      className="absolute w-full h-1.5 bg-blue-200 rounded-lg appearance-none cursor-pointer accent-blue-600 hover:h-2 transition-all z-10"
+                      style={{
+                        background: `linear-gradient(to right, #2563eb ${
+                          (currentTime / duration) * 100
+                        }%, #bfdbfe ${(currentTime / duration) * 100}%)`,
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="flex bg-gray-100 p-1 rounded-lg">
-                {[0.7, 1, 1.2].map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => setRate(r)}
-                    className={`text-xs font-bold px-3 py-1.5 rounded-md transition ${
-                      rate === r
-                        ? "bg-white text-blue-600 shadow-sm"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
-                  >
-                    {r}x
-                  </button>
-                ))}
+              {/* Speed Controls & Reset */}
+              <div className="flex justify-between items-center mt-3 pt-2 border-t border-blue-100/50">
+                <button
+                  onClick={() => {
+                    stopAudio();
+                    setCurrentTime(0);
+                  }}
+                  className="text-gray-400 hover:text-blue-500 transition text-xs font-bold flex items-center gap-1"
+                >
+                  <RotateCcw size={14} /> Reset
+                </button>
+
+                <div className="flex gap-1">
+                  {[0.7, 1, 1.2].map((r) => (
+                    <button
+                      key={r}
+                      onClick={() => {
+                        setRate(r);
+                        if (isPlaying) {
+                          stopAudio(); // Cần stop để apply tốc độ mới cho lần play tới
+                          setTimeout(() => playAudio(currentTime), 100);
+                        }
+                      }}
+                      className={`text-xs font-bold px-2 py-1 rounded-md transition border ${
+                        rate === r
+                          ? "bg-white text-blue-600 border-blue-200 shadow-sm"
+                          : "bg-transparent text-gray-500 border-transparent hover:bg-white/50"
+                      }`}
+                    >
+                      {r}x
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
+            {/* -------------------------------------- */}
 
             <textarea
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
-              className="flex-1 w-full min-h-[150px] p-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-gray-700 text-lg leading-relaxed custom-scrollbar resize-none"
+              className="flex-1 w-full min-h-[150px] p-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-lg leading-relaxed custom-scrollbar resize-none"
               placeholder="Nghe và chép lại..."
             />
 
@@ -198,7 +365,6 @@ export const ListeningPractice = ({ addToast }) => {
                     {result.acc}% Chính xác
                   </span>
                 </div>
-
                 <div className="space-y-4">
                   <div>
                     <span className="text-xs font-bold text-gray-400 uppercase">

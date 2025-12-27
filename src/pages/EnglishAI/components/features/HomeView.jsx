@@ -45,7 +45,7 @@ export const HomeView = ({ setView }) => (
       </h1>
       <p className="text-lg text-gray-600 leading-relaxed">
         Không chỉ là công cụ, đây là người bạn đồng hành giúp bạn cải thiện 4 kỹ
-        năng Nghe, Nói, Đọc, Viết với sức mạnh của Gemini AI.
+        năng Nghe, Nói, Đọc, Viết với sức mạnh của AI.
       </p>
     </div>
 

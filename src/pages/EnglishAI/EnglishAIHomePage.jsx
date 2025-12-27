@@ -58,7 +58,7 @@ const EnglishAIHomePage = () => {
       </main>
 
       <footer className="py-6 text-center text-gray-400 text-sm border-t border-gray-200 bg-white/50">
-        <p>&copy; 2025 LinguaAI. Powered by DeepSeek & OpenRouter.</p>
+        <p>&copy; 2025 LinguaAI. Powered by Phan Hoang Phuc.</p>
       </footer>
 
       <ToastContainer toasts={toasts} removeToast={removeToast} />
