@@ -399,9 +399,9 @@ const ListeningPractice = ({ addToast }) => {
           onChange={(e) => setLevel(e.target.value)}
           className="border p-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option>Beginner</option>
-          <option>Intermediate</option>
-          <option>Advanced</option>
+          <option>Beginner {"A1-A2"}</option>
+          <option>Intermediate {"B1-B2"}</option>
+          <option>Advanced {"C1-C2"}</option>
         </select>
         <button
           onClick={generate}
@@ -538,7 +538,7 @@ const WritingPractice = ({ addToast }) => {
             <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center">
               <div>
                 <h3 className="font-bold">Kết quả</h3>
-                <p className="text-xs opacity-75">Gemini AI</p>
+                <p className="text-xs opacity-75">từ MLPA AI</p>
               </div>
               <div className="text-4xl font-extrabold bg-white/20 px-4 py-2 rounded-xl">
                 {feedback.score}
