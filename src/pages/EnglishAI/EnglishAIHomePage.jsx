@@ -11,6 +11,7 @@ import { WritingPractice } from "./components/features/WritingPractice";
 import { ConversationPractice } from "./components/features/ConversationPractice";
 import { VocabularyBuilder } from "./components/features/VocabularyBuilder";
 import { SentenceChecker } from "./components/features/SentenceChecker";
+import { WordAnalysis } from "./components/features/WordAnalysis";
 
 // Hooks
 import { useToast } from "./hooks/useToast";
@@ -54,6 +55,9 @@ const EnglishAIHomePage = () => {
             <VocabularyBuilder addToast={addToast} />
           )}
           {currentView === "checker" && <SentenceChecker addToast={addToast} />}
+          {currentView === "wordAnalysis" && (
+            <WordAnalysis addToast={addToast} />
+          )}
         </div>
       </main>
 

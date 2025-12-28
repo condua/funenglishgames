@@ -7,6 +7,7 @@ import {
   BookOpen,
   Search,
   Sparkles,
+  TextSearch,
 } from "lucide-react";
 
 const NavButton = ({ view, current, setView, icon, label }) => {
@@ -81,6 +82,13 @@ export const Navbar = ({ currentView, setView }) => (
           setView={setView}
           icon={<Search size={18} />}
           label="Check Câu"
+        />
+        <NavButton
+          view="wordAnalysis"
+          current={currentView}
+          setView={setView}
+          icon={<TextSearch size={18} />}
+          label="Phân Tích Từ"
         />
       </div>
     </div>

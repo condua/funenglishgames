@@ -8,6 +8,7 @@ import {
   Search,
   ArrowRight,
   Zap,
+  TextSearch,
 } from "lucide-react";
 
 const FeatureCard = ({ onClick, icon, color, title, desc }) => (
@@ -49,7 +50,7 @@ export const HomeView = ({ setView }) => (
       </p>
     </div>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 w-full max-w-7xl px-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5 w-full max-w-7xl px-2">
       <FeatureCard
         onClick={() => setView("listening")}
         icon={<Headphones className="w-8 h-8 text-white" />}
@@ -84,6 +85,13 @@ export const HomeView = ({ setView }) => (
         color="bg-pink-500"
         title="Check Câu"
         desc="Sửa ngữ pháp tức thì"
+      />
+      <FeatureCard
+        onClick={() => setView("wordAnalysis")}
+        icon={<TextSearch className="w-8 h-8 text-white" />}
+        color="bg-teal-500"
+        title="Phân Tích Từ"
+        desc="Nghĩa, ví dụ & phát âm"
       />
     </div>
   </div>
