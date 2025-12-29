@@ -47,7 +47,7 @@ export const WordAnalysis = ({ addToast }) => {
       // 3. Gọi API
       const data = await generateContent(userPrompt, systemInstruction);
 
-      // 4. Kiểm tra dữ liệu trả về
+      // 4. Kiểm tra dữ liệu trả về.
       if (data && data.word !== "Unknown") {
         setResult(data);
         addToast("Đã phân tích xong!", "success");
@@ -184,7 +184,7 @@ export const WordAnalysis = ({ addToast }) => {
               <p className="text-gray-800 italic font-serif ml-6 text-xl">
                 "{result.example}"
               </p>
-              <p className="text-gray-500 italic text-sm mt-2 ml-6">
+              <p className="text-gray-500 italic text-lg mt-2 ml-6">
                 "{result.example_vn}"
               </p>
             </div>
