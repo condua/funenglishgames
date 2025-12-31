@@ -41,7 +41,7 @@ export const WordAnalysis = ({ addToast }) => {
         Nếu từ nhập vào hoàn toàn vô nghĩa hoặc không thể đoán được, hãy trả về JSON với "word": "Unknown" và "meaning": "Không tìm thấy từ này".
       `;
 
-      // 2. Tạo User Prompt
+      // 2. Tạo User Prompt //
       const userPrompt = `Phân tích từ vựng sau: "${word}"`;
 
       // 3. Gọi API
