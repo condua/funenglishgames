@@ -27,7 +27,7 @@ import WomenDayRosePage from "./pages/WomenDayRosePage";
 import MagicLoveCameraCanvas from "./pages/IloveYou";
 import EnglishAI from "./pages/EnglishAI";
 import EnglishAIHomePage from "./pages/EnglishAI/EnglishAIHomePage";
-
+import ProgrammingAI from "./pages/ProgrammingAI";
 // import FlashcardGame from "./pages/FlashcardGame" ';
 function App() {
   const [count, setCount] = useState(0);
@@ -67,6 +67,7 @@ function App() {
         <Route path="/magic-love-camera" element={<MagicLoveCameraCanvas />} />
         <Route path="/english-ai" element={<EnglishAI />} />
         <Route path="/english-ai-home" element={<EnglishAIHomePage />} />
+        <Route path="/programming-ai" element={<ProgrammingAI />} />
       </Routes>
     </BrowserRouter>
   );
