@@ -13,6 +13,7 @@ import {
   AlignLeft,
   Type,
   Mic,
+  Signal,
   BookOpen,
 } from "lucide-react";
 import { generateContent } from "../../api/aiService";
@@ -158,7 +159,7 @@ const ListeningPractice = ({ addToast }) => {
 
     try {
       // Cập nhật prompt để yêu cầu part_of_speech
-      const prompt = `Topic: ${topic}. Level: ${level}. Generate a short paragraph (80-100 words) suitable for listening practice. Output strict JSON: {"text": "English text here", "translation": "Vietnamese translation here", "difficult_words": [{"word": "word1", "part_of_speech": "n/v/adj", "meaning": "nghĩa tiếng việt"}]}`;
+      const prompt = `Topic: ${topic}. Level: ${level}. Generate a short paragraph (40-60 words) suitable for listening practice. Output strict JSON: {"text": "English text here", "translation": "Vietnamese translation here", "difficult_words": [{"word": "word1", "part_of_speech": "n/v/adj", "meaning": "nghĩa tiếng việt"}]}`;
       const data = await generateContent(prompt, "You are an English teacher.");
 
       if (data && data.text) {
@@ -363,8 +364,8 @@ const ListeningPractice = ({ addToast }) => {
       <div className="bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label className="text-xs font-bold text-gray-500 uppercase ml-1">
-              💬Chủ đề
+            <label className="text-xs font-bold text-gray-500 uppercase ml-1 flex items-center gap-1">
+              <Type size={12} /> Chủ đề
             </label>
             <input
               value={topic}
@@ -374,8 +375,8 @@ const ListeningPractice = ({ addToast }) => {
             />
           </div>
           <div>
-            <label className="text-xs font-bold text-gray-500 uppercase ml-1">
-              📈Trình độ
+            <label className="text-xs font-bold text-gray-500 uppercase ml-1 flex items-center gap-1">
+              <Signal size={12} /> Trình độ
             </label>
             <select
               value={level}
@@ -388,8 +389,8 @@ const ListeningPractice = ({ addToast }) => {
             </select>
           </div>
           <div>
-            <label className="text-xs font-bold text-gray-500 uppercase ml-1">
-              🎙️Giọng đọc
+            <label className="text-xs font-bold text-gray-500 uppercase ml-1 flex items-center gap-1">
+              <Mic size={12} /> Giọng đọc
             </label>
             <select
               value={selectedVoiceName}
@@ -774,5 +775,75 @@ const Toast = ({ message, type, onClose }) => {
     </div>
   );
 };
+
+export default function App() {
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (message, type = "info") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+
+    // Auto remove after 3s
+    setTimeout(() => {
+      removeToast(id);
+    }, 3000);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-4 font-sans text-gray-900">
+      <ListeningPractice addToast={addToast} />
+
+      {/* Toast Container */}
+      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+        {toasts.map((t) => (
+          <Toast
+            key={t.id}
+            message={t.message}
+            type={t.type}
+            onClose={() => removeToast(t.id)}
+          />
+        ))}
+      </div>
+
+      {/* Global Styles for Animations */}
+      <style>{`
+        @keyframes slideInRight {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        .animate-slide-in-right {
+          animation: slideInRight 0.3s ease-out forwards;
+        }
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.5s ease-out forwards;
+        }
+
+        /* Custom Scrollbar Styles */
+        ::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #cbd5e1; 
+          border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8; 
+        }
+      `}</style>
+    </div>
+  );
+}
 
 export { ListeningPractice };
