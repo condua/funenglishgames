@@ -12,6 +12,7 @@ import {
   Info,
   AlignLeft,
   Type,
+  Mic,
 } from "lucide-react";
 import { generateContent } from "../../api/aiService";
 
@@ -22,6 +23,10 @@ const ListeningPractice = ({ addToast }) => {
   const [level, setLevel] = useState("Intermediate");
   const [exercise, setExercise] = useState(null);
   const [mode, setMode] = useState("gap"); // 'gap' (Điền từ) | 'full' (Chép cả câu)
+
+  // --- Voice State ---
+  const [voices, setVoices] = useState([]);
+  const [selectedVoiceName, setSelectedVoiceName] = useState("");
 
   // State cho chế độ Gap Fill
   const [tokens, setTokens] = useState([]);
@@ -46,8 +51,31 @@ const ListeningPractice = ({ addToast }) => {
   const startOffsetRef = useRef(0);
 
   useEffect(() => {
+    // Load voices
+    const loadVoices = () => {
+      const allVoices = window.speechSynthesis.getVoices();
+      // Lọc các giọng tiếng Anh (bắt đầu bằng 'en')
+      const enVoices = allVoices.filter((v) => v.lang.startsWith("en"));
+      setVoices(enVoices);
+
+      // Nếu chưa chọn giọng nào, hoặc giọng đã chọn không còn tồn tại, chọn giọng mặc định
+      if (enVoices.length > 0) {
+        // Ưu tiên Google US English hoặc giọng đầu tiên
+        const defaultVoice =
+          enVoices.find((v) => v.name.includes("Google US")) || enVoices[0];
+        if (!selectedVoiceName) {
+          setSelectedVoiceName(defaultVoice.name);
+        }
+      }
+    };
+
+    loadVoices();
+    // Sự kiện này cần thiết cho Chrome vì voices load bất đồng bộ
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+
     return () => {
       stopAudio();
+      window.speechSynthesis.onvoiceschanged = null;
     };
   }, []);
 
@@ -172,8 +200,16 @@ const ListeningPractice = ({ addToast }) => {
     }
 
     const u = new SpeechSynthesisUtterance(textToSpeak);
+
+    // --- Thiết lập giọng đọc đã chọn ---
+    if (selectedVoiceName) {
+      const voice = voices.find((v) => v.name === selectedVoiceName);
+      if (voice) u.voice = voice;
+    }
+    // -----------------------------------
+
     u.rate = rate;
-    u.lang = "en-US";
+    u.lang = "en-US"; // Fallback nếu không chọn voice cụ thể
 
     u.onstart = () => {
       setIsPlaying(true);
@@ -286,7 +322,7 @@ const ListeningPractice = ({ addToast }) => {
       const usr = clean(fullInput);
 
       let matches = 0;
-      // So sánh đơn giản từng từ theo vị trí (có thể cải thiện bằng thuật toán Levenshtein nếu cần)
+      // So sánh đơn giản từng từ theo vị trí
       org.forEach((w, i) => {
         if (usr[i] === w) matches++;
       });
@@ -323,37 +359,62 @@ const ListeningPractice = ({ addToast }) => {
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in pb-10">
       {/* Controls Card */}
       <div className="bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase ml-1">
-              Chủ đề
+              💬Chủ đề
             </label>
             <input
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              className="w-full mt-1 border border-gray-200 bg-gray-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="w-full mt-1 border border-gray-200 bg-gray-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition text-sm"
               placeholder="Topic..."
             />
           </div>
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase ml-1">
-              Trình độ
+              📈Trình độ
             </label>
             <select
               value={level}
               onChange={(e) => setLevel(e.target.value)}
-              className="w-full mt-1 border border-gray-200 bg-gray-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="w-full mt-1 border border-gray-200 bg-gray-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition text-sm"
             >
               <option>Beginner (A1-A2)</option>
               <option>Intermediate (B1-B2)</option>
               <option>Advanced (C1-C2)</option>
             </select>
           </div>
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase ml-1">
+              🎙️Giọng đọc
+            </label>
+            <select
+              value={selectedVoiceName}
+              onChange={(e) => {
+                setSelectedVoiceName(e.target.value);
+                // Stop nếu đang đọc để lần tới play sẽ áp dụng giọng mới
+                if (isPlaying) stopAudio();
+              }}
+              className="w-full mt-1 border border-gray-200 bg-gray-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition text-sm truncate"
+              disabled={voices.length === 0}
+            >
+              {voices.length === 0 && <option>Đang tải giọng...</option>}
+              {voices.map((v) => (
+                <option key={v.name} value={v.name}>
+                  {v.name
+                    .replace("Google", "")
+                    .replace("Microsoft", "")
+                    .substring(0, 25)}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="flex items-end">
             <button
               onClick={generate}
               disabled={loading}
-              className="w-full bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 disabled:opacity-70 font-semibold shadow-lg shadow-blue-200 transition-all active:scale-95 flex justify-center items-center gap-2"
+              className="w-full bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 disabled:opacity-70 font-semibold shadow-lg shadow-blue-200 transition-all active:scale-95 flex justify-center items-center gap-2 text-sm"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
