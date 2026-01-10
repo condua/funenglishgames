@@ -1,4 +1,3 @@
-// src/components/features/ListeningPractice.jsx
 import React, { useState, useEffect, useRef } from "react";
 import {
   Play,
@@ -7,14 +6,30 @@ import {
   CheckCircle,
   Headphones,
   RotateCcw,
+  RefreshCw,
+  X,
+  AlertCircle,
+  Info,
+  AlignLeft,
+  Type,
 } from "lucide-react";
 import { generateContent } from "../../api/aiService";
 
-export const ListeningPractice = ({ addToast }) => {
+// --- Sub-components ---
+
+const ListeningPractice = ({ addToast }) => {
   const [topic, setTopic] = useState("Daily Routine");
   const [level, setLevel] = useState("Intermediate");
   const [exercise, setExercise] = useState(null);
-  const [userInput, setUserInput] = useState("");
+  const [mode, setMode] = useState("gap"); // 'gap' (Điền từ) | 'full' (Chép cả câu)
+
+  // State cho chế độ Gap Fill
+  const [tokens, setTokens] = useState([]);
+
+  // State cho chế độ Full Dictation
+  const [fullInput, setFullInput] = useState("");
+
+  const [isChecked, setIsChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [result, setResult] = useState(null);
@@ -27,8 +42,8 @@ export const ListeningPractice = ({ addToast }) => {
 
   const synth = useRef(window.speechSynthesis);
   const timerRef = useRef(null);
-  const startTimeRef = useRef(0); // Lưu thời điểm bắt đầu của đoạn hiện tại
-  const startOffsetRef = useRef(0); // Lưu offset thời gian (khi tua)
+  const startTimeRef = useRef(0);
+  const startOffsetRef = useRef(0);
 
   useEffect(() => {
     return () => {
@@ -36,11 +51,25 @@ export const ListeningPractice = ({ addToast }) => {
     };
   }, []);
 
-  // Ước tính thời lượng tổng dựa trên số từ và tốc độ
+  // Khi chuyển chế độ, reset lại trạng thái làm bài (nhưng giữ nguyên đề bài)
+  useEffect(() => {
+    setIsChecked(false);
+    setResult(null);
+    setFullInput("");
+    // Reset tokens input về rỗng
+    if (tokens.length > 0) {
+      setTokens((prev) =>
+        prev.map((t) =>
+          t.type === "gap" ? { ...t, userInput: "", isCorrect: null } : t
+        )
+      );
+    }
+  }, [mode]);
+
+  // Ước tính thời lượng dựa trên số từ và tốc độ
   useEffect(() => {
     if (exercise?.text) {
       const wordCount = exercise.text.split(/\s+/).length;
-      // Ước tính: 150 từ/phút là tốc độ trung bình (1.0x)
       const baseSeconds = (wordCount / 150) * 60;
       const estimatedDuration = Math.ceil(baseSeconds / rate) + 2;
       setDuration(estimatedDuration);
@@ -48,10 +77,45 @@ export const ListeningPractice = ({ addToast }) => {
   }, [exercise, rate]);
 
   const formatTime = (seconds) => {
-    const s = Math.min(Math.max(0, seconds), duration); // Clamp
+    const s = Math.min(Math.max(0, seconds), duration);
     const mins = Math.floor(s / 60);
     const secs = Math.floor(s % 60);
     return `${mins < 10 ? "0" : ""}${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  };
+
+  // Hàm xử lý text thành dạng điền từ
+  const processTextToTokens = (text) => {
+    const rawWords = text.split(" ");
+    const candidates = [];
+    rawWords.forEach((word, index) => {
+      const cleanWord = word.replace(/[^\w]/g, "");
+      if (cleanWord.length > 2 && !/\d/.test(cleanWord)) {
+        candidates.push(index);
+      }
+    });
+
+    const shuffled = candidates.sort(() => 0.5 - Math.random());
+    const selectedIndices = shuffled.slice(0, 5);
+
+    const newTokens = rawWords.map((word, index) => {
+      if (selectedIndices.includes(index)) {
+        const match = word.match(/^([^\w]*)([\w]+)([^\w]*)$/);
+        if (match) {
+          return {
+            id: index,
+            type: "gap",
+            prefix: match[1],
+            answer: match[2],
+            suffix: match[3],
+            userInput: "",
+            isCorrect: null,
+          };
+        }
+      }
+      return { id: index, type: "text", content: word };
+    });
+
+    return newTokens;
   };
 
   const generate = async () => {
@@ -59,19 +123,25 @@ export const ListeningPractice = ({ addToast }) => {
     stopAudio();
     setExercise(null);
     setResult(null);
-    setUserInput("");
+    setTokens([]);
+    setFullInput("");
+    setIsChecked(false);
 
     try {
-      const prompt = `Topic: ${topic}. Level: ${level}. Generate a short paragraph (30-50 words) for dictation practice. Output strict JSON: {"text": "English text here", "translation": "Vietnamese translation here", "difficult_words": ["word1", "word2"]}`;
+      const prompt = `Topic: ${topic}. Level: ${level}. Generate a short paragraph (40-60 words) suitable for listening practice. Output strict JSON: {"text": "English text here", "translation": "Vietnamese translation here", "difficult_words": ["word1", "word2"]}`;
       const data = await generateContent(prompt, "You are an English teacher.");
+
       if (data && data.text) {
         setExercise(data);
-        addToast("Đã tạo bài tập thành công!", "success");
+        const processedTokens = processTextToTokens(data.text);
+        setTokens(processedTokens);
+        if (addToast) addToast("Đã tạo bài tập mới!", "success");
       } else {
         throw new Error("Dữ liệu lỗi");
       }
     } catch (e) {
-      addToast("Lỗi tạo bài tập.", "error");
+      console.error(e);
+      if (addToast) addToast("Lỗi tạo bài tập.", "error");
     }
     setLoading(false);
   };
@@ -82,21 +152,17 @@ export const ListeningPractice = ({ addToast }) => {
     if (timerRef.current) clearInterval(timerRef.current);
   };
 
-  // Hàm phát audio (có hỗ trợ bắt đầu từ một đoạn text cụ thể)
   const playAudio = (startTime = 0) => {
     if (!exercise) return;
 
-    // 1. Dừng audio cũ
     synth.current.cancel();
     if (timerRef.current) clearInterval(timerRef.current);
 
-    // 2. Tính toán đoạn text cần đọc dựa trên startTime (kỹ thuật Slicing)
     const ratio = Math.min(startTime / duration, 1);
     const charIndex = Math.floor(exercise.text.length * ratio);
 
-    // Tìm khoảng trắng gần nhất để không cắt giữa từ
     let safeIndex = charIndex === 0 ? 0 : exercise.text.indexOf(" ", charIndex);
-    if (safeIndex === -1) safeIndex = charIndex; // Fallback nếu gần cuối
+    if (safeIndex === -1) safeIndex = charIndex;
 
     const textToSpeak = exercise.text.substring(safeIndex).trim();
     if (!textToSpeak) {
@@ -105,20 +171,17 @@ export const ListeningPractice = ({ addToast }) => {
       return;
     }
 
-    // 3. Thiết lập Utterance
     const u = new SpeechSynthesisUtterance(textToSpeak);
     u.rate = rate;
     u.lang = "en-US";
 
     u.onstart = () => {
       setIsPlaying(true);
-      startOffsetRef.current = startTime; // Lưu mốc thời gian đã tua tới
-      startTimeRef.current = Date.now(); // Lưu thời gian thực tế bắt đầu chạy
+      startOffsetRef.current = startTime;
+      startTimeRef.current = Date.now();
 
-      // Chạy timer cập nhật UI
       timerRef.current = setInterval(() => {
         const now = Date.now();
-        // Thời gian hiện tại = Thời gian đã tua + Thời gian trôi qua từ lúc play
         const elapsed = (now - startTimeRef.current) / 1000;
         const actualTime = startOffsetRef.current + elapsed;
 
@@ -132,19 +195,14 @@ export const ListeningPractice = ({ addToast }) => {
     };
 
     u.onend = () => {
-      // Chỉ stop nếu tự nhiên kết thúc (không phải do bị cancel để tua)
-      // Sự kiện onend của speech synthesis đôi khi fire khi cancel, cần cẩn thận
-      // Logic ở timer sẽ handle việc hiển thị hết giờ
       setIsPlaying(false);
       if (timerRef.current) clearInterval(timerRef.current);
-      // Nếu đọc hết thì set về 0 sau 1s
       if (Math.abs(currentTime - duration) < 2) {
         setTimeout(() => setCurrentTime(0), 1000);
       }
     };
 
     u.onerror = () => stopAudio();
-
     synth.current.speak(u);
   };
 
@@ -152,54 +210,118 @@ export const ListeningPractice = ({ addToast }) => {
     if (isPlaying) {
       stopAudio();
     } else {
-      // Nếu đang ở cuối bài thì phát lại từ đầu, ngược lại phát tiếp từ vị trí hiện tại
       const startFrom = currentTime >= duration - 1 ? 0 : currentTime;
       playAudio(startFrom);
     }
   };
 
-  // Xử lý khi người dùng kéo thanh trượt
   const handleSeekChange = (e) => {
     const newTime = parseFloat(e.target.value);
-    setCurrentTime(newTime); // Cập nhật UI mượt mà ngay lập tức
+    setCurrentTime(newTime);
   };
 
-  // Xử lý khi người dùng thả chuột ra (mới thực sự tua audio)
   const handleSeekCommit = (e) => {
     const newTime = parseFloat(e.target.value);
     setCurrentTime(newTime);
     if (isPlaying) {
-      // Nếu đang play thì tua và play tiếp
       playAudio(newTime);
     } else {
-      // Nếu đang pause thì chỉ tua mốc thời gian (lần tới bấm play sẽ play từ đây)
       startOffsetRef.current = newTime;
     }
   };
 
+  const handleTokenInputChange = (id, value) => {
+    if (isChecked) return;
+    setTokens((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, userInput: value } : t))
+    );
+  };
+
   const check = () => {
     if (!exercise) return;
-    const clean = (s) =>
-      s
-        .replace(/[^\w\s]/g, "")
-        .toLowerCase()
-        .split(/\s+/)
-        .filter((w) => w);
-    const org = clean(exercise.text);
-    const usr = clean(userInput);
-    let matches = 0;
-    org.forEach((w, i) => {
-      if (usr[i] === w) matches++;
-    });
-    const accuracy =
-      org.length > 0 ? Math.round((matches / org.length) * 100) : 0;
-    setResult({ acc: accuracy });
-    addToast(`Độ chính xác: ${accuracy}%`, accuracy > 80 ? "success" : "error");
+
+    let accuracy = 0;
+
+    if (mode === "gap") {
+      // --- Logic Check cho Gap Fill ---
+      let correctCount = 0;
+      let totalGaps = 0;
+
+      const checkedTokens = tokens.map((t) => {
+        if (t.type === "gap") {
+          totalGaps++;
+          const isCorrect =
+            t.userInput.trim().toLowerCase() === t.answer.toLowerCase();
+          if (isCorrect) correctCount++;
+          return { ...t, isCorrect };
+        }
+        return t;
+      });
+
+      setTokens(checkedTokens);
+      accuracy =
+        totalGaps > 0 ? Math.round((correctCount / totalGaps) * 100) : 0;
+      setResult({
+        acc: accuracy,
+        type: "gap",
+        correct: correctCount,
+        total: totalGaps,
+      });
+
+      if (addToast) {
+        addToast(
+          `Bạn đúng ${correctCount}/${totalGaps} từ!`,
+          accuracy > 80 ? "success" : "info"
+        );
+      }
+    } else {
+      // --- Logic Check cho Full Dictation ---
+      const clean = (s) =>
+        s
+          .replace(/[^\w\s]/g, "")
+          .toLowerCase()
+          .split(/\s+/)
+          .filter((w) => w);
+      const org = clean(exercise.text);
+      const usr = clean(fullInput);
+
+      let matches = 0;
+      // So sánh đơn giản từng từ theo vị trí (có thể cải thiện bằng thuật toán Levenshtein nếu cần)
+      org.forEach((w, i) => {
+        if (usr[i] === w) matches++;
+      });
+
+      accuracy = org.length > 0 ? Math.round((matches / org.length) * 100) : 0;
+      setResult({ acc: accuracy, type: "full" });
+
+      if (addToast) {
+        addToast(
+          `Độ chính xác: ${accuracy}%`,
+          accuracy > 80 ? "success" : "info"
+        );
+      }
+    }
+
+    setIsChecked(true);
+  };
+
+  const resetExercise = () => {
+    if (mode === "gap") {
+      setTokens((prev) =>
+        prev.map((t) =>
+          t.type === "gap" ? { ...t, userInput: "", isCorrect: null } : t
+        )
+      );
+    } else {
+      setFullInput("");
+    }
+    setIsChecked(false);
+    setResult(null);
   };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in pb-10">
-      {/* Controls Card - Giữ nguyên */}
+      {/* Controls Card */}
       <div className="bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-gray-100">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
@@ -210,7 +332,7 @@ export const ListeningPractice = ({ addToast }) => {
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               className="w-full mt-1 border border-gray-200 bg-gray-50 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"
-              placeholder="Ví dụ: Technology..."
+              placeholder="Topic..."
             />
           </div>
           <div>
@@ -248,7 +370,7 @@ export const ListeningPractice = ({ addToast }) => {
       {exercise && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white p-6 rounded-3xl shadow-lg border-l-8 border-blue-500 flex flex-col h-full">
-            {/* --- AUDIO PLAYER CÓ SEEK BAR --- */}
+            {/* --- AUDIO PLAYER --- */}
             <div className="mb-6 bg-blue-50 rounded-2xl p-4 border border-blue-100 select-none">
               <div className="flex items-center gap-4">
                 <button
@@ -274,7 +396,6 @@ export const ListeningPractice = ({ addToast }) => {
                     </span>
                   </div>
 
-                  {/* Slider Input thay vì div tĩnh */}
                   <div className="relative w-full h-4 flex items-center">
                     <input
                       type="range"
@@ -296,7 +417,6 @@ export const ListeningPractice = ({ addToast }) => {
                 </div>
               </div>
 
-              {/* Speed Controls & Reset */}
               <div className="flex justify-between items-center mt-3 pt-2 border-t border-blue-100/50">
                 <button
                   onClick={() => {
@@ -305,7 +425,7 @@ export const ListeningPractice = ({ addToast }) => {
                   }}
                   className="text-gray-400 hover:text-blue-500 transition text-xs font-bold flex items-center gap-1"
                 >
-                  <RotateCcw size={14} /> Reset
+                  <RotateCcw size={14} /> Replay
                 </button>
 
                 <div className="flex gap-1">
@@ -315,7 +435,7 @@ export const ListeningPractice = ({ addToast }) => {
                       onClick={() => {
                         setRate(r);
                         if (isPlaying) {
-                          stopAudio(); // Cần stop để apply tốc độ mới cho lần play tới
+                          stopAudio();
                           setTimeout(() => playAudio(currentTime), 100);
                         }
                       }}
@@ -331,21 +451,117 @@ export const ListeningPractice = ({ addToast }) => {
                 </div>
               </div>
             </div>
-            {/* -------------------------------------- */}
 
-            <textarea
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              className="flex-1 w-full min-h-[150px] p-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 text-lg leading-relaxed custom-scrollbar resize-none"
-              placeholder="Nghe và chép lại..."
-            />
+            {/* --- MODE SWITCHER & INPUT AREA --- */}
+            <div className="flex-1 flex flex-col gap-4">
+              {/* Tabs */}
+              <div className="bg-gray-100 p-1 rounded-xl flex gap-1">
+                <button
+                  onClick={() => setMode("gap")}
+                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                    mode === "gap"
+                      ? "bg-white shadow-sm text-blue-600"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  <Type size={16} /> Điền từ
+                </button>
+                <button
+                  onClick={() => setMode("full")}
+                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                    mode === "full"
+                      ? "bg-white shadow-sm text-blue-600"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  <AlignLeft size={16} /> Chép cả đoạn
+                </button>
+              </div>
 
-            <button
-              onClick={check}
-              className="mt-4 w-full bg-emerald-500 text-white py-3 rounded-xl hover:bg-emerald-600 font-bold shadow-md shadow-emerald-200 transition-all flex items-center justify-center gap-2"
-            >
-              <CheckCircle size={20} /> Kiểm tra kết quả
-            </button>
+              <div className="flex-1 bg-gray-50 border border-gray-200 rounded-2xl p-6 text-lg leading-loose text-gray-700 font-medium overflow-y-auto max-h-[400px]">
+                {mode === "gap" ? (
+                  // --- GAP FILL UI ---
+                  <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-2">
+                    {tokens.map((token, idx) => {
+                      if (token.type === "text") {
+                        return <span key={idx}>{token.content}</span>;
+                      } else {
+                        return (
+                          <span
+                            key={idx}
+                            className="inline-flex items-baseline"
+                          >
+                            {token.prefix}
+                            <span className="relative inline-block mx-1">
+                              <input
+                                type="text"
+                                value={token.userInput}
+                                onChange={(e) =>
+                                  handleTokenInputChange(
+                                    token.id,
+                                    e.target.value
+                                  )
+                                }
+                                disabled={isChecked}
+                                className={`
+                                                            w-24 px-2 py-0.5 text-center text-blue-900 border-b-2 outline-none bg-white transition-all
+                                                            ${
+                                                              isChecked &&
+                                                              token.isCorrect
+                                                                ? "border-emerald-500 bg-emerald-50 text-emerald-700 font-bold"
+                                                                : isChecked &&
+                                                                  !token.isCorrect
+                                                                ? "border-red-400 bg-red-50 text-red-600 line-through decoration-2"
+                                                                : "border-gray-300 focus:border-blue-500 focus:bg-blue-50"
+                                                            }
+                                                        `}
+                                placeholder={isChecked ? "" : "..."}
+                                autoComplete="off"
+                              />
+                              {isChecked && !token.isCorrect && (
+                                <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap z-10">
+                                  {token.answer}
+                                </span>
+                              )}
+                            </span>
+                            {token.suffix}
+                          </span>
+                        );
+                      }
+                    })}
+                  </div>
+                ) : (
+                  // --- FULL DICTATION UI ---
+                  <textarea
+                    value={fullInput}
+                    onChange={(e) => setFullInput(e.target.value)}
+                    disabled={isChecked}
+                    placeholder="Nghe và chép lại toàn bộ đoạn văn..."
+                    className={`w-full h-full min-h-[200px] bg-transparent outline-none resize-none ${
+                      isChecked ? "text-gray-500" : "text-gray-800"
+                    }`}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4 flex gap-3">
+              {!isChecked ? (
+                <button
+                  onClick={check}
+                  className="flex-1 bg-emerald-500 text-white py-3 rounded-xl hover:bg-emerald-600 font-bold shadow-md shadow-emerald-200 transition-all flex items-center justify-center gap-2"
+                >
+                  <CheckCircle size={20} /> Kiểm tra
+                </button>
+              ) : (
+                <button
+                  onClick={resetExercise}
+                  className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl hover:bg-gray-200 font-bold border border-gray-300 transition-all flex items-center justify-center gap-2"
+                >
+                  <RefreshCw size={18} /> Làm lại
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -374,6 +590,25 @@ export const ListeningPractice = ({ addToast }) => {
                       {exercise.text}
                     </div>
                   </div>
+
+                  {/* Hiển thị bài làm của user nếu là chế độ Full Dictation */}
+                  {mode === "full" && (
+                    <div>
+                      <span className="text-xs font-bold text-gray-400 uppercase">
+                        Bài làm của bạn
+                      </span>
+                      <div
+                        className={`mt-1 p-4 rounded-2xl border text-base leading-relaxed ${
+                          result.acc >= 80
+                            ? "bg-emerald-50 border-emerald-100 text-emerald-800"
+                            : "bg-red-50 border-red-100 text-red-800"
+                        }`}
+                      >
+                        {fullInput}
+                      </div>
+                    </div>
+                  )}
+
                   <div>
                     <span className="text-xs font-bold text-gray-400 uppercase">
                       Dịch nghĩa
@@ -382,12 +617,37 @@ export const ListeningPractice = ({ addToast }) => {
                       {exercise.translation}
                     </div>
                   </div>
+
+                  {exercise.difficult_words && (
+                    <div>
+                      <span className="text-xs font-bold text-gray-400 uppercase">
+                        Từ vựng gợi ý
+                      </span>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {exercise.difficult_words.map((w, i) => (
+                          <span
+                            key={i}
+                            className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 shadow-sm"
+                          >
+                            {w}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
               <div className="h-full min-h-[200px] flex flex-col items-center justify-center bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl text-gray-400 p-6 text-center">
                 <Headphones size={48} className="mb-3 opacity-50" />
-                <p>Kết quả so sánh sẽ hiển thị tại đây sau khi bạn nộp bài.</p>
+                <p>
+                  {mode === "gap"
+                    ? "Nghe đoạn văn và điền 5 từ còn thiếu vào ô trống."
+                    : "Nghe và chép lại toàn bộ đoạn văn chính xác nhất có thể."}
+                </p>
+                <p className="text-sm mt-2 opacity-75">
+                  Bấm "Kiểm tra" để xem đáp án.
+                </p>
               </div>
             )}
           </div>
@@ -396,3 +656,118 @@ export const ListeningPractice = ({ addToast }) => {
     </div>
   );
 };
+
+// --- Main App with Toast Provider ---
+
+const Toast = ({ message, type, onClose }) => {
+  return (
+    <div
+      className={`
+      flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border animate-slide-in-right max-w-sm
+      ${
+        type === "success"
+          ? "bg-white border-emerald-100 text-emerald-700"
+          : type === "error"
+          ? "bg-white border-red-100 text-red-700"
+          : "bg-white border-blue-100 text-blue-700"
+      }
+    `}
+    >
+      <div
+        className={`p-1 rounded-full ${
+          type === "success"
+            ? "bg-emerald-100"
+            : type === "error"
+            ? "bg-red-100"
+            : "bg-blue-100"
+        }`}
+      >
+        {type === "success" ? (
+          <CheckCircle size={16} />
+        ) : type === "error" ? (
+          <AlertCircle size={16} />
+        ) : (
+          <Info size={16} />
+        )}
+      </div>
+      <p className="text-sm font-medium">{message}</p>
+      <button
+        onClick={onClose}
+        className="ml-auto text-gray-400 hover:text-gray-600 transition"
+      >
+        <X size={16} />
+      </button>
+    </div>
+  );
+};
+
+export default function App() {
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (message, type = "info") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+
+    // Auto remove after 3s
+    setTimeout(() => {
+      removeToast(id);
+    }, 3000);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-4 font-sans text-gray-900">
+      <ListeningPractice addToast={addToast} />
+
+      {/* Toast Container */}
+      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+        {toasts.map((t) => (
+          <Toast
+            key={t.id}
+            message={t.message}
+            type={t.type}
+            onClose={() => removeToast(t.id)}
+          />
+        ))}
+      </div>
+
+      {/* Global Styles for Animations */}
+      <style>{`
+        @keyframes slideInRight {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        .animate-slide-in-right {
+          animation: slideInRight 0.3s ease-out forwards;
+        }
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.5s ease-out forwards;
+        }
+
+        /* Custom Scrollbar Styles */
+        ::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #cbd5e1; 
+          border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8; 
+        }
+      `}</style>
+    </div>
+  );
+}
+export { ListeningPractice };
