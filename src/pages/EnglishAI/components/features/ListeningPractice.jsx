@@ -13,6 +13,7 @@ import {
   AlignLeft,
   Type,
   Mic,
+  BookOpen,
 } from "lucide-react";
 import { generateContent } from "../../api/aiService";
 
@@ -156,7 +157,8 @@ const ListeningPractice = ({ addToast }) => {
     setIsChecked(false);
 
     try {
-      const prompt = `Topic: ${topic}. Level: ${level}. Generate a short paragraph (40-60 words) suitable for listening practice. Output strict JSON: {"text": "English text here", "translation": "Vietnamese translation here", "difficult_words": ["word1", "word2"]}`;
+      // Cập nhật prompt để yêu cầu part_of_speech
+      const prompt = `Topic: ${topic}. Level: ${level}. Generate a short paragraph (80-100 words) suitable for listening practice. Output strict JSON: {"text": "English text here", "translation": "Vietnamese translation here", "difficult_words": [{"word": "word1", "part_of_speech": "n/v/adj", "meaning": "nghĩa tiếng việt"}]}`;
       const data = await generateContent(prompt, "You are an English teacher.");
 
       if (data && data.text) {
@@ -679,23 +681,34 @@ const ListeningPractice = ({ addToast }) => {
                     </div>
                   </div>
 
-                  {exercise.difficult_words && (
-                    <div>
-                      <span className="text-xs font-bold text-gray-400 uppercase">
-                        Từ vựng gợi ý
-                      </span>
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {exercise.difficult_words.map((w, i) => (
-                          <span
-                            key={i}
-                            className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 shadow-sm"
-                          >
-                            {w}
-                          </span>
-                        ))}
+                  {exercise.difficult_words &&
+                    exercise.difficult_words.length > 0 && (
+                      <div>
+                        <span className="text-xs font-bold text-gray-400 uppercase flex items-center gap-1 mb-2">
+                          <BookOpen size={14} /> Từ vựng gợi ý
+                        </span>
+                        <div className="flex flex-col gap-2">
+                          {exercise.difficult_words.map((item, i) => (
+                            <div
+                              key={i}
+                              className="bg-white px-4 py-2 border border-gray-200 rounded-xl shadow-sm text-sm text-gray-700 flex items-center gap-2 hover:bg-blue-50 transition-colors"
+                            >
+                              <span className="font-bold text-blue-600 min-w-[80px]">
+                                {item.word}
+                              </span>
+                              {/* Hiển thị từ loại */}
+                              <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 border border-gray-200 font-mono italic">
+                                {item.part_of_speech}
+                              </span>
+                              <span className="text-gray-300">|</span>
+                              <span className="italic text-gray-600">
+                                {item.meaning}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               </div>
             ) : (
@@ -762,73 +775,4 @@ const Toast = ({ message, type, onClose }) => {
   );
 };
 
-export default function App() {
-  const [toasts, setToasts] = useState([]);
-
-  const addToast = (message, type = "info") => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
-
-    // Auto remove after 3s
-    setTimeout(() => {
-      removeToast(id);
-    }, 3000);
-  };
-
-  const removeToast = (id) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-100 p-4 font-sans text-gray-900">
-      <ListeningPractice addToast={addToast} />
-
-      {/* Toast Container */}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
-        {toasts.map((t) => (
-          <Toast
-            key={t.id}
-            message={t.message}
-            type={t.type}
-            onClose={() => removeToast(t.id)}
-          />
-        ))}
-      </div>
-
-      {/* Global Styles for Animations */}
-      <style>{`
-        @keyframes slideInRight {
-          from { transform: translateX(100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        .animate-slide-in-right {
-          animation: slideInRight 0.3s ease-out forwards;
-        }
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-out forwards;
-        }
-
-        /* Custom Scrollbar Styles */
-        ::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-          background: transparent; 
-        }
-        ::-webkit-scrollbar-thumb {
-          background: #cbd5e1; 
-          border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8; 
-        }
-      `}</style>
-    </div>
-  );
-}
 export { ListeningPractice };
