@@ -260,7 +260,7 @@ export default function ToeicPartFive() {
     // Prompt đã được nâng cấp để yêu cầu translation và vocabulary
     const prompt = `
       Bạn là một giáo viên TOEIC chuyên nghiệp. 
-      Hãy tạo 5 câu hỏi trắc nghiệm Part 5 (Incomplete Sentences) về chủ đề: "${topicPrompt}".
+      Hãy tạo 10 câu hỏi trắc nghiệm Part 5 (Incomplete Sentences) về chủ đề: "${topicPrompt}".
       Độ khó: Trung bình - Khó (sát đề thi thật).
       
       YÊU CẦU OUTPUT FORMAT JSON (KHÔNG CÓ MARKDOWN BLOCK):
