@@ -12,6 +12,8 @@ import {
   Lightbulb,
   Settings,
   Key,
+  Languages,
+  Book,
 } from "lucide-react";
 
 // --- DATA STRUCTURE & CONFIGURATION ---
@@ -132,6 +134,13 @@ const MOCK_DATA = [
     correctOption: 1, // Index of 'conducting'
     explanation:
       "Sau động từ 'suggest' (đề nghị), nếu theo sau là một động từ khác thì động từ đó phải ở dạng V-ing. Cấu trúc: suggest + V-ing.",
+    translation:
+      "Giám đốc tiếp thị đề nghị thực hiện một cuộc khảo sát để hiểu rõ hơn nhu cầu của khách hàng.",
+    vocabulary: [
+      { word: "suggest", meaning: "đề nghị, gợi ý" },
+      { word: "survey", meaning: "cuộc khảo sát" },
+      { word: "conduct", meaning: "thực hiện, tiến hành" },
+    ],
   },
   {
     question:
@@ -140,6 +149,12 @@ const MOCK_DATA = [
     correctOption: 2,
     explanation:
       "Dùng thì Quá khứ hoàn thành (had + V3/ed) để diễn tả một hành động xảy ra trước một hành động khác trong quá khứ. Ở đây việc 'hoàn thành báo cáo' xảy ra trước 'cuộc họp bắt đầu' (quá khứ đơn).",
+    translation:
+      "Ông Tanaka đã hoàn thành báo cáo trước khi cuộc họp hội đồng bắt đầu vào ngày hôm qua.",
+    vocabulary: [
+      { word: "board meeting", meaning: "cuộc họp hội đồng quản trị" },
+      { word: "finish", meaning: "hoàn thành" },
+    ],
   },
   {
     question:
@@ -148,6 +163,13 @@ const MOCK_DATA = [
     correctOption: 1,
     explanation:
       "'While' là liên từ, có thể đi với V-ing (rút gọn mệnh đề) mang nghĩa 'trong khi đang...'. 'During' + Noun. 'For' + khoảng thời gian. 'Because' + mệnh đề.",
+    translation:
+      "Tất cả nhân viên được yêu cầu đeo thẻ nhận dạng trong khi ở trong tòa nhà văn phòng.",
+    vocabulary: [
+      { word: "require", meaning: "yêu cầu" },
+      { word: "identification badge", meaning: "thẻ nhận dạng/thẻ tên" },
+      { word: "during", meaning: "trong suốt (khoảng thời gian)" },
+    ],
   },
   {
     question:
@@ -156,6 +178,13 @@ const MOCK_DATA = [
     correctOption: 1,
     explanation:
       "Cấu trúc so sánh hơn với tính từ dài (efficient). Có từ 'than' là dấu hiệu nhận biết. Cấu trúc: more + adj dài + than.",
+    translation:
+      "Phần mềm mới hiệu quả hơn phiên bản trước, cho phép người dùng xử lý dữ liệu nhanh gấp đôi.",
+    vocabulary: [
+      { word: "efficient", meaning: "hiệu quả, năng suất cao" },
+      { word: "previous version", meaning: "phiên bản trước" },
+      { word: "process data", meaning: "xử lý dữ liệu" },
+    ],
   },
   {
     question:
@@ -164,6 +193,13 @@ const MOCK_DATA = [
     correctOption: 2,
     explanation:
       "Cụm cố định (Collocation): 'be responsible for' + V-ing/Noun (chịu trách nhiệm cho việc gì).",
+    translation:
+      "Cô Green chịu trách nhiệm tổ chức sự kiện từ thiện thường niên.",
+    vocabulary: [
+      { word: "be responsible for", meaning: "chịu trách nhiệm về" },
+      { word: "annual", meaning: "hàng năm" },
+      { word: "charity event", meaning: "sự kiện từ thiện" },
+    ],
   },
 ];
 
@@ -221,9 +257,10 @@ export default function ToeicPartFive() {
   };
 
   const generateQuestionsWithGemini = async (topicPrompt) => {
+    // Prompt đã được nâng cấp để yêu cầu translation và vocabulary
     const prompt = `
       Bạn là một giáo viên TOEIC chuyên nghiệp. 
-      Hãy tạo 10 câu hỏi trắc nghiệm Part 5 (Incomplete Sentences) về chủ đề: "${topicPrompt}".
+      Hãy tạo 5 câu hỏi trắc nghiệm Part 5 (Incomplete Sentences) về chủ đề: "${topicPrompt}".
       Độ khó: Trung bình - Khó (sát đề thi thật).
       
       YÊU CẦU OUTPUT FORMAT JSON (KHÔNG CÓ MARKDOWN BLOCK):
@@ -231,16 +268,21 @@ export default function ToeicPartFive() {
         {
           "question": "Câu hỏi tiếng Anh...",
           "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
-          "correctOption": 0, (0 cho A, 1 cho B, 2 cho C, 3 cho D)
-          "explanation": "Giải thích ngắn gọn súc tích bằng tiếng Việt."
+          "correctOption": 0,
+          "explanation": "Giải thích ngữ pháp ngắn gọn súc tích bằng tiếng Việt.",
+          "translation": "Dịch nghĩa đầy đủ của câu hỏi sang tiếng Việt.",
+          "vocabulary": [
+            { "word": "từ tiếng anh", "meaning": "nghĩa tiếng việt ngắn gọn" }
+          ]
         }
       ]
-      Chỉ trả về JSON thuần túy, không có lời dẫn. Đảm bảo đủ 30 câu.
+      Chỉ trả về JSON thuần túy, không có lời dẫn. Tạo đúng 5 câu hỏi chất lượng.
     `;
 
     try {
+      // Sử dụng model mới nhất để tránh lỗi 404
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -442,15 +484,46 @@ export default function ToeicPartFive() {
           })}
         </div>
 
-        {/* Explanation */}
+        {/* Explanation Section (Đã nâng cấp) */}
         {showExplanation && (
-          <div className="bg-blue-50 p-5 rounded-xl border border-blue-100 mb-20 animate-in fade-in slide-in-from-bottom-2">
-            <h4 className="flex items-center gap-2 font-bold text-blue-800 mb-2">
-              <Lightbulb size={18} /> Giải thích
-            </h4>
-            <p className="text-slate-700 text-sm leading-6">
-              {currentQ.explanation}
-            </p>
+          <div className="bg-white rounded-xl border border-blue-100 overflow-hidden shadow-sm mb-20 animate-in fade-in slide-in-from-bottom-2">
+            {/* 1. Translation */}
+            <div className="bg-blue-50/50 p-4 border-b border-blue-100">
+              <h4 className="flex items-center gap-2 font-bold text-blue-800 mb-2 text-sm uppercase tracking-wide">
+                <Languages size={16} /> Dịch Nghĩa
+              </h4>
+              <p className="text-slate-700 italic">"{currentQ.translation}"</p>
+            </div>
+
+            {/* 2. Vocabulary */}
+            {currentQ.vocabulary && currentQ.vocabulary.length > 0 && (
+              <div className="p-4 border-b border-slate-100">
+                <h4 className="flex items-center gap-2 font-bold text-slate-700 mb-3 text-sm uppercase tracking-wide">
+                  <Book size={16} /> Từ Vựng Quan Trọng
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {currentQ.vocabulary.map((vocab, vIdx) => (
+                    <div key={vIdx} className="text-sm">
+                      <span className="font-semibold text-blue-600">
+                        {vocab.word}
+                      </span>
+                      <span className="text-slate-400 mx-1">:</span>
+                      <span className="text-slate-600">{vocab.meaning}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 3. Grammar Explanation */}
+            <div className="p-4 bg-orange-50/30">
+              <h4 className="flex items-center gap-2 font-bold text-orange-700 mb-2 text-sm uppercase tracking-wide">
+                <Lightbulb size={16} /> Giải Thích Ngữ Pháp
+              </h4>
+              <p className="text-slate-700 text-sm leading-6">
+                {currentQ.explanation}
+              </p>
+            </div>
           </div>
         )}
 
