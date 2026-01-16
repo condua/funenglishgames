@@ -249,7 +249,9 @@ export default function ToeicPartFive() {
       setQuestions(generatedQuestions);
     } catch (err) {
       console.error(err);
-      setError("Không thể tạo câu hỏi từ AI. Đang chuyển sang dữ liệu mẫu.");
+      setError(
+        "Không thể tạo câu hỏi từ AI. Vui lòng kiểm tra API Key hoặc kết nối mạng. Đang chuyển sang dữ liệu mẫu."
+      );
       setQuestions(MOCK_DATA);
     } finally {
       setLoading(false);
@@ -257,50 +259,80 @@ export default function ToeicPartFive() {
   };
 
   const generateQuestionsWithChatGPT = async (topicPrompt) => {
+    if (!topicPrompt) {
+      throw new Error("topicPrompt is undefined");
+    }
+
     const prompt = `
 Bạn là một giáo viên TOEIC chuyên nghiệp. 
 Hãy tạo 10 câu hỏi trắc nghiệm Part 5 (Incomplete Sentences) về chủ đề: "${topicPrompt}".
 Độ khó: Trung bình - Khó (sát đề thi thật).
 
-YÊU CẦU OUTPUT FORMAT JSON (KHÔNG CÓ MARKDOWN BLOCK):
+YÊU CẦU OUTPUT FORMAT JSON (TUYỆT ĐỐI KHÔNG DÙNG MARKDOWN BLOCK, CHỈ TRẢ VỀ JSON THUẦN):
 [
   {
     "question": "Câu hỏi tiếng Anh...",
     "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
     "correctOption": 0,
-    "explanation": "Giải thích ngữ pháp ngắn gọn súc tích bằng tiếng Việt.",
-    "translation": "Dịch nghĩa đầy đủ của câu hỏi sang tiếng Việt.",
+    "explanation": "Giải thích ngữ pháp ngắn gọn bằng tiếng Việt.",
+    "translation": "Dịch nghĩa đầy đủ sang tiếng Việt.",
     "vocabulary": [
       { "word": "từ tiếng anh", "ipa": "phiên âm ipa", "meaning": "nghĩa tiếng việt" }
     ]
   }
 ]
-Chỉ trả về JSON thuần túy, không có lời dẫn. Tạo đúng 10 câu hỏi chất lượng.
 `;
 
     try {
-      const response = await fetch("https://api.openai.com/v1/responses", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-5-nano",
-          input: prompt,
-        }),
-      });
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o", // Dùng model chính thức, nhanh và rẻ
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a helpful assistant that outputs strictly JSON.",
+              },
+              {
+                role: "user",
+                content: prompt,
+              },
+            ],
+            temperature: 0.7,
+          }),
+        }
+      );
 
       const data = await response.json();
-      if (data.error) throw new Error(data.error.message);
 
-      const cleanJson = data.output_text
-        .replace(/```json/g, "")
-        .replace(/```/g, "")
+      if (data.error) {
+        throw new Error(data.error.message || "API error from OpenAI");
+      }
+
+      // Lấy nội dung trả về từ cấu trúc Chat Completion
+      let content = data.choices?.[0]?.message?.content;
+
+      if (!content) {
+        throw new Error("AI did not return content");
+      }
+
+      // Làm sạch chuỗi JSON (đôi khi AI vẫn trả về ```json ... ```)
+      content = content
+        .replace(/^```json/g, "")
+        .replace(/^```/g, "")
+        .replace(/```$/g, "")
         .trim();
 
-      return JSON.parse(cleanJson);
+      return JSON.parse(content);
     } catch (e) {
+      console.error("Lỗi gọi API ChatGPT:", e);
       throw e;
     }
   };
@@ -479,7 +511,7 @@ Chỉ trả về JSON thuần túy, không có lời dẫn. Tạo đúng 10 câu
           })}
         </div>
 
-        {/* Explanation Section (Đã nâng cấp) */}
+        {/* Explanation Section */}
         {showExplanation && (
           <div className="bg-white rounded-xl border border-blue-100 overflow-hidden shadow-sm mb-20 animate-in fade-in slide-in-from-bottom-2">
             {/* 1. Translation */}
@@ -600,13 +632,13 @@ Chỉ trả về JSON thuần túy, không có lời dẫn. Tạo đúng 10 câu
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              API Key (Tùy chọn)
+              API Key (OpenAI / ChatGPT)
             </label>
             <input
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Dán API key của bạn vào đây..."
+              placeholder="sk-..."
               className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
             />
             <p className="text-xs text-slate-500 mt-2">
@@ -615,13 +647,13 @@ Chỉ trả về JSON thuần túy, không có lời dẫn. Tạo đúng 10 câu
               vô hạn.
             </p>
             <div className="mt-2 text-xs bg-slate-50 p-2 rounded text-slate-500">
-              Lấy key miễn phí tại:{" "}
+              Lấy key tại:{" "}
               <a
                 href="https://platform.openai.com/api-keys"
                 target="_blank"
                 className="text-blue-600 underline"
               >
-                Google AI Studio
+                OpenAI Platform
               </a>
             </div>
           </div>
