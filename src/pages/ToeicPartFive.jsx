@@ -243,7 +243,7 @@ export default function ToeicPartFive() {
     }
 
     try {
-      const generatedQuestions = await generateQuestionsWithGemini(
+      const generatedQuestions = await generateQuestionsWithChatGPT(
         topic.prompt
       );
       setQuestions(generatedQuestions);
@@ -256,54 +256,49 @@ export default function ToeicPartFive() {
     }
   };
 
-  const generateQuestionsWithGemini = async (topicPrompt) => {
-    // Prompt đã được nâng cấp để yêu cầu translation và vocabulary
+  const generateQuestionsWithChatGPT = async (topicPrompt) => {
     const prompt = `
-      Bạn là một giáo viên TOEIC chuyên nghiệp. 
-      Hãy tạo 10 câu hỏi trắc nghiệm Part 5 (Incomplete Sentences) về chủ đề: "${topicPrompt}".
-      Độ khó: Trung bình - Khó (sát đề thi thật).
-      
-      YÊU CẦU OUTPUT FORMAT JSON (KHÔNG CÓ MARKDOWN BLOCK):
-      [
-        {
-          "question": "Câu hỏi tiếng Anh...",
-          "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
-          "correctOption": 0,
-          "explanation": "Giải thích ngữ pháp ngắn gọn súc tích bằng tiếng Việt.",
-          "translation": "Dịch nghĩa đầy đủ của câu hỏi sang tiếng Việt.",
-          "vocabulary": [
-            { "word": "từ tiếng anh","ipa":"phiên âm ipa của từ", "meaning": "nghĩa tiếng việt ngắn gọn" }
-          ]
-        }
-      ]
-      Chỉ trả về JSON thuần túy, không có lời dẫn. Tạo đúng 10 câu hỏi chất lượng.
-    `;
+Bạn là một giáo viên TOEIC chuyên nghiệp. 
+Hãy tạo 10 câu hỏi trắc nghiệm Part 5 (Incomplete Sentences) về chủ đề: "${topicPrompt}".
+Độ khó: Trung bình - Khó (sát đề thi thật).
+
+YÊU CẦU OUTPUT FORMAT JSON (KHÔNG CÓ MARKDOWN BLOCK):
+[
+  {
+    "question": "Câu hỏi tiếng Anh...",
+    "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
+    "correctOption": 0,
+    "explanation": "Giải thích ngữ pháp ngắn gọn súc tích bằng tiếng Việt.",
+    "translation": "Dịch nghĩa đầy đủ của câu hỏi sang tiếng Việt.",
+    "vocabulary": [
+      { "word": "từ tiếng anh", "ipa": "phiên âm ipa", "meaning": "nghĩa tiếng việt" }
+    ]
+  }
+]
+Chỉ trả về JSON thuần túy, không có lời dẫn. Tạo đúng 10 câu hỏi chất lượng.
+`;
 
     try {
-      // Sử dụng model mới nhất để tránh lỗi 404
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-          }),
-        }
-      );
+      const response = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-5-nano",
+          input: prompt,
+        }),
+      });
 
       const data = await response.json();
+      if (data.error) throw new Error(data.error.message);
 
-      if (data.error) {
-        throw new Error(data.error.message);
-      }
-
-      const text = data.candidates[0].content.parts[0].text;
-      // Clean up markdown if Gemini adds it accidentally
-      const cleanJson = text
+      const cleanJson = data.output_text
         .replace(/```json/g, "")
         .replace(/```/g, "")
         .trim();
+
       return JSON.parse(cleanJson);
     } catch (e) {
       throw e;
@@ -338,8 +333,8 @@ export default function ToeicPartFive() {
           TOEIC Master AI
         </h1>
         <p className="mt-2 text-blue-100 text-sm">
-          Hệ thống ôn luyện Part 5 chuyên sâu với Gemini AI. Chọn chủ đề bên
-          dưới để bắt đầu.
+          Hệ thống ôn luyện Part 5 chuyên sâu với AI. Chọn chủ đề bên dưới để
+          bắt đầu.
         </p>
         <div className="mt-4 flex gap-2">
           <button
@@ -605,7 +600,7 @@ export default function ToeicPartFive() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              Gemini API Key (Tùy chọn)
+              API Key (Tùy chọn)
             </label>
             <input
               type="password"
@@ -622,7 +617,7 @@ export default function ToeicPartFive() {
             <div className="mt-2 text-xs bg-slate-50 p-2 rounded text-slate-500">
               Lấy key miễn phí tại:{" "}
               <a
-                href="https://aistudio.google.com/app/apikey"
+                href="https://platform.openai.com/api-keys"
                 target="_blank"
                 className="text-blue-600 underline"
               >
