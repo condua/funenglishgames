@@ -272,11 +272,11 @@ export default function ToeicPartFive() {
           "explanation": "Giải thích ngữ pháp ngắn gọn súc tích bằng tiếng Việt.",
           "translation": "Dịch nghĩa đầy đủ của câu hỏi sang tiếng Việt.",
           "vocabulary": [
-            { "word": "từ tiếng anh", "meaning": "nghĩa tiếng việt ngắn gọn" }
+            { "word": "từ tiếng anh","ipa":"phiên âm ipa của từ", "meaning": "nghĩa tiếng việt ngắn gọn" }
           ]
         }
       ]
-      Chỉ trả về JSON thuần túy, không có lời dẫn. Tạo đúng 5 câu hỏi chất lượng.
+      Chỉ trả về JSON thuần túy, không có lời dẫn. Tạo đúng 10 câu hỏi chất lượng.
     `;
 
     try {
@@ -505,7 +505,10 @@ export default function ToeicPartFive() {
                   {currentQ.vocabulary.map((vocab, vIdx) => (
                     <div key={vIdx} className="text-sm">
                       <span className="font-semibold text-blue-600">
-                        {vocab.word}
+                        {vocab.word}{" "}
+                        {vocab.ipa && (
+                          <span className=" text-slate-400">{vocab.ipa}</span>
+                        )}
                       </span>
                       <span className="text-slate-400 mx-1">:</span>
                       <span className="text-slate-600">{vocab.meaning}</span>
