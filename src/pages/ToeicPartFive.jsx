@@ -204,7 +204,7 @@ const MOCK_DATA = [
 ];
 const VITE_OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY || "";
 export default function ToeicPartFive() {
-  // --- STATE ---
+  // --- STATE ----
   const [apiKey, setApiKey] = useState(VITE_OPENAI_API_KEY || ""); // Lấy từ biến môi trường nếu có
   const [showSettings, setShowSettings] = useState(false);
   const [view, setView] = useState("home"); // 'home', 'quiz', 'result'
