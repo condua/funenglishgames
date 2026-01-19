@@ -30,6 +30,7 @@ import EnglishAIHomePage from "./pages/EnglishAI/EnglishAIHomePage";
 import ProgrammingAI from "./pages/ProgrammingAI";
 import TextToSpeech from "./pages/TextToSpeech";
 import ToeicPartFive from "./pages/ToeicPartFive";
+import ToeicFlashcards from "./pages/VocabularyToeic";
 // import FlashcardGame from "./pages/FlashcardGame" ';
 function App() {
   const [count, setCount] = useState(0);
@@ -72,6 +73,7 @@ function App() {
         <Route path="/programming-ai" element={<ProgrammingAI />} />
         <Route path="/text-to-speech" element={<TextToSpeech />} />
         <Route path="/toeic-part-five" element={<ToeicPartFive />} />
+        <Route path="/toeic-flashcards" element={<ToeicFlashcards />} />
       </Routes>
     </BrowserRouter>
   );
