@@ -1,5 +1,5 @@
 // src/api/aiService.js adadas
-
+// get api_key from env
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 // Nếu model là dòng o1-preview hoặc o1-mini, hãy đổi tên cho đúng.
 // Hiện tại mình giữ nguyên biến MODEL của bạn để bạn tự config.
