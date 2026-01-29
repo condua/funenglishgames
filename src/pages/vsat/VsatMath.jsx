@@ -10,7 +10,7 @@ import {
   Pin,
   Calculator,
   ImageIcon,
-  ChevronDown, // Thêm icon mũi tên cho dropdown
+  ChevronDown,
 } from "lucide-react";
 
 // --- COMPONENT HIỂN THỊ CÔNG THỨC TOÁN ---
@@ -21,7 +21,6 @@ const MathRenderer = ({ content, className = "", block = false }) => {
     const el = containerRef.current;
     if (!el || !content) return;
 
-    // Chuyển đổi format để MathJax hiểu
     const processedContent = content
       .replace(/\$\$([^$]+)\$\$/g, "\\[$1\\]")
       .replace(/\$([^$]+)\$/g, "\\($1\\)");
@@ -54,15 +53,17 @@ const MathRenderer = ({ content, className = "", block = false }) => {
   }, [content]);
 
   const Tag = block ? "div" : "span";
+  // Sửa lỗi: Loại bỏ overflow-x-auto mặc định để tránh thanh cuộn thừa.
+  // Chỉ khi nào block=true (công thức lớn) mới có thể cần cuộn.
   return (
     <Tag
       ref={containerRef}
-      className={`math-content ${className} ${block ? "text-center my-3 block" : "inline-block"}`}
+      className={`math-content ${className} ${block ? "text-center my-3 block overflow-x-auto max-w-full no-scrollbar" : "inline-block break-words"}`}
     />
   );
 };
 
-// --- COMPONENT DROPDOWN TÙY CHỈNH (Hỗ trợ MathJax) ---
+// --- COMPONENT DROPDOWN TÙY CHỈNH ---
 const CustomDropdown = ({
   options,
   value,
@@ -74,7 +75,6 @@ const CustomDropdown = ({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Đóng dropdown khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -87,24 +87,19 @@ const CustomDropdown = ({
 
   const handleSelect = (optFullString) => {
     if (disabled) return;
-    // Tách lấy ký tự A, B, C... (ví dụ "A. y' = ..." -> "A")
     const optValue = optFullString.split(".")[0];
     onChange(optValue);
     setIsOpen(false);
   };
 
-  // Tìm text đầy đủ của lựa chọn hiện tại để hiển thị
   const selectedOptionText = options.find((opt) => opt.startsWith(value + "."));
 
-  // Styles
   const baseBorder = darkMode ? "border-slate-600" : "border-gray-300";
   const bgClass = darkMode ? "bg-slate-700" : "bg-gray-50";
   const textClass = darkMode ? "text-white" : "text-gray-900";
-  const hoverClass = darkMode ? "hover:bg-slate-600" : "hover:bg-gray-100";
 
   return (
     <div className="relative w-full" ref={dropdownRef}>
-      {/* Nút kích hoạt Dropdown */}
       <button
         type="button"
         disabled={disabled}
@@ -113,7 +108,6 @@ const CustomDropdown = ({
       >
         <div className="flex-1 mr-2 truncate">
           {selectedOptionText ? (
-            // Hiển thị MathJax cho giá trị đã chọn
             <MathRenderer content={selectedOptionText} />
           ) : (
             <span className="opacity-50">{placeholder}</span>
@@ -125,10 +119,9 @@ const CustomDropdown = ({
         />
       </button>
 
-      {/* Danh sách xổ xuống */}
       {isOpen && (
         <div
-          className={`absolute z-50 w-full mt-1 rounded-lg shadow-xl max-h-80 overflow-y-auto border animate-in fade-in zoom-in-95 duration-100 ${darkMode ? "bg-slate-800 border-slate-600" : "bg-white border-gray-200"}`}
+          className={`absolute z-50 w-full mt-1 rounded-lg shadow-xl max-h-60 overflow-y-auto border animate-in fade-in zoom-in-95 duration-100 ${darkMode ? "bg-slate-800 border-slate-600" : "bg-white border-gray-200"}`}
         >
           {options.map((opt, idx) => (
             <div
@@ -136,7 +129,6 @@ const CustomDropdown = ({
               onClick={() => handleSelect(opt)}
               className={`p-3 text-sm cursor-pointer border-b last:border-b-0 transition-colors flex items-center ${darkMode ? "border-slate-700 hover:bg-slate-700 text-gray-200" : "border-gray-50 hover:bg-indigo-50 text-gray-800"}`}
             >
-              {/* Hiển thị MathJax cho từng option trong list */}
               <MathRenderer content={opt} />
             </div>
           ))}
@@ -146,13 +138,12 @@ const CustomDropdown = ({
   );
 };
 
-// --- DỮ LIỆU BÀI THI TOÁN (CẤU TRÚC MỚI) ---
+// --- DỮ LIỆU BÀI THI ---
 const testData = {
   title: "ĐỀ THI MINH HỌA - ĐÁNH GIÁ ĐẦU VÀO ĐẠI HỌC (VSAT) 2025",
   subject: "Toán học",
   duration: 90,
   parts: [
-    // PART 1: ĐÚNG / SAI (Câu 1 - 9)
     {
       part: 1,
       title: "PHẦN I. TRẮC NGHIỆM ĐÚNG SAI",
@@ -268,7 +259,6 @@ const testData = {
         },
       ],
     },
-    // PART 2: TRẮC NGHIỆM 4 LỰA CHỌN (Câu 10 - 15)
     {
       part: 2,
       title: "PHẦN II. TRẮC NGHIỆM NHIỀU LỰA CHỌN",
@@ -334,7 +324,6 @@ const testData = {
         },
       ],
     },
-    // PART 3: GHÉP NỐI (Câu 16 - 20)
     {
       part: 3,
       title: "PHẦN III. TRẮC NGHIỆM GHÉP NỐI",
@@ -439,7 +428,6 @@ const testData = {
         },
       ],
     },
-    // PART 4: TRẢ LỜI NGẮN (Câu 21 - 25)
     {
       part: 4,
       title: "PHẦN IV. CÂU HỎI MỞ TRẢ LỜI NGẮN",
@@ -498,7 +486,6 @@ export default function VsatMath() {
   const [darkMode, setDarkMode] = useState(false);
   const timerRef = useRef(null);
 
-  // Load MathJax
   useEffect(() => {
     if (!document.getElementById("mathjax-script")) {
       const script = document.createElement("script");
@@ -524,12 +511,11 @@ export default function VsatMath() {
     }
   }, []);
 
-  // Tính tổng điểm giả định
   useEffect(() => {
     let total = 0;
     testData.parts.forEach((part) => {
       part.questions.forEach(() => {
-        total += 1; // Giả định mỗi câu 1 điểm cho đơn giản
+        total += 1;
       });
     });
     setTotalPossibleScore(total);
@@ -566,10 +552,8 @@ export default function VsatMath() {
   const handleSubmit = () => {
     if (submitted) return;
     let currentScore = 0;
-    // Logic chấm điểm đơn giản
     testData.parts.forEach((part) => {
       part.questions.forEach((q) => {
-        // Logic chấm điểm chi tiết sẽ phức tạp hơn, ở đây demo tăng điểm nếu có tương tác
         if (answers[q.id]) currentScore += 1;
       });
     });
@@ -613,14 +597,14 @@ export default function VsatMath() {
               />
             </div>
             <div className="hidden sm:block">
-              <h1 className="font-bold text-lg leading-tight">
+              <h1 className="font-bold text-base sm:text-lg leading-tight">
                 VSAT MATH 2025
               </h1>
               <span className="text-xs opacity-70">Toán Học • 90 Phút</span>
             </div>
           </div>
           <div
-            className={`flex items-center px-4 py-2 rounded-full font-mono font-bold text-xl tracking-wider shadow-inner ${timeLeft < 300 ? "bg-red-100 text-red-600 animate-pulse border border-red-200" : darkMode ? "bg-slate-950 text-emerald-400 border border-slate-700" : "bg-slate-100 text-indigo-600 border border-slate-200"}`}
+            className={`flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-mono font-bold text-lg sm:text-xl tracking-wider shadow-inner ${timeLeft < 300 ? "bg-red-100 text-red-600 animate-pulse border border-red-200" : darkMode ? "bg-slate-950 text-emerald-400 border border-slate-700" : "bg-slate-100 text-indigo-600 border border-slate-200"}`}
           >
             {formatTime(timeLeft)}
           </div>
@@ -628,13 +612,13 @@ export default function VsatMath() {
             {!submitted ? (
               <button
                 onClick={handleSubmit}
-                className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-full shadow-lg transform active:scale-95 transition-all font-bold text-sm"
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-full shadow-lg transform active:scale-95 transition-all font-bold text-sm"
               >
                 <Send size={16} /> Nộp bài
               </button>
             ) : (
               <div
-                className={`font-bold text-emerald-500 px-3 py-1 rounded-full border border-emerald-200 ${darkMode ? "bg-emerald-900/30" : "bg-emerald-100"}`}
+                className={`font-bold text-sm sm:text-base text-emerald-500 px-2 sm:px-3 py-1 rounded-full border border-emerald-200 ${darkMode ? "bg-emerald-900/30" : "bg-emerald-100"}`}
               >
                 {score}/{totalPossibleScore}
               </div>
@@ -649,20 +633,19 @@ export default function VsatMath() {
         </div>
       </header>
 
-      <div className="container mx-auto p-4 sm:p-6 pb-32">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">
+      <div className="container mx-auto p-3 sm:p-6 pb-32">
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">
             {testData.title}
           </h2>
-          <p className="opacity-70 mt-2 text-sm sm:text-base">
+          <p className="opacity-70 mt-2 text-xs sm:text-base">
             Môn thi: {testData.subject}
           </p>
         </div>
 
         {/* QUESTIONS LIST */}
-        <main className="space-y-10 w-full mx-auto max-w-5xl">
+        <main className="space-y-6 sm:space-y-10 w-full mx-auto max-w-5xl">
           {testData.parts.map((part, partIndex) => {
-            // Style riêng cho từng phần để dễ phân biệt
             let colorClass = "";
             let descColor = "";
 
@@ -685,7 +668,7 @@ export default function VsatMath() {
                   : "bg-cyan-100/50 border-cyan-500 text-cyan-800";
                 descColor = darkMode ? "text-cyan-300" : "text-cyan-700";
                 break;
-              default: // multiple-choice
+              default:
                 colorClass = darkMode
                   ? "bg-indigo-900/30 border-indigo-500 text-indigo-200"
                   : "bg-indigo-100/50 border-indigo-500 text-indigo-800";
@@ -693,15 +676,17 @@ export default function VsatMath() {
             }
 
             return (
-              <div key={partIndex} className="space-y-6">
+              <div key={partIndex} className="space-y-4 sm:space-y-6">
                 {/* Part Header */}
                 <div
-                  className={`${colorClass} p-5 rounded-xl border-l-4 shadow-sm`}
+                  className={`${colorClass} p-4 sm:p-5 rounded-xl border-l-4 shadow-sm`}
                 >
-                  <h3 className="font-bold text-xl uppercase tracking-wide">
+                  <h3 className="font-bold text-lg sm:text-xl uppercase tracking-wide">
                     {part.title}
                   </h3>
-                  <p className={`${descColor} text-base mt-2 font-medium`}>
+                  <p
+                    className={`${descColor} text-sm sm:text-base mt-2 font-medium`}
+                  >
                     {part.description}
                   </p>
                 </div>
@@ -715,7 +700,7 @@ export default function VsatMath() {
                       <img
                         src={q.image}
                         alt={`Hình câu ${displayNum}`}
-                        className={`max-h-64 object-contain rounded-lg border shadow-sm ${darkMode ? "border-slate-600" : "border-gray-200"}`}
+                        className={`max-h-48 sm:max-h-64 object-contain rounded-lg border shadow-sm ${darkMode ? "border-slate-600" : "border-gray-200"}`}
                       />
                     </div>
                   ) : null;
@@ -728,10 +713,10 @@ export default function VsatMath() {
                     >
                       {/* Question Header */}
                       <div
-                        className={`flex justify-between items-center p-4 border-b rounded-t-xl ${darkMode ? "border-slate-700 bg-slate-800/50" : "border-gray-100 bg-gray-50/50"}`}
+                        className={`flex justify-between items-center p-3 sm:p-4 border-b rounded-t-xl ${darkMode ? "border-slate-700 bg-slate-800/50" : "border-gray-100 bg-gray-50/50"}`}
                       >
                         <h4
-                          className={`font-bold text-lg ${darkMode ? "text-gray-100" : "text-gray-800"}`}
+                          className={`font-bold text-base sm:text-lg ${darkMode ? "text-gray-100" : "text-gray-800"}`}
                         >
                           Câu {displayNum}
                         </h4>
@@ -744,23 +729,23 @@ export default function VsatMath() {
                           }
                         >
                           <Pin
-                            size={20}
+                            size={18}
                             fill={flagged[q.id] ? "currentColor" : "none"}
                           />
                         </button>
                       </div>
 
                       {/* Question Body */}
-                      <div className="p-5">
+                      <div className="p-3 sm:p-5">
                         <div
-                          className={`text-base leading-relaxed font-medium ${darkMode ? "text-gray-200" : "text-gray-800"}`}
+                          className={`text-sm sm:text-base leading-relaxed font-medium ${darkMode ? "text-gray-200" : "text-gray-800"}`}
                         >
                           <MathRenderer content={q.text} />
                         </div>
                         {image}
                         {q.mathText && (
                           <div
-                            className={`my-4 p-4 rounded-lg text-center overflow-x-auto ${darkMode ? "bg-slate-900/50" : "bg-gray-50"}`}
+                            className={`my-4 p-3 sm:p-4 rounded-lg text-center overflow-x-auto ${darkMode ? "bg-slate-900/50" : "bg-gray-50"}`}
                           >
                             <MathRenderer
                               content={`$$${q.mathText}$$`}
@@ -772,14 +757,14 @@ export default function VsatMath() {
 
                       {/* Interaction Area (Footer) */}
                       <div
-                        className={`p-5 border-t rounded-b-xl ${darkMode ? "bg-slate-900/30 border-slate-700" : "bg-gray-50 border-gray-100"}`}
+                        className={`p-3 sm:p-5 border-t rounded-b-xl ${darkMode ? "bg-slate-900/30 border-slate-700" : "bg-gray-50 border-gray-100"}`}
                       >
                         {/* 1. TRẮC NGHIỆM ĐÚNG SAI (PART 1) */}
                         {part.type === "true-false" && (
                           <div
-                            className={`overflow-hidden rounded-lg border ${darkMode ? "border-slate-600 bg-slate-800" : "border-gray-200 bg-white"}`}
+                            className={`overflow-x-auto rounded-lg border ${darkMode ? "border-slate-600 bg-slate-800" : "border-gray-200 bg-white"}`}
                           >
-                            <table className="w-full text-sm">
+                            <table className="w-full text-sm min-w-[600px] sm:min-w-0">
                               <thead
                                 className={`uppercase text-xs font-bold ${darkMode ? "bg-slate-700 text-gray-200" : "bg-gray-100 text-gray-700"}`}
                               >
@@ -788,12 +773,12 @@ export default function VsatMath() {
                                     Nội dung
                                   </th>
                                   <th
-                                    className={`p-3 w-20 text-center border-l ${darkMode ? "border-slate-600" : "border-gray-200"}`}
+                                    className={`p-3 w-16 sm:w-20 text-center border-l ${darkMode ? "border-slate-600" : "border-gray-200"}`}
                                   >
                                     Đúng
                                   </th>
                                   <th
-                                    className={`p-3 w-20 text-center border-l ${darkMode ? "border-slate-600" : "border-gray-200"}`}
+                                    className={`p-3 w-16 sm:w-20 text-center border-l ${darkMode ? "border-slate-600" : "border-gray-200"}`}
                                   >
                                     Sai
                                   </th>
@@ -808,7 +793,7 @@ export default function VsatMath() {
                                   const rowClass = submitted
                                     ? isCorrect
                                       ? darkMode
-                                        ? "bg-emerald-900/20"
+                                        ? "bg-green-700/20"
                                         : "bg-emerald-50"
                                       : darkMode
                                         ? "bg-rose-900/20"
@@ -823,7 +808,7 @@ export default function VsatMath() {
                                         <span
                                           className={`font-bold mr-2 ${darkMode ? "text-indigo-400" : "text-indigo-600"}`}
                                         >
-                                          {st.id})
+                                          {st.id}.
                                         </span>
                                         <MathRenderer content={st.text} />
                                       </td>
@@ -863,7 +848,7 @@ export default function VsatMath() {
 
                         {/* 2. TRẮC NGHIỆM 4 LỰA CHỌN (PART 2) */}
                         {part.type === "multiple-choice" && (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                             {q.options.map((opt, idx) => {
                               const isSelected = answers[q.id]?.[0] === opt;
                               const isCorrect = q.answer === opt;
@@ -894,14 +879,14 @@ export default function VsatMath() {
                                   onClick={() =>
                                     handleAnswerChange(q.id, 0, opt)
                                   }
-                                  className={`p-4 text-left rounded-lg border transition-all flex items-center gap-4 ${bgClass} cursor-pointer`}
+                                  className={`p-3 sm:p-4 text-left rounded-lg border transition-all flex items-center gap-3 sm:gap-4 ${bgClass} cursor-pointer`}
                                 >
                                   <div
-                                    className={`w-8 h-8 rounded-full border-2 flex flex-shrink-0 items-center justify-center text-sm font-bold ${isSelected || (submitted && isCorrect) ? "border-current" : "border-gray-300 text-gray-400"}`}
+                                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 flex flex-shrink-0 items-center justify-center text-xs sm:text-sm font-bold ${isSelected || (submitted && isCorrect) ? "border-current" : "border-gray-300 text-gray-400"}`}
                                   >
                                     {String.fromCharCode(65 + idx)}
                                   </div>
-                                  <div className="flex-1 text-base">
+                                  <div className="flex-1 text-sm sm:text-base">
                                     <MathRenderer content={opt} />
                                   </div>
                                 </button>
@@ -910,13 +895,12 @@ export default function VsatMath() {
                           </div>
                         )}
 
-                        {/* 3. TRẮC NGHIỆM GHÉP NỐI (PART 3) - NEW UI WITH CUSTOM DROPDOWN */}
+                        {/* 3. TRẮC NGHIỆM GHÉP NỐI (PART 3) */}
                         {part.type === "matching" && (
                           <div className="space-y-3">
                             {q.items.map((item, idx) => {
                               const currentVal = answers[q.id]?.[idx] || "";
-                              // Logic hiển thị đúng sai sau khi nộp
-                              const correctVal = q.answer[idx]; // e.g., "A", "B"
+                              const correctVal = q.answer[idx];
                               let borderClass = darkMode
                                 ? "border-slate-600"
                                 : "border-gray-300";
@@ -934,7 +918,7 @@ export default function VsatMath() {
                               return (
                                 <div
                                   key={idx}
-                                  className={`flex flex-col sm:flex-row sm:items-center gap-4 p-3 rounded-lg border shadow-sm ${darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-gray-200"}`}
+                                  className={`flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-3 rounded-lg border shadow-sm ${darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-gray-200"}`}
                                 >
                                   {/* Left Content */}
                                   <div className="flex-1 flex gap-3">
@@ -950,8 +934,8 @@ export default function VsatMath() {
                                     </div>
                                   </div>
 
-                                  {/* Right Dropdown (CustomDropdown) */}
-                                  <div className="sm:w-1/3">
+                                  {/* Right Dropdown */}
+                                  <div className="w-full sm:w-1/3">
                                     <CustomDropdown
                                       options={q.options}
                                       value={currentVal}
@@ -971,7 +955,6 @@ export default function VsatMath() {
                               );
                             })}
 
-                            {/* Hiển thị list Options đầy đủ phía dưới để tham chiếu (backup) */}
                             <div
                               className={`mt-4 p-4 rounded-lg border ${darkMode ? "bg-purple-900/20 border-purple-800" : "bg-purple-50 border-purple-100"}`}
                             >
@@ -993,9 +976,9 @@ export default function VsatMath() {
 
                         {/* 4. TRẢ LỜI NGẮN (PART 4) */}
                         {part.type === "short-answer" && (
-                          <div className="flex flex-col sm:flex-row shadow-sm rounded-md overflow-hidden">
+                          <div className="flex flex-col sm:flex-row shadow-sm rounded-md overflow-hidden border sm:border-0 border-gray-300 dark:border-slate-500">
                             <div
-                              className={`px-5 py-3 border-b sm:border-b-0 sm:border-r flex items-center justify-center sm:justify-start min-w-[100px] ${darkMode ? "bg-slate-700 border-slate-500" : "bg-gray-100 border-gray-300"}`}
+                              className={`px-4 sm:px-5 py-2 sm:py-3 border-b sm:border-b-0 sm:border-r flex items-center justify-start sm:min-w-[100px] ${darkMode ? "bg-slate-700 border-slate-500" : "bg-gray-100 border-gray-300"}`}
                             >
                               <span
                                 className={`font-bold text-sm uppercase ${darkMode ? "text-gray-300" : "text-gray-700"}`}
@@ -1012,13 +995,13 @@ export default function VsatMath() {
                                   handleAnswerChange(q.id, 0, e.target.value)
                                 }
                                 placeholder="Nhập kết quả (ví dụ: 1.5)"
-                                className={`w-full h-full p-3 border-none focus:ring-2 focus:ring-inset focus:ring-cyan-500 transition-all font-mono text-lg ${darkMode ? "bg-slate-800 placeholder-slate-600" : "bg-white placeholder-gray-400"}`}
+                                className={`w-full h-full p-3 border-none focus:ring-2 focus:ring-inset focus:ring-cyan-500 transition-all font-mono text-base sm:text-lg ${darkMode ? "bg-slate-800 placeholder-slate-600" : "bg-white placeholder-gray-400"}`}
                               />
                               {submitted && (
                                 <div
                                   className={`absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 px-2 ${darkMode ? "bg-slate-800" : "bg-white"}`}
                                 >
-                                  <span className="text-xs font-bold text-gray-500">
+                                  <span className="text-xs font-bold text-gray-500 hidden sm:inline">
                                     Đáp án:
                                   </span>
                                   <span
@@ -1046,18 +1029,27 @@ export default function VsatMath() {
         className={`fixed bottom-0 left-0 right-0 z-40 border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] transition-transform duration-300 ${darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-indigo-100"}`}
       >
         <div className="container mx-auto">
-          <div className="flex sm:justify-center gap-3 p-3 overflow-x-auto no-scrollbar scroll-smooth">
+          <div className="flex gap-2 p-3 overflow-x-auto no-scrollbar scroll-smooth justify-start sm:justify-center">
             {testData.parts
               .flatMap((p) => p.questions)
               .map((q) => (
                 <button
                   key={q.id}
                   onClick={() => scrollToQuestion(q.id)}
-                  className={`flex-shrink-0 w-9 h-9 rounded-lg text-xs font-bold border transition-all shadow-sm ${getNavBubbleClass(q)}`}
+                  className={`flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-lg text-xs font-bold border transition-all shadow-sm ${getNavBubbleClass(q)}`}
                 >
                   {q.id.replace("q", "")}
                 </button>
               ))}
+            {/* Thêm nút nộp bài mobile */}
+            {/* {!submitted && (
+              <button
+                onClick={handleSubmit}
+                className="sm:hidden flex-shrink-0 px-4 h-8 rounded-lg bg-indigo-600 text-white text-xs font-bold whitespace-nowrap ml-auto"
+              >
+                Nộp bài
+              </button>
+            )} */}
           </div>
         </div>
       </div>
