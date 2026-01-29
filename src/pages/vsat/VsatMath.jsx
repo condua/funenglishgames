@@ -575,7 +575,7 @@ export default function VsatMath() {
     if (isFlagged)
       return "bg-yellow-400 text-yellow-900 ring-2 ring-yellow-200";
     if (hasAnswer) return "bg-blue-500 text-white";
-    return `${darkMode ? "bg-slate-700 text-gray-50 dark:text-gray-300" : "bg-gray-200 text-gray-600"}`;
+    return `${darkMode ? "bg-slate-700 text-gray-100 dark:text-gray-300" : "bg-gray-200 text-gray-600"}`;
   };
 
   return (
