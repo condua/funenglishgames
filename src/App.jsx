@@ -31,6 +31,7 @@ import ProgrammingAI from "./pages/ProgrammingAI";
 import TextToSpeech from "./pages/TextToSpeech";
 import ToeicPartFive from "./pages/ToeicPartFive";
 import ToeicFlashcards from "./pages/VocabularyToeic";
+import VsatMath from "./pages/vsat/VsatMath";
 // import FlashcardGame from "./pages/FlashcardGame" ';
 function App() {
   const [count, setCount] = useState(0);
@@ -65,6 +66,7 @@ function App() {
         <Route path="/dsa-review" element={<DSAReviewPage />} />
         <Route path="/dsa-review-new" element={<ReviewPage />} />
         <Route path="/vsat-test" element={<VsatTestPage />} />
+        <Route path="/vsat-math" element={<VsatMath />} />
         <Route path="/vsat-creator" element={<VsatCreatorPage />} />
         <Route path="/women-day-rose" element={<WomenDayRosePage />} />
         <Route path="/magic-love-camera" element={<MagicLoveCameraCanvas />} />
