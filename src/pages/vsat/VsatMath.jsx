@@ -164,7 +164,7 @@ const testData = {
           id: "q1",
           text: "Cho hàm số $y = f(x) = x^3 - 3x^2 + 2$.",
           image:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Graph_of_cubic_polynomial.svg/300px-Graph_of_cubic_polynomial.svg.png",
+            "https://res.cloudinary.com/dy9yts4fa/image/upload/v1769700202/Screenshot_2026-01-29_222224_me3qgn.png",
           statements: [
             {
               id: "1",
