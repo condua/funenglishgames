@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -31,10 +31,41 @@ import ProgrammingAI from "./pages/ProgrammingAI";
 import TextToSpeech from "./pages/TextToSpeech";
 import ToeicPartFive from "./pages/ToeicPartFive";
 import ToeicFlashcards from "./pages/VocabularyToeic";
-import VsatMath from "./pages/vsat/VsatMath";
+import ExamDashboard from "./components/vsat/pages/ExamDashboard";
+import ExamSession from "./components/vsat/pages/ExamSession";
+// import VsatMath from "./pages/vsat/VsatMath";
+// import VsatHome from "./components/vsat/VsatHome";
 // import FlashcardGame from "./pages/FlashcardGame" ';
 function App() {
-  const [count, setCount] = useState(0);
+  const [darkMode, setDarkMode] = useState(false);
+
+  // Load MathJax Script Global
+  useEffect(() => {
+    if (!document.getElementById("mathjax-script")) {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
+      script.async = true;
+      script.id = "mathjax-script";
+      document.head.appendChild(script);
+
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+          displayMath: [
+            ["$$", "$$"],
+            ["\\[", "\\]"],
+          ],
+        },
+        svg: { fontCache: "global" },
+        startup: { typeset: false },
+      };
+    }
+  }, []);
+
+  const toggleTheme = () => setDarkMode(!darkMode);
 
   return (
     <BrowserRouter>
@@ -66,7 +97,7 @@ function App() {
         <Route path="/dsa-review" element={<DSAReviewPage />} />
         <Route path="/dsa-review-new" element={<ReviewPage />} />
         <Route path="/vsat-test" element={<VsatTestPage />} />
-        <Route path="/vsat-math" element={<VsatMath />} />
+        {/* <Route path="/vsat-math" element={<VsatHome />} /> */}
         <Route path="/vsat-creator" element={<VsatCreatorPage />} />
         <Route path="/women-day-rose" element={<WomenDayRosePage />} />
         <Route path="/magic-love-camera" element={<MagicLoveCameraCanvas />} />
@@ -76,6 +107,18 @@ function App() {
         <Route path="/text-to-speech" element={<TextToSpeech />} />
         <Route path="/toeic-part-five" element={<ToeicPartFive />} />
         <Route path="/toeic-flashcards" element={<ToeicFlashcards />} />
+        <Route
+          path="/vsat-home"
+          element={
+            <ExamDashboard darkMode={darkMode} toggleTheme={toggleTheme} />
+          }
+        />
+        <Route
+          path="/exam/:id"
+          element={
+            <ExamSession darkMode={darkMode} toggleTheme={toggleTheme} />
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

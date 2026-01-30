@@ -1026,7 +1026,7 @@ export default function VsatMath() {
 
       {/* FOOTER NAV */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-40 border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] transition-transform duration-300 ${darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-indigo-100"}`}
+        className={`fixed w-full bottom-0 left-0 right-0 z-40 border-t shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] transition-transform duration-300 ${darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-indigo-100"}`}
       >
         <div className="container mx-auto">
           <div className="flex gap-2 p-3 overflow-x-auto no-scrollbar scroll-smooth justify-start sm:justify-center">
