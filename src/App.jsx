@@ -39,7 +39,7 @@ import ExamSession from "./components/vsat/pages/ExamSession";
 function App() {
   const [darkMode, setDarkMode] = useState(false);
 
-  // Load MathJax Script Global
+  // Load MathJax Script Global --
   useEffect(() => {
     if (!document.getElementById("mathjax-script")) {
       const script = document.createElement("script");
