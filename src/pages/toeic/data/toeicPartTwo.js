@@ -1785,4 +1785,922 @@ export const rawQuizData = [
     explanation:
       "Câu yêu cầu lịch sự (Could you pass). B là câu nói quen thuộc khi đưa đồ cho người khác (Của bạn đây).",
   },
+  {
+    q: "101. Where did you put the spare keys?",
+    ipa: "/wɛr dɪd ju pʊt ðə spɛr kiz/",
+    meaning: "Bạn đã cất chùm chìa khóa dự phòng ở đâu?",
+    options: [
+      "A. In the top drawer.",
+      "B. Yes, they are spare.",
+      "C. A pair of keys.",
+    ],
+    optionsMeaning: [
+      "A. Trong ngăn kéo trên cùng.",
+      "B. Vâng, chúng là đồ dự phòng.",
+      "C. Một cặp chìa khóa.",
+    ],
+    answer: "A. In the top drawer.",
+    explanation:
+      "Câu hỏi 'Where' cần địa điểm. A chỉ vị trí (ngăn kéo). B bẫy Yes/No. C bẫy lặp từ 'keys' và phát âm 'spare/pair'.",
+  },
+  {
+    q: "102. Where is the marketing seminar being held?",
+    ipa: "/wɛr ɪz ðə ˈmɑrkətɪŋ ˈsɛməˌnɑr ˈbiɪŋ hɛld/",
+    meaning: "Hội thảo tiếp thị đang được tổ chức ở đâu?",
+    options: [
+      "A. It starts at 9 AM.",
+      "B. At the downtown convention center.",
+      "C. The market is closed.",
+    ],
+    optionsMeaning: [
+      "A. Nó bắt đầu lúc 9 giờ sáng.",
+      "B. Tại trung tâm hội nghị thành phố.",
+      "C. Chợ đã đóng cửa.",
+    ],
+    answer: "B. At the downtown convention center.",
+    explanation:
+      "Câu hỏi 'Where'. B chỉ địa điểm. A trả lời cho 'When'. C bẫy nghĩa từ 'marketing/market'.",
+  },
+  {
+    q: "103. Where should I send this invoice?",
+    ipa: "/wɛr ʃʊd aɪ sɛnd ðɪs ˈɪnvɔɪs/",
+    meaning: "Tôi nên gửi hóa đơn này đến đâu?",
+    options: [
+      "A. His voice is very loud.",
+      "B. I sent an email.",
+      "C. To the accounting department.",
+    ],
+    optionsMeaning: [
+      "A. Giọng anh ấy rất to.",
+      "B. Tôi đã gửi một email.",
+      "C. Đến bộ phận kế toán.",
+    ],
+    answer: "C. To the accounting department.",
+    explanation:
+      "Câu hỏi 'Where' (gửi tới đâu). C chỉ nơi nhận. A bẫy phát âm 'invoice/voice'. B bẫy lặp từ 'send/sent'.",
+  },
+  {
+    q: "104. Where can I catch the bus to the city center?",
+    ipa: "/wɛr kæn aɪ kæʧ ðə bʌs tʊ ðə ˈsɪti ˈsɛntər/",
+    meaning: "Tôi có thể bắt xe buýt đến trung tâm thành phố ở đâu?",
+    options: [
+      "A. Right outside the hotel.",
+      "B. It costs two dollars.",
+      "C. He caught a cold.",
+    ],
+    optionsMeaning: [
+      "A. Ngay bên ngoài khách sạn.",
+      "B. Nó tốn hai đô la.",
+      "C. Anh ấy bị cảm lạnh.",
+    ],
+    answer: "A. Right outside the hotel.",
+    explanation:
+      "Câu hỏi 'Where'. A chỉ địa điểm đón xe. B trả lời 'How much'. C bẫy phát âm/nghĩa 'catch/caught'.",
+  },
+  {
+    q: "105. Where are the new brochures we printed?",
+    ipa: "/wɛr ɑr ðə nu broʊˈʃʊrz wi ˈprɪntəd/",
+    meaning: "Những cuốn sách quảng cáo mới chúng ta in ở đâu rồi?",
+    options: [
+      "A. A new printer.",
+      "B. I haven't seen them yet.",
+      "C. About 500 copies.",
+    ],
+    optionsMeaning: [
+      "A. Một cái máy in mới.",
+      "B. Tôi vẫn chưa nhìn thấy chúng.",
+      "C. Khoảng 500 bản.",
+    ],
+    answer: "B. I haven't seen them yet.",
+    explanation:
+      "Câu hỏi 'Where'. B là cách trả lời gián tiếp phổ biến (Tôi chưa thấy -> không biết ở đâu). A bẫy từ 'print/printer'. C trả lời 'How many'.",
+  },
+
+  // --- WHEN (106-110) ---
+  {
+    q: "106. When is the final report due?",
+    ipa: "/wɛn ɪz ðə ˈfaɪnəl rɪˈpɔrt du/",
+    meaning: "Khi nào đến hạn nộp báo cáo cuối cùng?",
+    options: [
+      "A. Next Friday at 5 PM.",
+      "B. It's a financial report.",
+      "C. Do it right now.",
+    ],
+    optionsMeaning: [
+      "A. 5 giờ chiều thứ Sáu tới.",
+      "B. Đó là một báo cáo tài chính.",
+      "C. Làm nó ngay bây giờ.",
+    ],
+    answer: "A. Next Friday at 5 PM.",
+    explanation:
+      "Câu hỏi 'When'. A chỉ thời điểm chính xác. B bẫy lặp từ 'report'. C bẫy phát âm 'due/do'.",
+  },
+  {
+    q: "107. When did the supplier call?",
+    ipa: "/wɛn dɪd ðə səˈplaɪər kɔl/",
+    meaning: "Nhà cung cấp đã gọi điện khi nào?",
+    options: [
+      "A. Just before lunch.",
+      "B. To order some parts.",
+      "C. Yes, he called.",
+    ],
+    optionsMeaning: [
+      "A. Ngay trước bữa trưa.",
+      "B. Để đặt một vài linh kiện.",
+      "C. Vâng, anh ấy đã gọi.",
+    ],
+    answer: "A. Just before lunch.",
+    explanation:
+      "Câu hỏi 'When' trong quá khứ. A chỉ thời gian đã qua. B trả lời 'Why'. C bẫy Yes/No.",
+  },
+  {
+    q: "108. When will the new software be installed?",
+    ipa: "/wɛn wɪl ðə nu ˈsɔfˌtwɛr bi ɪnˈstɔld/",
+    meaning: "Khi nào phần mềm mới sẽ được cài đặt?",
+    options: [
+      "A. It's too soft.",
+      "B. Sometime next week.",
+      "C. By the IT department.",
+    ],
+    optionsMeaning: [
+      "A. Nó quá mềm.",
+      "B. Một lúc nào đó vào tuần tới.",
+      "C. Bởi bộ phận IT.",
+    ],
+    answer: "B. Sometime next week.",
+    explanation:
+      "Câu hỏi 'When' cho tương lai. B chỉ thời gian dự kiến. A bẫy phát âm 'software/soft'. C trả lời 'Who'.",
+  },
+  {
+    q: "109. When does the supermarket close?",
+    ipa: "/wɛn dʌz ðə ˈsupərˌmɑrkɪt kloʊz/",
+    meaning: "Siêu thị đóng cửa lúc mấy giờ?",
+    options: [
+      "A. Very close to my house.",
+      "B. At 10 PM on weekdays.",
+      "C. I bought some groceries.",
+    ],
+    optionsMeaning: [
+      "A. Rất gần nhà tôi.",
+      "B. Lúc 10 giờ tối các ngày trong tuần.",
+      "C. Tôi đã mua một số đồ tạp hóa.",
+    ],
+    answer: "B. At 10 PM on weekdays.",
+    explanation:
+      "Câu hỏi 'When'. B chỉ giờ đóng cửa. A bẫy từ 'close' (đóng cửa/gần). C bẫy ngữ cảnh siêu thị.",
+  },
+  {
+    q: "110. When are you going to review my proposal?",
+    ipa: "/wɛn ɑr ju ˈgoʊɪŋ tʊ rɪˈvju maɪ prəˈpoʊzəl/",
+    meaning: "Khi nào bạn sẽ xem xét bản đề xuất của tôi?",
+    options: [
+      "A. It's a great review.",
+      "B. A wedding proposal.",
+      "C. I'll look at it tomorrow morning.",
+    ],
+    optionsMeaning: [
+      "A. Đó là một bài đánh giá tuyệt vời.",
+      "B. Một lời cầu hôn.",
+      "C. Tôi sẽ xem nó vào sáng mai.",
+    ],
+    answer: "C. I'll look at it tomorrow morning.",
+    explanation:
+      "Câu hỏi 'When'. C đưa ra mốc thời gian (sáng mai). A bẫy lặp từ 'review'. B bẫy nghĩa 'proposal' (đề xuất/cầu hôn).",
+  },
+
+  // --- WHO (111-115) ---
+  {
+    q: "111. Who is managing the new construction project?",
+    ipa: "/hu ɪz ˈmænəʤɪŋ ðə nu kənˈstrʌkʃən ˈprɑʤɛkt/",
+    meaning: "Ai đang quản lý dự án xây dựng mới?",
+    options: [
+      "A. The construction site.",
+      "B. Mr. Henderson is.",
+      "C. It will take six months.",
+    ],
+    optionsMeaning: [
+      "A. Công trường xây dựng.",
+      "B. Ông Henderson.",
+      "C. Nó sẽ mất sáu tháng.",
+    ],
+    answer: "B. Mr. Henderson is.",
+    explanation:
+      "Câu hỏi 'Who'. B nêu tên người cụ thể. A bẫy lặp từ 'construction'. C trả lời 'How long'.",
+  },
+  {
+    q: "112. Who approved this budget?",
+    ipa: "/hu əˈpruvd ðɪs ˈbʌʤət/",
+    meaning: "Ai đã phê duyệt ngân sách này?",
+    options: [
+      "A. The board of directors.",
+      "B. To save money.",
+      "C. I need to prove it.",
+    ],
+    optionsMeaning: [
+      "A. Ban giám đốc.",
+      "B. Để tiết kiệm tiền.",
+      "C. Tôi cần chứng minh nó.",
+    ],
+    answer: "A. The board of directors.",
+    explanation:
+      "Câu hỏi 'Who'. A chỉ bộ phận/người phê duyệt. B trả lời 'Why'. C bẫy phát âm 'approved/prove'.",
+  },
+  {
+    q: "113. Who should I talk to about a parking pass?",
+    ipa: "/hu ʃʊd aɪ tɔk tʊ əˈbaʊt ə ˈpɑrkɪŋ pæs/",
+    meaning: "Tôi nên nói chuyện với ai về thẻ đỗ xe?",
+    options: [
+      "A. I passed the test.",
+      "B. The receptionist can help you.",
+      "C. Park in the back.",
+    ],
+    optionsMeaning: [
+      "A. Tôi đã đậu kỳ thi.",
+      "B. Nhân viên lễ tân có thể giúp bạn.",
+      "C. Đỗ xe ở phía sau.",
+    ],
+    answer: "B. The receptionist can help you.",
+    explanation:
+      "Câu hỏi 'Who'. B chỉ người có thể giúp (nhân viên lễ tân). A bẫy từ 'pass'. C bẫy lặp từ 'park'.",
+  },
+  {
+    q: "114. Who is the keynote speaker for tomorrow?",
+    ipa: "/hu ɪz ðə ˈkiˌnoʊt ˈspikər fɔr təˈmɑˌroʊ/",
+    meaning: "Ai là diễn giả chính cho ngày mai?",
+    options: [
+      "A. A famous author from New York.",
+      "B. Speak louder, please.",
+      "C. I forgot my keys.",
+    ],
+    optionsMeaning: [
+      "A. Một tác giả nổi tiếng từ New York.",
+      "B. Vui lòng nói to hơn.",
+      "C. Tôi đã quên chìa khóa của mình.",
+    ],
+    answer: "A. A famous author from New York.",
+    explanation:
+      "Câu hỏi 'Who'. A chỉ đối tượng (một tác giả nổi tiếng). B bẫy từ 'speaker/speak'. C bẫy từ 'keynote/keys'.",
+  },
+  {
+    q: "115. Who forgot to turn off the printer?",
+    ipa: "/hu fərˈgɑt tʊ tɜrn ɔf ðə ˈprɪntər/",
+    meaning: "Ai đã quên tắt máy in?",
+    options: [
+      "A. Turn right at the corner.",
+      "B. It was probably me, sorry.",
+      "C. Out of ink.",
+    ],
+    optionsMeaning: [
+      "A. Rẽ phải ở góc đường.",
+      "B. Chắc là tôi đấy, xin lỗi nhé.",
+      "C. Hết mực rồi.",
+    ],
+    answer: "B. It was probably me, sorry.",
+    explanation:
+      "Câu hỏi 'Who'. B nhận lỗi về mình. A bẫy phát âm/nghĩa 'turn'. C bẫy ngữ cảnh máy in.",
+  },
+
+  // --- WHY (116-120) ---
+  {
+    q: "116. Why are you taking the train instead of driving?",
+    ipa: "/waɪ ɑr ju ˈteɪkɪŋ ðə treɪn ɪnˈstɛd ʌv ˈdraɪvɪŋ/",
+    meaning: "Tại sao bạn lại đi tàu thay vì lái xe?",
+    options: [
+      "A. My car is in the repair shop.",
+      "B. Train your employees well.",
+      "C. It's a nice drive.",
+    ],
+    optionsMeaning: [
+      "A. Xe của tôi đang ở xưởng sửa chữa.",
+      "B. Hãy đào tạo nhân viên của bạn thật tốt.",
+      "C. Đó là một chuyến lái xe thú vị.",
+    ],
+    answer: "A. My car is in the repair shop.",
+    explanation:
+      "Câu hỏi 'Why'. A đưa ra lý do hợp lý (xe hỏng). B bẫy nghĩa 'train' (đào tạo). C bẫy lặp từ 'drive'.",
+  },
+  {
+    q: "117. Why did the price of materials go up?",
+    ipa: "/waɪ dɪd ðə praɪs ʌv məˈtɪriəlz goʊ ʌp/",
+    meaning: "Tại sao giá nguyên vật liệu lại tăng?",
+    options: [
+      "A. Go up the stairs.",
+      "B. Because of higher transportation costs.",
+      "C. A very nice prize.",
+    ],
+    optionsMeaning: [
+      "A. Đi lên cầu thang.",
+      "B. Do chi phí vận chuyển cao hơn.",
+      "C. Một giải thưởng rất đẹp.",
+    ],
+    answer: "B. Because of higher transportation costs.",
+    explanation:
+      "Câu hỏi 'Why'. B giải thích lý do (chi phí vận chuyển cao). A bẫy cụm 'go up'. C bẫy phát âm 'price/prize'.",
+  },
+  {
+    q: "118. Why is the cafeteria so crowded today?",
+    ipa: "/waɪ ɪz ðə ˌkæfəˈtɪriə soʊ ˈkraʊdəd təˈdeɪ/",
+    meaning: "Tại sao căng tin hôm nay lại đông đúc thế?",
+    options: [
+      "A. They are serving a special holiday menu.",
+      "B. A cup of coffee.",
+      "C. The crowd cheered.",
+    ],
+    optionsMeaning: [
+      "A. Họ đang phục vụ thực đơn đặc biệt cho ngày lễ.",
+      "B. Một tách cà phê.",
+      "C. Đám đông reo hò.",
+    ],
+    answer: "A. They are serving a special holiday menu.",
+    explanation:
+      "Câu hỏi 'Why'. A đưa ra lý do thu hút người (thực đơn đặc biệt). B bẫy từ 'cafeteria/coffee'. C bẫy từ 'crowded/crowd'.",
+  },
+  {
+    q: "119. Why haven't they responded to our email?",
+    ipa: "/waɪ ˈhævənt ðeɪ rɪˈspɑndɪd tʊ ˈaʊər iˈmeɪl/",
+    meaning: "Tại sao họ chưa phản hồi email của chúng ta?",
+    options: [
+      "A. I mailed the letter.",
+      "B. Maybe they're out of the office.",
+      "C. He is responsible.",
+    ],
+    optionsMeaning: [
+      "A. Tôi đã gửi thư.",
+      "B. Có lẽ họ đang không có ở văn phòng.",
+      "C. Anh ấy chịu trách nhiệm.",
+    ],
+    answer: "B. Maybe they're out of the office.",
+    explanation:
+      "Câu hỏi 'Why'. B phỏng đoán lý do (không có ở văn phòng). A bẫy từ 'email/mailed'. C bẫy phát âm 'responded/responsible'.",
+  },
+  {
+    q: "120. Why did you change your flight?",
+    ipa: "/waɪ dɪd ju ʧeɪnʤ jʊr flaɪt/",
+    meaning: "Tại sao bạn lại đổi chuyến bay?",
+    options: [
+      "A. Here is your change.",
+      "B. I needed to attend one more meeting.",
+      "C. Flying is faster.",
+    ],
+    optionsMeaning: [
+      "A. Tiền thối của bạn đây.",
+      "B. Tôi cần tham gia thêm một cuộc họp nữa.",
+      "C. Đi máy bay thì nhanh hơn.",
+    ],
+    answer: "B. I needed to attend one more meeting.",
+    explanation:
+      "Câu hỏi 'Why'. B đưa ra lý do cá nhân đổi chuyến. A bẫy nghĩa 'change' (tiền thối). C bẫy ngữ cảnh.",
+  },
+
+  // --- HOW (121-125) ---
+  {
+    q: "121. How many copies of the agenda do we need?",
+    ipa: "/haʊ ˈmɛni ˈkɑpiz ʌv ði əˈʤɛndə du wi nid/",
+    meaning: "Chúng ta cần bao nhiêu bản sao của chương trình nghị sự?",
+    options: [
+      "A. About twenty should be enough.",
+      "B. I copied it from a book.",
+      "C. At the end of the meeting.",
+    ],
+    optionsMeaning: [
+      "A. Khoảng hai mươi bản là đủ.",
+      "B. Tôi đã chép nó từ một cuốn sách.",
+      "C. Vào cuối cuộc họp.",
+    ],
+    answer: "A. About twenty should be enough.",
+    explanation:
+      "Câu hỏi 'How many'. A cung cấp số lượng. B bẫy từ 'copies/copied'. C trả lời 'When'.",
+  },
+  {
+    q: "122. How do I operate this coffee machine?",
+    ipa: "/haʊ du aɪ ˈɑpəˌreɪt ðɪs ˈkɑfi məˈʃin/",
+    meaning: "Làm cách nào để tôi vận hành chiếc máy pha cà phê này?",
+    options: [
+      "A. A successful operation.",
+      "B. Just press the green button here.",
+      "C. I prefer tea.",
+    ],
+    optionsMeaning: [
+      "A. Một ca phẫu thuật/chiến dịch thành công.",
+      "B. Chỉ cần nhấn nút màu xanh ở đây.",
+      "C. Tôi thích trà hơn.",
+    ],
+    answer: "B. Just press the green button here.",
+    explanation:
+      "Câu hỏi 'How' chỉ cách thức/hướng dẫn. B hướng dẫn cách dùng. A bẫy từ 'operate/operation'. C là bình luận không liên quan.",
+  },
+  {
+    q: "123. How often does the shuttle bus run?",
+    ipa: "/haʊ ˈɔfən dʌz ðə ˈʃʌtəl bʌs rʌn/",
+    meaning: "Xe buýt trung chuyển chạy bao lâu một chuyến?",
+    options: [
+      "A. Every fifteen minutes.",
+      "B. I run in the park.",
+      "C. The bus is full.",
+    ],
+    optionsMeaning: [
+      "A. Mỗi mười lăm phút một lần.",
+      "B. Tôi chạy bộ trong công viên.",
+      "C. Xe buýt đã đầy.",
+    ],
+    answer: "A. Every fifteen minutes.",
+    explanation:
+      "Câu hỏi 'How often' hỏi tần suất. A trả lời chu kỳ thời gian. B bẫy từ 'run'. C miêu tả tình trạng.",
+  },
+  {
+    q: "124. How was your trip to Berlin?",
+    ipa: "/haʊ wʌz jʊr trɪp tʊ bɜrˈlɪn/",
+    meaning: "Chuyến đi tới Berlin của bạn thế nào?",
+    options: [
+      "A. I tripped and fell.",
+      "B. It was very productive.",
+      "C. Three days long.",
+    ],
+    optionsMeaning: [
+      "A. Tôi bị vấp và ngã.",
+      "B. Nó rất hiệu quả.",
+      "C. Dài ba ngày.",
+    ],
+    answer: "B. It was very productive.",
+    explanation:
+      "Câu hỏi 'How was...' hỏi cảm nhận/đánh giá. B đánh giá chuyến đi. A bẫy từ 'trip' (vấp ngã). C trả lời 'How long'.",
+  },
+  {
+    q: "125. How much does it cost to ship this package?",
+    ipa: "/haʊ mʌʧ dʌz ɪt kɑst tʊ ʃɪp ðɪs ˈpækəʤ/",
+    meaning: "Gửi gói hàng này tốn bao nhiêu tiền?",
+    options: [
+      "A. Let me weigh it first.",
+      "B. A large passenger ship.",
+      "C. It arrived yesterday.",
+    ],
+    optionsMeaning: [
+      "A. Để tôi cân nó trước đã.",
+      "B. Một tàu chở khách lớn.",
+      "C. Nó đã đến hôm qua.",
+    ],
+    answer: "A. Let me weigh it first.",
+    explanation:
+      "Câu hỏi 'How much' hỏi giá. A là câu trả lời gián tiếp hợp lý (phải cân mới báo giá được). B bẫy từ 'ship' (tàu thủy). C trả lời 'When'.",
+  },
+
+  // --- WHAT (126-130) ---
+  {
+    q: "126. What time does the orientation session start?",
+    ipa: "/wʌt taɪm dʌz ði ˌɔriɛnˈteɪʃən ˈsɛʃən stɑrt/",
+    meaning: "Buổi định hướng bắt đầu lúc mấy giờ?",
+    options: [
+      "A. In the main hall.",
+      "B. At nine o'clock sharp.",
+      "C. Yes, I have time.",
+    ],
+    optionsMeaning: [
+      "A. Ở sảnh chính.",
+      "B. Đúng 9 giờ.",
+      "C. Vâng, tôi có thời gian.",
+    ],
+    answer: "B. At nine o'clock sharp.",
+    explanation:
+      "Câu hỏi 'What time'. B trả lời thời gian cụ thể. A trả lời 'Where'. C bẫy lặp từ 'time' và Yes/No.",
+  },
+  {
+    q: "127. What is the main topic of the article?",
+    ipa: "/wʌt ɪz ðə meɪn ˈtɑpɪk ʌv ði ˈɑrtɪkəl/",
+    meaning: "Chủ đề chính của bài báo là gì?",
+    options: [
+      "A. Renewable energy trends.",
+      "B. I read it online.",
+      "C. It's on page five.",
+    ],
+    optionsMeaning: [
+      "A. Xu hướng năng lượng tái tạo.",
+      "B. Tôi đã đọc nó trên mạng.",
+      "C. Nó ở trang số 5.",
+    ],
+    answer: "A. Renewable energy trends.",
+    explanation:
+      "Câu hỏi 'What'. A chỉ đích danh chủ đề. B trả lời 'Where/How'. C trả lời 'Where'.",
+  },
+  {
+    q: "128. What should I wear to the company dinner?",
+    ipa: "/wʌt ʃʊd aɪ wɛr tʊ ðə ˈkʌmpəni ˈdɪnər/",
+    meaning: "Tôi nên mặc gì đến bữa tối của công ty?",
+    options: [
+      "A. A warehouse.",
+      "B. Chicken and rice.",
+      "C. Business casual is fine.",
+    ],
+    optionsMeaning: [
+      "A. Một nhà kho.",
+      "B. Gà và cơm.",
+      "C. Trang phục công sở thoải mái là được.",
+    ],
+    answer: "C. Business casual is fine.",
+    explanation:
+      "Câu hỏi 'What should I wear'. C khuyên cách ăn mặc. A bẫy phát âm 'wear/warehouse'. B bẫy ngữ cảnh 'dinner'.",
+  },
+  {
+    q: "129. What did the client say about our design?",
+    ipa: "/wʌt dɪd ðə ˈklaɪənt seɪ əˈbaʊt ˈaʊər dɪˈzaɪn/",
+    meaning: "Khách hàng đã nói gì về thiết kế của chúng ta?",
+    options: [
+      "A. A new sign outside.",
+      "B. They absolutely loved it.",
+      "C. To design a website.",
+    ],
+    optionsMeaning: [
+      "A. Một biển báo mới bên ngoài.",
+      "B. Họ hoàn toàn thích nó.",
+      "C. Để thiết kế một trang web.",
+    ],
+    answer: "B. They absolutely loved it.",
+    explanation:
+      "Câu hỏi 'What did they say' (nhận xét). B đưa ra nhận xét của khách. A bẫy âm 'design/sign'. C bẫy lặp từ 'design'.",
+  },
+  {
+    q: "130. What kind of food do they serve at the banquet?",
+    ipa: "/wʌt kaɪnd ʌv fud du ðeɪ sɜrv æt ðə ˈbæŋkwət/",
+    meaning: "Họ phục vụ loại thức ăn gì tại bữa tiệc?",
+    options: [
+      "A. Mostly seafood.",
+      "B. Serve the ball.",
+      "C. Very kind of you.",
+    ],
+    optionsMeaning: [
+      "A. Chủ yếu là hải sản.",
+      "B. Giao bóng đi.",
+      "C. Bạn thật tốt bụng.",
+    ],
+    answer: "A. Mostly seafood.",
+    explanation:
+      "Câu hỏi 'What kind of food'. A trả lời loại thức ăn. B bẫy nghĩa 'serve' (phục vụ/giao bóng). C bẫy từ 'kind'.",
+  },
+
+  // --- YES/NO QUESTIONS (131-135) ---
+  {
+    q: "131. Are you going to the trade show next month?",
+    ipa: "/ɑr ju ˈgoʊɪŋ tʊ ðə treɪd ʃoʊ nɛkst mʌnθ/",
+    meaning: "Bạn có định đi dự hội chợ thương mại vào tháng tới không?",
+    options: [
+      "A. Let me show you.",
+      "B. I haven't decided yet.",
+      "C. Trade your seats.",
+    ],
+    optionsMeaning: [
+      "A. Để tôi chỉ cho bạn.",
+      "B. Tôi vẫn chưa quyết định.",
+      "C. Đổi chỗ ngồi của bạn đi.",
+    ],
+    answer: "B. I haven't decided yet.",
+    explanation:
+      "Câu hỏi Yes/No. B là một cách trả lời gián tiếp phổ biến (chưa quyết định). A và C bẫy lặp từ 'show' và 'trade'.",
+  },
+  {
+    q: "132. Did you hear about the promotion?",
+    ipa: "/dɪd ju hir əˈbaʊt ðə prəˈmoʊʃən/",
+    meaning: "Bạn đã nghe về đợt thăng chức chưa?",
+    options: [
+      "A. Yes, congratulations to Mark!",
+      "B. I hear you loud and clear.",
+      "C. A sales promotion.",
+    ],
+    optionsMeaning: [
+      "A. Có, chúc mừng Mark nhé!",
+      "B. Tôi nghe bạn rất rõ.",
+      "C. Một đợt khuyến mãi bán hàng.",
+    ],
+    answer: "A. Yes, congratulations to Mark!",
+    explanation:
+      "Câu hỏi Yes/No. A xác nhận và thể hiện sự hiểu biết về sự việc. B lặp từ 'hear' sai ngữ cảnh. C bẫy nghĩa 'promotion' (thăng chức/khuyến mãi).",
+  },
+  {
+    q: "133. Have you finished reading the contract?",
+    ipa: "/hæv ju ˈfɪnɪʃt ˈridɪŋ ðə ˈkɑntrækt/",
+    meaning: "Bạn đã đọc xong hợp đồng chưa?",
+    options: [
+      "A. A red book.",
+      "B. No, I'm still on the last page.",
+      "C. Contact me later.",
+    ],
+    optionsMeaning: [
+      "A. Một cuốn sách màu đỏ.",
+      "B. Chưa, tôi vẫn đang ở trang cuối.",
+      "C. Liên hệ với tôi sau.",
+    ],
+    answer: "B. No, I'm still on the last page.",
+    explanation:
+      "Câu hỏi Yes/No. B trả lời chưa và giải thích tiến độ. A bẫy phát âm 'reading/red'. C bẫy phát âm 'contract/contact'.",
+  },
+  {
+    q: "134. Do we have enough chairs for everyone?",
+    ipa: "/du wi hæv ɪˈnʌf ʧɛrz fɔr ˈɛvriˌwʌn/",
+    meaning: "Chúng ta có đủ ghế cho mọi người không?",
+    options: [
+      "A. We might need to bring in a few more.",
+      "B. He is the chairman.",
+      "C. Please sit down.",
+    ],
+    optionsMeaning: [
+      "A. Chúng ta có thể cần phải mang thêm vài chiếc nữa.",
+      "B. Ông ấy là chủ tịch.",
+      "C. Vui lòng ngồi xuống.",
+    ],
+    answer: "A. We might need to bring in a few more.",
+    explanation:
+      "Câu hỏi Yes/No. A trả lời gián tiếp ngầm hiểu là 'Chưa đủ'. B bẫy lặp từ 'chair'. C là mệnh lệnh.",
+  },
+  {
+    q: "135. Can you review this document for me?",
+    ipa: "/kæn ju rɪˈvju ðɪs ˈdɑkjəmənt fɔr mi/",
+    meaning: "Bạn có thể xem lại tài liệu này giúp tôi không?",
+    options: [
+      "A. A documentary film.",
+      "B. Sure, just leave it on my desk.",
+      "C. I viewed it yesterday.",
+    ],
+    optionsMeaning: [
+      "A. Một bộ phim tài liệu.",
+      "B. Chắc chắn rồi, cứ để nó trên bàn của tôi.",
+      "C. Tôi đã xem nó hôm qua.",
+    ],
+    answer: "B. Sure, just leave it on my desk.",
+    explanation:
+      "Câu hỏi nhờ vả. B đồng ý và hướng dẫn cách giao tài liệu. A bẫy từ 'document'. C bẫy từ 'review/viewed'.",
+  },
+
+  // --- CHOICE QUESTIONS (136-140) ---
+  {
+    q: "136. Would you prefer a window or an aisle seat?",
+    ipa: "/wʊd ju prɪˈfɜr ə ˈwɪndoʊ ɔr ən aɪl sit/",
+    meaning: "Bạn thích chỗ ngồi cạnh cửa sổ hay lối đi?",
+    options: [
+      "A. An aisle seat, please.",
+      "B. Open the window.",
+      "C. Yes, I do.",
+    ],
+    optionsMeaning: [
+      "A. Cho tôi chỗ ngồi lối đi.",
+      "B. Mở cửa sổ ra.",
+      "C. Vâng, tôi muốn.",
+    ],
+    answer: "A. An aisle seat, please.",
+    explanation:
+      "Câu hỏi lựa chọn (A or B). A chọn phương án thứ 2. B bẫy lặp từ 'window'. C bẫy Yes/No sai luật.",
+  },
+  {
+    q: "137. Should we order pizza or Chinese food?",
+    ipa: "/ʃʊd wi ˈɔrdər ˈpitsə ɔr ʧaɪˈniz fud/",
+    meaning: "Chúng ta nên gọi pizza hay đồ ăn Trung Quốc?",
+    options: [
+      "A. I'm in the mood for pizza.",
+      "B. In alphabetical order.",
+      "C. Yes, please.",
+    ],
+    optionsMeaning: [
+      "A. Tôi đang có hứng ăn pizza.",
+      "B. Theo thứ tự bảng chữ cái.",
+      "C. Vâng, làm ơn.",
+    ],
+    answer: "A. I'm in the mood for pizza.",
+    explanation:
+      "Câu hỏi lựa chọn. A đưa ra sự lựa chọn. B bẫy nghĩa từ 'order' (đặt món/thứ tự). C bẫy Yes/No.",
+  },
+  {
+    q: "138. Is the meeting on Tuesday or Wednesday?",
+    ipa: "/ɪz ðə ˈmitɪŋ ɑn ˈtuzdeɪ ɔr ˈwɛnzdeɪ/",
+    meaning: "Cuộc họp diễn ra vào thứ Ba hay thứ Tư?",
+    options: [
+      "A. It's been moved to Thursday.",
+      "B. Nice to meet you too.",
+      "C. No, I am busy.",
+    ],
+    optionsMeaning: [
+      "A. Nó đã được chuyển sang thứ Năm rồi.",
+      "B. Tôi cũng rất vui được gặp bạn.",
+      "C. Không, tôi bận.",
+    ],
+    answer: "A. It's been moved to Thursday.",
+    explanation:
+      "Câu hỏi lựa chọn. A đưa ra một lựa chọn thứ 3 khác biệt (thường gặp trong TOEIC). B bẫy lặp từ 'meet'.",
+  },
+  {
+    q: "139. Do you want to review the data now or later?",
+    ipa: "/du ju wɑnt tʊ rɪˈvju ðə ˈdeɪtə naʊ ɔr ˈleɪtər/",
+    meaning: "Bạn muốn xem lại dữ liệu bây giờ hay để sau?",
+    options: [
+      "A. A later train.",
+      "B. Let's do it after lunch.",
+      "C. It's on my computer.",
+    ],
+    optionsMeaning: [
+      "A. Một chuyến tàu muộn hơn.",
+      "B. Hãy làm việc đó sau bữa trưa.",
+      "C. Nó ở trên máy tính của tôi.",
+    ],
+    answer: "B. Let's do it after lunch.",
+    explanation:
+      "Câu hỏi lựa chọn. B chọn 'later' bằng cụm từ tương đương 'after lunch'. A bẫy từ 'later'.",
+  },
+  {
+    q: "140. Are you driving yourself or taking a taxi?",
+    ipa: "/ɑr ju ˈdraɪvɪŋ jərˈsɛlf ɔr ˈteɪkɪŋ ə ˈtæksi/",
+    meaning: "Bạn tự lái xe hay đi taxi?",
+    options: [
+      "A. I'll just get a cab.",
+      "B. I drove carefully.",
+      "C. Pay the tax.",
+    ],
+    optionsMeaning: [
+      "A. Tôi sẽ gọi một chiếc taxi.",
+      "B. Tôi đã lái xe cẩn thận.",
+      "C. Trả tiền thuế.",
+    ],
+    answer: "A. I'll just get a cab.",
+    explanation:
+      "Câu hỏi lựa chọn. A chọn đi taxi bằng từ đồng nghĩa 'cab'. B bẫy từ 'drove/driving'. C bẫy phát âm 'taxi/tax'.",
+  },
+
+  // --- STATEMENTS (141-145) ---
+  {
+    q: "141. The printer on the second floor is broken again.",
+    ipa: "/ðə ˈprɪntər ɑn ðə ˈsɛkənd flɔr ɪz ˈbroʊkən əˈgɛn/",
+    meaning: "Máy in trên tầng hai lại bị hỏng rồi.",
+    options: [
+      "A. I'll call the technician right away.",
+      "B. Break the glass.",
+      "C. It's on the first floor.",
+    ],
+    optionsMeaning: [
+      "A. Tôi sẽ gọi kỹ thuật viên ngay lập tức.",
+      "B. Đập vỡ kính.",
+      "C. Nó ở tầng một.",
+    ],
+    answer: "A. I'll call the technician right away.",
+    explanation:
+      "Câu trần thuật báo lỗi. A đưa ra hướng giải quyết. B bẫy từ 'break/broken'. C bẫy từ 'floor'.",
+  },
+  {
+    q: "142. I'm planning to take a few days off next week.",
+    ipa: "/aɪm ˈplænɪŋ tʊ teɪk ə fju deɪz ɔf nɛkst wik/",
+    meaning: "Tôi đang lên kế hoạch xin nghỉ vài ngày vào tuần tới.",
+    options: [
+      "A. Take off your shoes.",
+      "B. Oh, where are you going?",
+      "C. A floor plan.",
+    ],
+    optionsMeaning: [
+      "A. Cởi giày của bạn ra.",
+      "B. Ồ, bạn định đi đâu thế?",
+      "C. Một sơ đồ tầng.",
+    ],
+    answer: "B. Oh, where are you going?",
+    explanation:
+      "Câu trần thuật chia sẻ thông tin. B phản hồi lại bằng một câu hỏi quan tâm. A bẫy cụm 'take off'. C bẫy từ 'plan'.",
+  },
+  {
+    q: "143. We need to hire more staff for the busy season.",
+    ipa: "/wi nid tʊ ˈhaɪər mɔr stæf fɔr ðə ˈbɪzi ˈsizən/",
+    meaning: "Chúng ta cần thuê thêm nhân viên cho mùa bận rộn.",
+    options: [
+      "A. Higher up the mountain.",
+      "B. Summer is my favorite season.",
+      "C. I agree, everyone is overworked.",
+    ],
+    optionsMeaning: [
+      "A. Ở trên cao hơn của ngọn núi.",
+      "B. Mùa hè là mùa yêu thích của tôi.",
+      "C. Tôi đồng ý, mọi người đều đang làm việc quá sức.",
+    ],
+    answer: "C. I agree, everyone is overworked.",
+    explanation:
+      "Câu trần thuật đưa ý kiến. C bày tỏ sự đồng tình. A bẫy phát âm 'hire/higher'. B bẫy nghĩa từ 'season'.",
+  },
+  {
+    q: "144. This presentation is too long.",
+    ipa: "/ðɪs ˌprɛzənˈteɪʃən ɪz tu lɔŋ/",
+    meaning: "Bài thuyết trình này quá dài.",
+    options: [
+      "A. A nice present.",
+      "B. I will try to cut out a few slides.",
+      "C. It belongs to me.",
+    ],
+    optionsMeaning: [
+      "A. Một món quà đẹp.",
+      "B. Tôi sẽ cố gắng cắt bỏ một vài slide.",
+      "C. Nó thuộc về tôi.",
+    ],
+    answer: "B. I will try to cut out a few slides.",
+    explanation:
+      "Câu trần thuật nhận xét. B đưa ra giải pháp sửa đổi. A bẫy từ 'present'. C bẫy phát âm 'long/belong'.",
+  },
+  {
+    q: "145. My laptop keeps freezing.",
+    ipa: "/maɪ ˈlæpˌtɑp kips ˈfrizɪŋ/",
+    meaning: "Máy tính xách tay của tôi liên tục bị đơ.",
+    options: [
+      "A. It's freezing outside.",
+      "B. You should save your work and restart it.",
+      "C. Put it on your lap.",
+    ],
+    optionsMeaning: [
+      "A. Ngoài trời đang lạnh cóng.",
+      "B. Bạn nên lưu công việc và khởi động lại nó.",
+      "C. Đặt nó lên đùi của bạn.",
+    ],
+    answer: "B. You should save your work and restart it.",
+    explanation:
+      "Câu trần thuật báo lỗi. B khuyên cách giải quyết. A bẫy nghĩa 'freezing' (đơ máy/lạnh cóng). C bẫy từ 'lap/laptop'.",
+  },
+
+  // --- TAG QUESTIONS & MIXED (146-150) ---
+  {
+    q: "146. You submitted the expense report, didn't you?",
+    ipa: "/ju səbˈmɪtəd ði ɪkˈspɛns rɪˈpɔrt, ˈdɪdənt ju/",
+    meaning: "Bạn đã nộp báo cáo chi phí rồi, phải không?",
+    options: [
+      "A. Yes, right before I left yesterday.",
+      "B. It was very expensive.",
+      "C. A news reporter.",
+    ],
+    optionsMeaning: [
+      "A. Vâng, ngay trước khi tôi rời đi hôm qua.",
+      "B. Nó rất đắt đỏ.",
+      "C. Một phóng viên tin tức.",
+    ],
+    answer: "A. Yes, right before I left yesterday.",
+    explanation:
+      "Câu hỏi đuôi xác nhận. A đồng ý và nói rõ thời điểm. B bẫy từ 'expense/expensive'. C bẫy từ 'report/reporter'.",
+  },
+  {
+    q: "147. The new graphic designer is very talented, isn't she?",
+    ipa: "/ðə nu ˈgræfɪk dɪˈzaɪnər ɪz ˈvɛri ˈtæləntəd, ˈɪzənt ʃi/",
+    meaning: "Nhà thiết kế đồ họa mới rất tài năng, phải không?",
+    options: [
+      "A. Yes, her portfolio is impressive.",
+      "B. Sign here, please.",
+      "C. A new graph.",
+    ],
+    optionsMeaning: [
+      "A. Vâng, danh mục tác phẩm của cô ấy rất ấn tượng.",
+      "B. Vui lòng ký vào đây.",
+      "C. Một biểu đồ mới.",
+    ],
+    answer: "A. Yes, her portfolio is impressive.",
+    explanation:
+      "Câu hỏi đuôi khen ngợi. A đồng tình và bổ sung ý kiến. B bẫy phát âm 'designer/sign'. C bẫy từ 'graphic/graph'.",
+  },
+  {
+    q: "148. We don't have to work this weekend, do we?",
+    ipa: "/wi doʊnt hæv tʊ wɜrk ðɪs ˈwikˌɛnd, du wi/",
+    meaning: "Chúng ta không phải làm việc cuối tuần này đâu, đúng không?",
+    options: [
+      "A. Only if we don't finish the project by Friday.",
+      "B. The end of the road.",
+      "C. Yes, we don't.",
+    ],
+    optionsMeaning: [
+      "A. Chỉ khi chúng ta không hoàn thành dự án trước thứ Sáu.",
+      "B. Cuối con đường.",
+      "C. Vâng, chúng ta không.",
+    ],
+    answer: "A. Only if we don't finish the project by Friday.",
+    explanation:
+      "Câu hỏi đuôi phủ định. A trả lời bằng một điều kiện. C là cấu trúc ngữ pháp sai ('Yes' không đi với 'we don't').",
+  },
+  {
+    q: "149. Has anyone seen the remote control for the projector?",
+    ipa: "/hæz ˈɛniˌwʌn sin ðə rɪˈmoʊt kənˈtroʊl fɔr ðə prəˈʤɛktər/",
+    meaning: "Có ai nhìn thấy chiếc điều khiển từ xa của máy chiếu không?",
+    options: [
+      "A. Try looking under those papers.",
+      "B. A remote island.",
+      "C. Control yourself.",
+    ],
+    optionsMeaning: [
+      "A. Thử tìm dưới những tờ giấy kia xem.",
+      "B. Một hòn đảo hẻo lánh.",
+      "C. Hãy tự kiểm soát bản thân.",
+    ],
+    answer: "A. Try looking under those papers.",
+    explanation:
+      "Câu hỏi tìm đồ vật. A chỉ ra một vị trí có khả năng. B và C bẫy nghĩa của từ 'remote' và 'control'.",
+  },
+  {
+    q: "150. Why don't we take a short break?",
+    ipa: "/waɪ doʊnt wi teɪk ə ʃɔrt breɪk/",
+    meaning: "Tại sao chúng ta không nghỉ giải lao một lát nhỉ?",
+    options: [
+      "A. Good idea, I need some coffee.",
+      "B. It's too short.",
+      "C. I didn't break it.",
+    ],
+    optionsMeaning: [
+      "A. Ý hay đấy, tôi cần một chút cà phê.",
+      "B. Nó quá ngắn.",
+      "C. Tôi đã không làm vỡ nó.",
+    ],
+    answer: "A. Good idea, I need some coffee.",
+    explanation:
+      "Câu hỏi 'Why don't we' là một lời đề nghị. A đồng ý với lời đề nghị. B lặp từ 'short'. C bẫy nghĩa 'break' (giải lao/làm vỡ).",
+  },
 ];

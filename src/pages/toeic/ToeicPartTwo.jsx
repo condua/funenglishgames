@@ -335,7 +335,8 @@ export default function ToeicPartTwo() {
         <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-white z-10 sticky top-0">
           <div className="flex flex-col">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
-              Tiến độ: {userAnswers.filter((a) => a !== null).length}/100
+              Tiến độ: {userAnswers.filter((a) => a !== null).length}/
+              {balancedQuizData.length}
             </span>
             <div className="w-32 sm:w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden">
               <div
