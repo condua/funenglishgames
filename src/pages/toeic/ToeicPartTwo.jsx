@@ -1848,15 +1848,42 @@ const generateBalancedData = () => {
 const balancedQuizData = generateBalancedData();
 
 export default function ToeicPartTwo() {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  // Khởi tạo state từ localStorage nếu có, nếu không thì dùng giá trị mặc định
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(() => {
+    const saved = localStorage.getItem("toeic_part2_current_index");
+    return saved !== null ? parseInt(saved, 10) : 0;
+  });
 
-  // Trạng thái lưu toàn bộ lịch sử trả lời: userAnswers[index] = 'A. option text...'
-  const [userAnswers, setUserAnswers] = useState(
-    Array(balancedQuizData.length).fill(null),
-  );
+  const [userAnswers, setUserAnswers] = useState(() => {
+    const saved = localStorage.getItem("toeic_part2_answers");
+    return saved
+      ? JSON.parse(saved)
+      : Array(balancedQuizData.length).fill(null);
+  });
 
-  // Trạng thái đánh cờ: chứa các index câu hỏi bị đánh cờ
-  const [flags, setFlags] = useState(new Set());
+  const [flags, setFlags] = useState(() => {
+    const saved = localStorage.getItem("toeic_part2_flags");
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+
+  // Lưu state vào localStorage mỗi khi có sự thay đổi
+  useEffect(() => {
+    localStorage.setItem(
+      "toeic_part2_current_index",
+      currentQuestionIndex.toString(),
+    );
+  }, [currentQuestionIndex]);
+
+  useEffect(() => {
+    localStorage.setItem("toeic_part2_answers", JSON.stringify(userAnswers));
+  }, [userAnswers]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "toeic_part2_flags",
+      JSON.stringify(Array.from(flags)),
+    );
+  }, [flags]);
 
   // Modal trạng thái lưới câu hỏi
   const [isListOpen, setIsListOpen] = useState(false);
@@ -1955,6 +1982,11 @@ export default function ToeicPartTwo() {
   };
 
   const restartQuiz = () => {
+    // Xóa dữ liệu cũ khỏi localStorage và đặt lại state
+    localStorage.removeItem("toeic_part2_current_index");
+    localStorage.removeItem("toeic_part2_answers");
+    localStorage.removeItem("toeic_part2_flags");
+
     setCurrentQuestionIndex(0);
     setUserAnswers(Array(balancedQuizData.length).fill(null));
     setFlags(new Set());
@@ -2137,7 +2169,7 @@ export default function ToeicPartTwo() {
             >
               {voices.map((voice) => (
                 <option key={voice.voiceURI} value={voice.voiceURI}>
-                  {voice.name.split(" ")[0]} ({voice.lang})
+                  {voice.name} ({voice.lang})
                 </option>
               ))}
             </select>
