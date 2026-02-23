@@ -7,6 +7,7 @@ import set2 from "./set2";
 import set3 from "./set3";
 import set4 from "./set4";
 import set5 from "./set5";
+import set6 from "./set6";
 export const generateFillerQuestions = (startId, count, topic) => {
   return Array.from({ length: count }, (_, i) => ({
     id: startId + i,
@@ -27,6 +28,7 @@ const ALL_SETS = {
   3: { title: "Đề 3: Traveling & Du lịch", data: set3 },
   4: { title: "Đề 4: Văn phòng & Công việc", data: set4 },
   5: { title: "Đề 5: Shopping & Bán hàng", data: set5 },
+  6: { title: "Đề 6: Tài chính & Ngân hàng", data: set6 },
 };
 
 export default ALL_SETS;

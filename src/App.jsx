@@ -31,6 +31,7 @@ import ProgrammingAI from "./pages/ProgrammingAI";
 import TextToSpeech from "./pages/TextToSpeech";
 import ToeicPartFive from "./pages/ToeicPartFive";
 import ToeicPartFiveNew from "./pages/toeic/ToeicPartFiveNew";
+import ToeicPartTwo from "./pages/toeic/ToeicPartTwo";
 import ToeicFlashcards from "./pages/VocabularyToeic";
 import ExamDashboard from "./components/vsat/pages/ExamDashboard";
 import ExamSession from "./components/vsat/pages/ExamSession";
@@ -108,6 +109,7 @@ function App() {
         <Route path="/text-to-speech" element={<TextToSpeech />} />
         <Route path="/toeic-part-five" element={<ToeicPartFive />} />
         <Route path="/toeic-part-five-new" element={<ToeicPartFiveNew />} />
+        <Route path="/toeic-part-two" element={<ToeicPartTwo />} />
         <Route path="/toeic-flashcards" element={<ToeicFlashcards />} />
         <Route
           path="/vsat-home"
