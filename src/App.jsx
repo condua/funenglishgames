@@ -33,7 +33,7 @@ import ToeicPartFive from "./pages/ToeicPartFive";
 import ToeicPartFiveNew from "./pages/toeic/ToeicPartFiveNew";
 import ToeicPartTwo from "./pages/toeic/ToeicPartTwo";
 import ToeicFlashcards from "./pages/VocabularyToeic";
-import PracticeListening from "./pages/PracticeListening";
+import PracticeListening from "./pages/toeic/PracticeListening";
 import ExamDashboard from "./components/vsat/pages/ExamDashboard";
 import ExamSession from "./components/vsat/pages/ExamSession";
 // import VsatMath from "./pages/vsat/VsatMath";
