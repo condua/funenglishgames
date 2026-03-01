@@ -33,6 +33,7 @@ import ToeicPartFive from "./pages/ToeicPartFive";
 import ToeicPartFiveNew from "./pages/toeic/ToeicPartFiveNew";
 import ToeicPartTwo from "./pages/toeic/ToeicPartTwo";
 import ToeicFlashcards from "./pages/VocabularyToeic";
+import PracticeListening from "./pages/PracticeListening";
 import ExamDashboard from "./components/vsat/pages/ExamDashboard";
 import ExamSession from "./components/vsat/pages/ExamSession";
 // import VsatMath from "./pages/vsat/VsatMath";
@@ -111,6 +112,7 @@ function App() {
         <Route path="/toeic-part-five-new" element={<ToeicPartFiveNew />} />
         <Route path="/toeic-part-two" element={<ToeicPartTwo />} />
         <Route path="/toeic-flashcards" element={<ToeicFlashcards />} />
+        <Route path="/practice-listening" element={<PracticeListening />} />
         <Route
           path="/vsat-home"
           element={
