@@ -14,82 +14,8 @@ import {
   Headphones,
   RefreshCcw,
 } from "lucide-react";
-
+import { TOPICS } from "./data/listening/index";
 // Dữ liệu mẫu (Tích hợp dữ liệu được cá nhân hóa của người dùng)
-const TOPICS = [
-  {
-    id: "family_habits",
-    name: "Gia đình & Thói quen",
-    icon: <BookOpen className="w-5 h-5" />,
-    data: [
-      {
-        question: "How often do you eat dinner with your family?",
-        questionTrans: "Bạn có thường xuyên ăn tối cùng gia đình không?",
-        answer: "We usually have dinner together every evening.",
-        answerTrans: "Chúng tôi thường ăn tối cùng nhau vào mỗi buổi tối.",
-      },
-      {
-        question: "What are the most important family values to you?",
-        questionTrans:
-          "Những giá trị gia đình nào là quan trọng nhất đối với bạn?",
-        answer: "Honesty and respect are the most important values.",
-        answerTrans:
-          "Sự trung thực và tôn trọng là những giá trị quan trọng nhất.",
-      },
-      {
-        question: "Who does the housework in your family?",
-        questionTrans: "Ai là người làm việc nhà trong gia đình bạn?",
-        answer: "We share the chores equally among family members.",
-        answerTrans:
-          "Chúng tôi chia sẻ công việc nhà đều cho các thành viên trong gia đình.",
-      },
-    ],
-  },
-  {
-    id: "animals",
-    name: "Động vật (Animals)",
-    icon: <Headphones className="w-5 h-5" />,
-    data: [
-      {
-        question: "What is the largest land animal?",
-        questionTrans: "Loài động vật trên cạn nào lớn nhất?",
-        answer: "The elephant is the largest land animal.",
-        answerTrans: "Voi là loài động vật trên cạn lớn nhất.",
-      },
-      {
-        question: "Can you describe a tiger?",
-        questionTrans: "Bạn có thể miêu tả một con hổ được không?",
-        answer: "A tiger is a large carnivorous feline with stripes.",
-        answerTrans: "Hổ là loài động vật họ mèo ăn thịt lớn có vằn.",
-      },
-      {
-        question: "Where do penguins live?",
-        questionTrans: "Chim cánh cụt sống ở đâu?",
-        answer: "They mostly live in the Southern Hemisphere, like Antarctica.",
-        answerTrans: "Chúng chủ yếu sống ở Nam Bán Cầu, như Nam Cực.",
-      },
-    ],
-  },
-  {
-    id: "daily_life",
-    name: "Giao tiếp hàng ngày",
-    icon: <Languages className="w-5 h-5" />,
-    data: [
-      {
-        question: "Excuse me, where is the nearest train station?",
-        questionTrans: "Xin lỗi, nhà ga xe lửa gần nhất ở đâu?",
-        answer: "Go straight ahead and turn left at the next corner.",
-        answerTrans: "Đi thẳng về phía trước và rẽ trái ở góc đường tiếp theo.",
-      },
-      {
-        question: "How much does this coffee cost?",
-        questionTrans: "Cốc cà phê này giá bao nhiêu?",
-        answer: "It is four dollars and fifty cents.",
-        answerTrans: "Nó có giá 4 đô la và 50 xu.",
-      },
-    ],
-  },
-];
 
 // Hàm chuẩn hóa chuỗi để so sánh (xóa dấu câu, khoảng trắng thừa, đưa về chữ thường)
 const normalizeText = (text) => {
