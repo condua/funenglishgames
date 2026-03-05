@@ -3,7 +3,7 @@ import React from "react";
 const Sidebar = ({ topics, activeTopic, onTopicClick, isOpen, setIsOpen }) => {
   return (
     <>
-      {/* Overlay for mobile *******/}
+      {/* Overlay for mobile ************/}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
