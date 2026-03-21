@@ -12,9 +12,32 @@ import {
   Settings,
   BarChart,
   FileText,
+  Volume2,
+  Square,
 } from "lucide-react";
 
-const API_KEY = import.meta.VITE_OPENAI_API_KEY; // System injects the key
+// Thay đổi key phù hợp với môi trường của bạn
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+
+// Hàm gọi API với cơ chế thử lại (exponential backoff) để chống lỗi mạng
+const fetchWithRetry = async (url, options, retries = 5) => {
+  const delays = [1000, 2000, 4000, 8000, 16000];
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error?.message || `HTTP error! status: ${response.status}`,
+        );
+      }
+      return await response.json();
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      await new Promise((resolve) => setTimeout(resolve, delays[i]));
+    }
+  }
+};
 
 const IPALearningSystem = () => {
   const [topic, setTopic] = useState("");
@@ -25,12 +48,81 @@ const IPALearningSystem = () => {
   const [feedback, setFeedback] = useState([]);
   const [accuracy, setAccuracy] = useState(0);
 
-  // New settings state
+  // Settings state
   const [level, setLevel] = useState("Easy"); // Easy, Medium, Hard
   const [length, setLength] = useState("Short"); // Short, Medium, Long
 
+  // Text-to-Speech state
+  const [voices, setVoices] = useState([]);
+  const [selectedVoice, setSelectedVoice] = useState("");
+  const [isPlaying, setIsPlaying] = useState(false);
+
   // Focus input on load
   const inputRef = useRef(null);
+
+  // Initialize Speech Synthesis Voices
+  useEffect(() => {
+    const loadVoices = () => {
+      const availableVoices = window.speechSynthesis.getVoices();
+      // Ưu tiên hiển thị các giọng đọc tiếng Anh
+      const englishVoices = availableVoices.filter((v) =>
+        v.lang.startsWith("en"),
+      );
+      const voiceList =
+        englishVoices.length > 0 ? englishVoices : availableVoices;
+
+      setVoices(voiceList);
+      if (voiceList.length > 0 && !selectedVoice) {
+        // Tự động chọn giọng US English mặc định nếu có
+        const defaultVoice =
+          voiceList.find(
+            (v) => v.lang === "en-US" && v.name.includes("Google"),
+          ) || voiceList[0];
+        setSelectedVoice(defaultVoice.name);
+      }
+    };
+
+    loadVoices();
+    // Chrome cần event này do load voices bất đồng bộ
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  // Hủy âm thanh đang phát nếu chuyển màn hình
+  useEffect(() => {
+    if (gameState === "idle" || gameState === "loading") {
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+    }
+  }, [gameState]);
+
+  const handleSpeak = (text) => {
+    if (!text) return;
+
+    // Nếu đang phát thì dừng lại
+    if (isPlaying) {
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    if (selectedVoice) {
+      const voice = voices.find((v) => v.name === selectedVoice);
+      if (voice) utterance.voice = voice;
+    }
+
+    utterance.onend = () => setIsPlaying(false);
+    utterance.onerror = () => setIsPlaying(false);
+
+    setIsPlaying(true);
+    window.speechSynthesis.speak(utterance);
+  };
 
   const generateContent = async () => {
     if (!topic.trim()) return;
@@ -105,9 +197,13 @@ Make sure the IPA transcription is accurate (General American accent preferred).
   const handleCheck = () => {
     if (!data) return;
 
+    // Tự động dừng âm thanh khi kiểm tra
+    window.speechSynthesis.cancel();
+    setIsPlaying(false);
+
     // Normalize strings for comparison (remove punctuation, lower case)
     const cleanWord = (w) =>
-      w.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "").toLowerCase();
+      w.replace(/[.,/#!$%^&*;:{}=\-_`~()?"']/g, "").toLowerCase();
 
     const originalWords = data.original.split(/\s+/);
     const userWords = userInput.trim().split(/\s+/);
@@ -152,6 +248,42 @@ Make sure the IPA transcription is accurate (General American accent preferred).
       handleCheck();
     }
   };
+
+  // Component phụ cho Audio Controls (phát âm thanh & chọn giọng)
+  const AudioPlayer = ({ text, title = "Nghe giọng đọc" }) => (
+    <div className="flex items-center gap-3 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+      <button
+        onClick={() => handleSpeak(text)}
+        className={`p-2.5 rounded-lg flex items-center justify-center transition-colors shadow-sm ${
+          isPlaying
+            ? "bg-red-100 text-red-600 hover:bg-red-200"
+            : "bg-indigo-100 text-indigo-600 hover:bg-indigo-200"
+        }`}
+        title={isPlaying ? "Dừng đọc" : title}
+      >
+        {isPlaying ? (
+          <Square className="w-5 h-5" />
+        ) : (
+          <Volume2 className="w-5 h-5" />
+        )}
+      </button>
+
+      <div className="flex-1 border border-gray-200 rounded-lg bg-gray-50 overflow-hidden">
+        <select
+          value={selectedVoice}
+          onChange={(e) => setSelectedVoice(e.target.value)}
+          className="w-full text-sm bg-transparent px-3 py-2 focus:ring-0 text-gray-700 outline-none cursor-pointer truncate"
+        >
+          {voices.length === 0 && <option>Đang tải giọng đọc...</option>}
+          {voices.map((voice) => (
+            <option key={voice.name} value={voice.name}>
+              {voice.name} {voice.lang ? `(${voice.lang})` : ""}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
 
   // --- Components ---
 
@@ -326,6 +458,9 @@ Make sure the IPA transcription is accurate (General American accent preferred).
               </span>
             </div>
 
+            {/* Audio Controls (Text-to-Speech) */}
+            <AudioPlayer text={data.original} title="Nghe đáp án (Gợi ý)" />
+
             {/* IPA Display Card */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="bg-indigo-50 px-4 py-2 border-b border-indigo-100 flex justify-between items-center">
@@ -337,7 +472,7 @@ Make sure the IPA transcription is accurate (General American accent preferred).
                   className="text-indigo-400 hover:text-indigo-600 transition flex items-center gap-1 text-xs"
                 >
                   <HelpCircle className="w-4 h-4" />{" "}
-                  {showHint ? "Ẩn gợi ý" : "Gợi ý"}
+                  {showHint ? "Ẩn gợi ý" : "Gợi ý nghĩa"}
                 </button>
               </div>
               <div className="p-5 max-h-64 overflow-y-auto">
@@ -385,7 +520,13 @@ Make sure the IPA transcription is accurate (General American accent preferred).
             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-center relative overflow-hidden">
               {/* Score Circle */}
               <div
-                className={`w-24 h-24 mx-auto rounded-full flex items-center justify-center border-4 mb-4 ${accuracy >= 80 ? "border-green-500 text-green-600" : accuracy >= 50 ? "border-yellow-500 text-yellow-600" : "border-red-500 text-red-600"}`}
+                className={`w-24 h-24 mx-auto rounded-full flex items-center justify-center border-4 mb-4 ${
+                  accuracy >= 80
+                    ? "border-green-500 text-green-600"
+                    : accuracy >= 50
+                      ? "border-yellow-500 text-yellow-600"
+                      : "border-red-500 text-red-600"
+                }`}
               >
                 <span className="text-3xl font-bold">{accuracy}%</span>
               </div>
@@ -401,6 +542,9 @@ Make sure the IPA transcription is accurate (General American accent preferred).
                 Bạn đã dịch đúng {accuracy}% nội dung ({level} - {length}).
               </p>
             </div>
+
+            {/* Audio Controls for reviewing */}
+            <AudioPlayer text={data.original} title="Nghe lại toàn bộ" />
 
             {/* Comparison */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -454,7 +598,10 @@ Make sure the IPA transcription is accurate (General American accent preferred).
             {/* Actions */}
             <div className="flex gap-3">
               <button
-                onClick={() => setGameState("playing")}
+                onClick={() => {
+                  setGameState("playing");
+                  setUserInput("");
+                }}
                 className="flex-1 bg-white border border-gray-300 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-50 transition"
               >
                 Làm lại
