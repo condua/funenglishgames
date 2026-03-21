@@ -36,6 +36,7 @@ import ToeicFlashcards from "./pages/VocabularyToeic";
 import PracticeListening from "./pages/toeic/PracticeListening";
 import ExamDashboard from "./components/vsat/pages/ExamDashboard";
 import ExamSession from "./components/vsat/pages/ExamSession";
+import IpaToText from "./pages/IpaToText";
 // import VsatMath from "./pages/vsat/VsatMath";
 // import VsatHome from "./components/vsat/VsatHome";
 // import FlashcardGame from "./pages/FlashcardGame" ';
@@ -113,6 +114,7 @@ function App() {
         <Route path="/toeic-part-two" element={<ToeicPartTwo />} />
         <Route path="/toeic-flashcards" element={<ToeicFlashcards />} />
         <Route path="/practice-listening" element={<PracticeListening />} />
+        <Route path="/ipa-to-text" element={<IpaToText />} />
         <Route
           path="/vsat-home"
           element={

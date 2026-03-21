@@ -202,7 +202,7 @@ Make sure the IPA transcription is accurate (General American accent preferred).
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans max-w-md mx-auto shadow-2xl overflow-hidden relative border-x border-gray-200">
+    <div className="min-h-screen bg-gray-50 font-sans max-w-3xl mx-auto shadow-2xl overflow-hidden relative border-x border-gray-200">
       <Header />
 
       <main className="px-4 pb-20">
