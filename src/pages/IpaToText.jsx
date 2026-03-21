@@ -19,26 +19,6 @@ import {
 // Thay đổi key phù hợp với môi trường của bạn
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 
-// Hàm gọi API với cơ chế thử lại (exponential backoff) để chống lỗi mạng
-const fetchWithRetry = async (url, options, retries = 5) => {
-  const delays = [1000, 2000, 4000, 8000, 16000];
-  for (let i = 0; i < retries; i++) {
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.error?.message || `HTTP error! status: ${response.status}`,
-        );
-      }
-      return await response.json();
-    } catch (error) {
-      if (i === retries - 1) throw error;
-      await new Promise((resolve) => setTimeout(resolve, delays[i]));
-    }
-  }
-};
-
 const IPALearningSystem = () => {
   const [topic, setTopic] = useState("");
   const [gameState, setGameState] = useState("idle"); // idle, loading, playing, result, error
@@ -142,38 +122,52 @@ const IPALearningSystem = () => {
         levelDesc =
           "C1-C2 vocabulary, complex grammar, idioms, and advanced lexicon";
 
-      let lengthDesc = "25-35 words (2-3 sentences)";
-      if (length === "Medium") lengthDesc = "50-70 words (4-6 sentences)";
-      if (length === "Long") lengthDesc = "80-120 words (paragraph)";
+      let lengthDesc = "60-70 words (3-4 sentences)";
+      if (length === "Medium") lengthDesc = "80-100 words (4-6 sentences)";
+      if (length === "Long") lengthDesc = "100-150 words (1 paragraph)";
 
-      const prompt = `
-Create an English text about the topic: "${topic}".
+      // Cải thiện Prompt
+      const prompt = `You are an expert English linguist and teacher. Generate an English text based on the following specifications:
 
-Constraints:
-1. Difficulty: ${level} (${levelDesc})
-2. Length: ${lengthDesc}
+- Topic: "${topic}"
+- Difficulty Level: ${level} (${levelDesc})
+- Length Target: ${lengthDesc}
 
-Return ONLY valid JSON:
+REQUIREMENTS:
+1. "original": Write the text strictly adhering to the topic, difficulty, and length constraints.
+2. "ipa": Provide an accurate General American English phonetic transcription for the entire text.
+3. "vietnamese": Provide a natural, contextually accurate Vietnamese translation of the text.
+
+OUTPUT FORMAT:
+You must return ONLY a valid, raw JSON object. Do NOT wrap the JSON in markdown code blocks (e.g., do not use \`\`\`json). Do NOT include any greetings, explanations, or extra text.
+
 {
-  "original": "The English text here.",
-  "ipa": "/ðə ˈɪŋɡlɪʃ tekst hɪr/",
-  "vietnamese": "Dịch nghĩa tiếng Việt của đoạn văn."
-}
+  "original": "The generated English text here",
+  "ipa": "/ðə ˈdʒenəreɪtɪd ˈɪŋɡlɪʃ tekst hɪr/",
+  "vietnamese": "Bản dịch tiếng Việt tự nhiên ở đây"
+}`;
 
-Make sure the IPA transcription is accurate (General American accent preferred).
-`;
-
-      const response = await fetch("https://api.openai.com/v1/responses", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+      // LƯU Ý: Phần gọi API OpenAI dưới đây đã được sửa lại cho đúng chuẩn API của họ.
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini", // Sửa tên model (GPT-4o-mini là model mới nhất, không có gpt-4.1-mini)
+            messages: [
+              {
+                role: "user",
+                content: prompt,
+              },
+            ],
+            temperature: 0.7,
+          }),
         },
-        body: JSON.stringify({
-          model: "gpt-4.1-mini",
-          input: prompt,
-        }),
-      });
+      );
 
       const result = await response.json();
 
@@ -181,8 +175,18 @@ Make sure the IPA transcription is accurate (General American accent preferred).
         throw new Error(result.error.message);
       }
 
-      // Lấy text từ OpenAI response
-      const content = result.output[0].content[0].text;
+      // Lấy text từ OpenAI response theo đúng chuẩn format của /v1/chat/completions
+      let content = result.choices[0].message.content.trim();
+
+      // Phòng hờ trường hợp AI vẫn trả về markdown block dù đã cấm
+      if (content.startsWith("```json")) {
+        content = content
+          .replace(/^```json/, "")
+          .replace(/```$/, "")
+          .trim();
+      } else if (content.startsWith("```")) {
+        content = content.replace(/^```/, "").replace(/```$/, "").trim();
+      }
 
       const parsedData = JSON.parse(content);
 
@@ -600,7 +604,6 @@ Make sure the IPA transcription is accurate (General American accent preferred).
               <button
                 onClick={() => {
                   setGameState("playing");
-                  setUserInput("");
                 }}
                 className="flex-1 bg-white border border-gray-300 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-50 transition"
               >
