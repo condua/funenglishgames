@@ -15,6 +15,7 @@ import {
   Volume2,
   Square,
 } from "lucide-react";
+import LogoImage from "../utils/LogoImage";
 
 // Thay đổi key phù hợp với môi trường của bạn
 const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
@@ -338,7 +339,7 @@ You must return ONLY a valid, raw JSON object. Do NOT wrap the JSON in markdown 
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans max-w-3xl mx-auto shadow-2xl overflow-hidden relative border-x border-gray-200">
+    <div className="min-h-screen bg-gray-50  max-w-3xl mx-auto shadow-2xl overflow-hidden relative border-x border-gray-200">
       <Header />
 
       <main className="px-4 pb-20">
@@ -347,7 +348,7 @@ You must return ONLY a valid, raw JSON object. Do NOT wrap the JSON in markdown 
           <div className="space-y-6 animate-fade-in">
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
               <div className="text-center mb-4">
-                <Sparkles className="w-10 h-10 text-yellow-400 mx-auto mb-3" />
+                <LogoImage width={150} height={150} alt="IPA Decoder Logo" />
                 <h2 className="text-lg font-semibold text-gray-800">
                   Chủ đề & Cấu hình
                 </h2>
