@@ -11,7 +11,7 @@ import {
   Volume2,
 } from "lucide-react";
 
-// --- DỮ LIỆU TỪ VỰNG (300 TỪ) ---
+// --- DỮ LIỆU TỪ VỰNG (300 TỪ) ----
 const INITIAL_VOCABULARY = [
   // 1. CONTRACTS (HỢP ĐỒNG)
   {
