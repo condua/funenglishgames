@@ -456,7 +456,7 @@ export default function Home() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Empty State */}
+        {/* Empty State---- */}
         {filtered.length === 0 && (
           <div className="mt-16 text-center text-slate-400">
             Không tìm thấy kết quả phù hợp. Thử từ khóa khác hoặc đổi bộ lọc
