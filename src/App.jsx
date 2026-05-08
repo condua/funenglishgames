@@ -37,6 +37,7 @@ import PracticeListening from "./pages/toeic/PracticeListening";
 import ExamDashboard from "./components/vsat/pages/ExamDashboard";
 import ExamSession from "./components/vsat/pages/ExamSession";
 import IpaToText from "./pages/IpaToText";
+import Page404 from "./pages/Page404";
 // import VsatMath from "./pages/vsat/VsatMath";
 // import VsatHome from "./components/vsat/VsatHome";
 // import FlashcardGame from "./pages/FlashcardGame" ';
@@ -127,6 +128,7 @@ function App() {
             <ExamSession darkMode={darkMode} toggleTheme={toggleTheme} />
           }
         />
+        <Route path="*" element={<Page404 />} />
       </Routes>
     </BrowserRouter>
   );
