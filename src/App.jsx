@@ -38,6 +38,7 @@ import ExamDashboard from "./components/vsat/pages/ExamDashboard";
 import ExamSession from "./components/vsat/pages/ExamSession";
 import IpaToText from "./pages/IpaToText";
 import Page404 from "./pages/Page404";
+import ToeicPartSix from "./pages/toeic/ToeicPartSix";
 // import VsatMath from "./pages/vsat/VsatMath";
 // import VsatHome from "./components/vsat/VsatHome";
 // import FlashcardGame from "./pages/FlashcardGame" ';
@@ -113,6 +114,7 @@ function App() {
         <Route path="/toeic-part-five" element={<ToeicPartFive />} />
         <Route path="/toeic-part-five-new" element={<ToeicPartFiveNew />} />
         <Route path="/toeic-part-two" element={<ToeicPartTwo />} />
+        <Route path="/toeic-part-six" element={<ToeicPartSix />} />
         <Route path="/toeic-flashcards" element={<ToeicFlashcards />} />
         <Route path="/practice-listening" element={<PracticeListening />} />
         <Route path="/ipa-to-text" element={<IpaToText />} />
