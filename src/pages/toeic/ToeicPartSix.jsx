@@ -905,7 +905,7 @@ Man: Exactly. We may need to allocate more budget to social media campaigns.`;
           </div>
 
           {/* TEXT CONTENT */}
-          {!quizMode && !isSpeaking ? (
+          {!quizMode && !isSpeaking && !isPaused ? (
             <textarea
               className="w-full h-64 p-5 bg-white border border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-mono text-sm leading-relaxed resize-none text-gray-700 shadow-sm disabled:bg-gray-50 disabled:text-gray-400"
               value={text}
