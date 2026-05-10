@@ -936,7 +936,6 @@ Man: Exactly. We may need to allocate more budget to social media campaigns.`;
                 <Pause className="w-4 h-4 fill-current" /> TẠM DỪNG
               </button>
             )}
-
             <button
               onClick={handleStop}
               disabled={isGenerating}
