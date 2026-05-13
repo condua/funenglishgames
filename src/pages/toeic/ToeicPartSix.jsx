@@ -880,7 +880,7 @@ Man: Exactly. We may need to allocate more budget to social media campaigns.`;
             </button>
           </div>
 
-          {/* -------TEXT AREA HEADER ---------------------*/}
+          {/* -------TEXT AREA HEADER -------------------------*/}
           <div className="flex justify-between items-end mb-3">
             <h3 className="text-sm font-bold text-gray-700 flex items-center gap-2">
               <Languages className="w-4 h-4 text-gray-500" />
