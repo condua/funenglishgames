@@ -14,6 +14,7 @@ import {
   FileText,
   Volume2,
   Square,
+  Languages,
 } from "lucide-react";
 import LogoImage from "../utils/LogoImage";
 
@@ -26,6 +27,7 @@ const IPALearningSystem = () => {
   const [data, setData] = useState(null);
   const [userInput, setUserInput] = useState("");
   const [showHint, setShowHint] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false); // Thêm state cho toggle dịch nghĩa ở màn kết quả
   const [feedback, setFeedback] = useState([]);
   const [accuracy, setAccuracy] = useState(0);
 
@@ -112,6 +114,7 @@ const IPALearningSystem = () => {
     setData(null);
     setUserInput("");
     setShowHint(false);
+    setShowTranslation(false); // Reset trạng thái dịch nghĩa
     setFeedback([]);
 
     try {
@@ -476,7 +479,7 @@ You must return ONLY a valid, raw JSON object. Do NOT wrap the JSON in markdown 
                   onClick={() => setShowHint(!showHint)}
                   className="text-indigo-400 hover:text-indigo-600 transition flex items-center gap-1 text-xs"
                 >
-                  <HelpCircle className="w-4 h-4" />{" "}
+                  <Languages className="w-4 h-4" />{" "}
                   {showHint ? "Ẩn gợi ý" : "Gợi ý nghĩa"}
                 </button>
               </div>
@@ -584,11 +587,31 @@ You must return ONLY a valid, raw JSON object. Do NOT wrap the JSON in markdown 
                   ))}
                 </div>
 
+                {/* Phần hiện đáp án gốc có thêm toggle dịch tiếng Việt */}
                 <div className="mt-6 pt-4 border-t border-gray-100 bg-indigo-50/50 -mx-4 px-4 py-3">
-                  <p className="text-xs font-bold text-indigo-500 mb-1 uppercase">
-                    Đáp án gốc đầy đủ:
-                  </p>
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-xs font-bold text-indigo-500 uppercase">
+                      Đáp án gốc đầy đủ:
+                    </p>
+                    <button
+                      onClick={() => setShowTranslation(!showTranslation)}
+                      className="text-indigo-500 hover:text-indigo-700 transition flex items-center gap-1 text-xs font-medium bg-white/50 px-2 py-1 rounded-md border border-indigo-100"
+                    >
+                      <Languages className="w-4 h-4" />
+                      {showTranslation ? "Ẩn tiếng Việt" : "Dịch tiếng Việt"}
+                    </button>
+                  </div>
                   <p className="text-gray-800 font-medium">{data.original}</p>
+
+                  {/* Nội dung dịch tiếng việt (Hiển thị khi được bật) */}
+                  {showTranslation && (
+                    <div className="mt-3 pt-3 border-t border-indigo-100 animate-fade-in">
+                      <p className="text-xs font-bold text-indigo-400 mb-1 uppercase">
+                        Bản dịch:
+                      </p>
+                      <p className="text-gray-700 text-sm">{data.vietnamese}</p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-2">
