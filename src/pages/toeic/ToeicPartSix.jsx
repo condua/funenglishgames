@@ -255,53 +255,68 @@ Man: Exactly. We may need to allocate more budget to social media campaigns.`;
   };
 
   // --- AI GENERATOR: FULL LESSON (SCRIPT + QUESTIONS) ---
+  // ================================
+  // AI GENERATOR: FULL LESSON
+  // ================================
   const generateFullLessonWithAI = async () => {
     setIsGenerating(true);
     setUsingFallback(false);
-    // User cannot edit while this is running due to UI locking
 
     try {
-      const systemInstruction = `You are a TOEIC test expert. 
-      Generate a short TOEIC Part 3 conversation (Man & Woman) about the topic: "${selectedTopic}".
-      Then, generate 3 multiple-choice questions based on that conversation.
-      
-      Output Rules:
-      1. Return ONLY valid JSON.
-      2. Structure:
-      {
-        "script": "Man: [line]\\nWoman: [line]...",
-        "questions": [
-           { "question": "Question text?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correct": 0 },
-           ...
-        ]
-      }
-      3. Script should be natural English, approx 8-12 lines.
-      4. Questions must have exactly 4 meaningful distinct options (not just A,B,C,D placeholders).
-      5. "correct" is the index (0-3).
-      `;
+      const prompt = `
+You are a TOEIC test expert.
+
+Generate a short TOEIC Part 3 conversation about the topic: "${selectedTopic}".
+
+Requirements:
+1. Return ONLY valid JSON.
+2. Format:
+{
+  "script": "Man: ...\\nWoman: ...",
+  "questions": [
+    {
+      "question": "Question text?",
+      "options": ["A", "B", "C", "D"],
+      "correct": 0
+    }
+  ]
+}
+3. Script length: 8-12 lines.
+4. Generate exactly 3 questions.
+5. Each question must contain exactly 4 meaningful options.
+6. "correct" must be index number from 0-3.
+`;
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+        "https://e-temple-backend.vercel.app/api/chat",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: `Topic: ${selectedTopic}` }] }],
-            systemInstruction: { parts: [{ text: systemInstruction }] },
-            generationConfig: { responseMimeType: "application/json" },
+            message: prompt,
           }),
         },
       );
 
-      if (!response.ok) throw new Error(`API Error: ${response.status}`);
+      if (!response.ok) {
+        throw new Error("API Error");
+      }
+
       const data = await response.json();
-      const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!generatedText) throw new Error("No text returned");
 
-      const parsedData = JSON.parse(generatedText);
+      if (!data.reply) {
+        throw new Error("No AI response");
+      }
 
+      // Parse JSON AI trả về
+      const parsedData = JSON.parse(data.reply);
+
+      // Set script
       setText(parsedData.script || "");
 
+      // Format questions
       const formattedQuestions = (parsedData.questions || []).map((q, idx) => ({
         id: Date.now() + idx,
         question: q.question,
@@ -314,7 +329,9 @@ Man: Exactly. We may need to allocate more budget to social media campaigns.`;
       setShowResults(false);
     } catch (error) {
       console.error("AI Error:", error);
+
       alert("AI Generation failed. Using fallback.");
+
       generateQuestionsFallback(defaultText);
     } finally {
       setIsGenerating(false);
@@ -327,28 +344,58 @@ Man: Exactly. We may need to allocate more budget to social media campaigns.`;
     setUsingFallback(false);
 
     try {
-      const systemInstruction = `Analyze the text. Generate 3 TOEIC Part 3 questions. 
-      JSON Format: [{"question": "Text?", "options": ["Op1","Op2","Op3","Op4"], "correct": 0}]
-      Ensure exactly 4 meaningful options per question.`;
+      const prompt = `
+Analyze the following TOEIC Part 3 conversation.
+
+Generate exactly 3 multiple-choice questions.
+
+Return ONLY valid JSON array.
+
+Format:
+[
+  {
+    "question": "Question text?",
+    "options": ["A", "B", "C", "D"],
+    "correct": 0
+  }
+]
+
+Rules:
+1. Exactly 3 questions.
+2. Each question must contain 4 meaningful options.
+3. "correct" must be index number from 0-3.
+
+Conversation:
+${inputText}
+`;
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+        "https://e-temple-backend.vercel.app/api/chat",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: inputText }] }],
-            systemInstruction: { parts: [{ text: systemInstruction }] },
-            generationConfig: { responseMimeType: "application/json" },
+            message: prompt,
           }),
         },
       );
 
-      if (!response.ok) throw new Error(`API Error`);
-      const data = await response.json();
-      const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      const parsedQuestions = JSON.parse(generatedText);
+      if (!response.ok) {
+        throw new Error("API Error");
+      }
 
+      const data = await response.json();
+
+      if (!data.reply) {
+        throw new Error("No AI response");
+      }
+
+      // Parse JSON
+      const parsedQuestions = JSON.parse(data.reply);
+
+      // Format
       const formattedQuestions = parsedQuestions.map((q, idx) => ({
         id: Date.now() + idx,
         question: q.question,
@@ -357,9 +404,12 @@ Man: Exactly. We may need to allocate more budget to social media campaigns.`;
       }));
 
       setQuestions(formattedQuestions.slice(0, 3));
+
       setUserAnswers({});
       setShowResults(false);
     } catch (error) {
+      console.error("AI Error:", error);
+
       generateQuestionsFallback(inputText);
     } finally {
       setIsGenerating(false);
