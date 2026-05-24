@@ -36,7 +36,7 @@ Woman: I wanted to discuss the progress of the marketing project. Have you had a
 Man: Yes, I looked over it yesterday. Overall, the results are positive, but I think we need to improve our online advertising strategy.
 
 Woman: I agree. The sales figures increased, but not as much as we expected.
-Man: Exactly. We may need to allocate more budget to social media campaigns.`;
+Man: Exactly. We may need to allocate more budget to social media campaigns....`;
 
   const [text, setText] = useState(defaultText);
 
