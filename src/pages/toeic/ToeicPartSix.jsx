@@ -68,7 +68,7 @@ Man: Exactly. We may need to allocate more budget to social media campaigns....`
   const [isGenerating, setIsGenerating] = useState(false);
   const [usingFallback, setUsingFallback] = useState(false);
 
-  // --- NEW: TOEIC TOPIC GENERATOR STATE ---
+  // --- NEW: TOEIC TOPIC GENERATOR STATE -----------
   const [selectedTopic, setSelectedTopic] = useState("Business");
 
   const synth = useRef(window.speechSynthesis);
