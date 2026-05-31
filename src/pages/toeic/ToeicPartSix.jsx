@@ -75,7 +75,7 @@ Man: Exactly. We may need to allocate more budget to social media campaigns....`
   const utterancesRef = useRef([]);
 
   // ------------------------------------- GEMINI API CONFIGURATION ------------------------------------
-  // const apiKey = ""; // API Key được cung cấp bởi môi trường thực thi------------
+  // const apiKey = ""; // API Key được cung cấp bởi môi trường thực thi----------------
 
   // --- AUTO SCROLL ------------------------
   useEffect(() => {
