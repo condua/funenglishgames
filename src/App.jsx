@@ -119,6 +119,7 @@ function App() {
         <Route path="/toeic-flashcards" element={<ToeicFlashcards />} />
         <Route path="/practice-listening" element={<PracticeListening />} />
         <Route path="/ipa-to-text" element={<IpaToText />} />
+        <Route path="/write-email" element={<WriteEmail />} />
         <Route
           path="/vsat-home"
           element={

@@ -15,9 +15,11 @@ import {
   Volume2,
   Sparkles,
   Loader2,
+  Bot,
 } from "lucide-react";
+const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
-// --- DATASET: 5 MẪU EMAIL IPA ---
+// --- DATASET: 5 MẪU EMAIL TĨNH ---
 const exercises = [
   {
     id: 1,
@@ -68,25 +70,28 @@ const exercises = [
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Chuyển currentExercise thành state để có thể lưu bài tập do AI tạo ra
+  const [currentExercise, setCurrentExercise] = useState(exercises[0]);
+
   const [showTranscript, setShowTranscript] = useState(false);
   const [showVietnamese, setShowVietnamese] = useState(false);
 
   const [userText, setUserText] = useState("");
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [feedback, setFeedback] = useState(null);
+
   const [aiSampleEmail, setAiSampleEmail] = useState(null);
   const [isGeneratingSample, setIsGeneratingSample] = useState(false);
 
-  const currentExercise = exercises[currentIndex];
+  // State mới cho việc AI tạo nguyên bài tập mới
+  const [isGeneratingExercise, setIsGeneratingExercise] = useState(false);
 
-  // Tính số từ
   const wordCount = userText
     .trim()
     .split(/\s+/)
     .filter((w) => w.length > 0).length;
 
-  // Toggle Dark Mode
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -95,14 +100,22 @@ export default function App() {
     }
   }, [darkMode]);
 
-  // Chuyển bài tập tiếp theo
+  // Chọn bài tập ngẫu nhiên từ thư viện cứng (Dataset)
   const handleNextExercise = () => {
     let nextIndex;
     do {
       nextIndex = Math.floor(Math.random() * exercises.length);
-    } while (nextIndex === currentIndex && exercises.length > 1);
+    } while (
+      exercises[nextIndex].task === currentExercise.task &&
+      exercises.length > 1
+    );
 
-    setCurrentIndex(nextIndex);
+    setCurrentExercise(exercises[nextIndex]);
+    resetStates();
+  };
+
+  // Reset các thông số hiển thị khi chuyển bài
+  const resetStates = () => {
     setShowTranscript(false);
     setShowVietnamese(false);
     setUserText("");
@@ -110,7 +123,76 @@ export default function App() {
     setAiSampleEmail(null);
   };
 
-  // Tích hợp API chấm điểm bằng Gemini AI
+  // TÍNH NĂNG MỚI: Dùng AI tạo đề bài email hoàn toàn mới
+  const generateNewExerciseFromAI = async () => {
+    setIsGeneratingExercise(true);
+    resetStates();
+
+    try {
+      const prompt = `You are an expert English teacher. Create a completely new, random, and practical email writing task for a student (e.g., business, academic, customer service, or daily life).
+      
+Return a JSON with:
+- task: The instruction for the student (in English).
+- transcript: A high-quality sample email fulfilling this task.
+- ipa: The exact phonetic transcription (IPA) of the transcript.
+- vietnamese: A natural Vietnamese translation of the transcript.`;
+
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [{ role: "user", content: prompt }],
+            response_format: {
+              type: "json_schema",
+              json_schema: {
+                name: "new_email_exercise",
+                strict: true,
+                schema: {
+                  type: "object",
+                  properties: {
+                    task: { type: "string" },
+                    transcript: { type: "string" },
+                    ipa: { type: "string" },
+                    vietnamese: { type: "string" },
+                  },
+                  required: ["task", "transcript", "ipa", "vietnamese"],
+                  additionalProperties: false,
+                },
+              },
+            },
+          }),
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error?.message || "API Error");
+      }
+
+      const text = result.choices[0].message.content;
+      const newExerciseData = JSON.parse(text);
+
+      // Cập nhật State thành bài tập mới
+      setCurrentExercise({
+        id: Date.now(), // Tạo ID ngẫu nhiên
+        ...newExerciseData,
+      });
+    } catch (error) {
+      console.error("AI Generation error:", error);
+      alert("Đã có lỗi xảy ra khi gọi AI để tạo đề bài mới.");
+    } finally {
+      setIsGeneratingExercise(false);
+    }
+  };
+
+  // Tích hợp API chấm điểm bằng OpenAI
   const evaluateWriting = async () => {
     if (wordCount < 10) {
       alert("Vui lòng viết dài hơn (ít nhất 10 từ) để AI có thể đánh giá!");
@@ -121,63 +203,71 @@ export default function App() {
     setFeedback(null);
 
     try {
-      const prompt = `You are an expert English teacher evaluating a student's email.
-      Task: "${currentExercise.task}"
-      Student's Email: "${userText}"
-      Evaluate the email and provide constructive feedback.`;
+      const prompt = `
+You are an expert English teacher evaluating a student's email.
 
-      const payload = {
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: "OBJECT",
-            properties: {
-              score: {
-                type: "STRING",
-                description: "Score out of 10 (e.g., '8.5')",
-              },
-              grammar: { type: "STRING", description: "Feedback on grammar" },
-              vocabulary: {
-                type: "STRING",
-                description: "Feedback on vocabulary",
-              },
-              taskAchievement: {
-                type: "STRING",
-                description: "Did they complete the task successfully?",
-              },
-              improvement: {
-                type: "STRING",
-                description: "Actionable tips for improvement",
+Task: ${currentExercise.task}
+
+Student's Email:
+${userText}
+
+Return a JSON with:
+- score (out of 10, string like "8.5")
+- grammar (feedback)
+- vocabulary (feedback)
+- taskAchievement (feedback)
+- improvement (actionable tips)
+`;
+
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [{ role: "user", content: prompt }],
+            response_format: {
+              type: "json_schema",
+              json_schema: {
+                name: "writing_evaluation",
+                strict: true,
+                schema: {
+                  type: "object",
+                  properties: {
+                    score: { type: "string" },
+                    grammar: { type: "string" },
+                    vocabulary: { type: "string" },
+                    taskAchievement: { type: "string" },
+                    improvement: { type: "string" },
+                  },
+                  required: [
+                    "score",
+                    "grammar",
+                    "vocabulary",
+                    "taskAchievement",
+                    "improvement",
+                  ],
+                  additionalProperties: false,
+                },
               },
             },
-            required: [
-              "score",
-              "grammar",
-              "vocabulary",
-              "taskAchievement",
-              "improvement",
-            ],
-          },
+          }),
         },
-      };
-
-      const apiKey = ""; // API Key được tự động inject trên môi trường này
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      );
 
       const result = await response.json();
-      if (result.candidates && result.candidates.length > 0) {
-        const jsonText = result.candidates[0].content.parts[0].text;
-        setFeedback(JSON.parse(jsonText));
-      } else {
-        throw new Error("Invalid API response");
+
+      if (!response.ok) {
+        throw new Error(result.error?.message || "API Error");
       }
+
+      const text = result.choices[0].message.content;
+      const json = JSON.parse(text);
+      setFeedback(json);
     } catch (error) {
       console.error("AI Evaluation error:", error);
       alert("Đã có lỗi xảy ra khi gọi AI để chấm điểm. Vui lòng thử lại sau.");
@@ -186,30 +276,37 @@ export default function App() {
     }
   };
 
-  // Tính năng mới: Dùng AI sinh ra Email mẫu dựa theo đề bài
+  // Dùng AI sinh ra Email mẫu
   const generateSampleEmail = async () => {
     setIsGeneratingSample(true);
     setAiSampleEmail(null);
+
     try {
-      const prompt = `Write a well-structured, professional English email based on this task: "${currentExercise.task}". Only output the exact email content, no introductory or concluding sentences outside the email body.`;
+      const prompt = `Write a well-structured, professional English email based on this task:\n\n${currentExercise.task}\n\nOnly output the email content. No explanation.`;
 
-      const payload = {
-        contents: [{ parts: [{ text: prompt }] }],
-      };
-
-      const apiKey = "";
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [{ role: "user", content: prompt }],
+          }),
+        },
+      );
 
       const result = await response.json();
-      if (result.candidates && result.candidates.length > 0) {
-        setAiSampleEmail(result.candidates[0].content.parts[0].text);
+
+      if (!response.ok) {
+        throw new Error(result.error?.message || "API Error");
       }
+
+      const text = result.choices[0].message.content;
+      setAiSampleEmail(text);
     } catch (error) {
       console.error("AI Generation error:", error);
       alert("Đã có lỗi xảy ra khi gọi AI để tạo mẫu.");
@@ -218,7 +315,7 @@ export default function App() {
     }
   };
 
-  // Đọc IPA (Sử dụng Web Speech API đơn giản)
+  // Đọc IPA
   const readText = (text) => {
     if ("speechSynthesis" in window) {
       const utterance = new SpeechSynthesisUtterance(text);
@@ -233,7 +330,6 @@ export default function App() {
     <div
       className={`min-h-screen transition-colors duration-300 ${darkMode ? "bg-slate-900 text-slate-100" : "bg-slate-50 text-slate-800"}`}
     >
-      {/* Header */}
       <header
         className={`sticky top-0 z-10 px-6 py-4 shadow-sm flex justify-between items-center ${darkMode ? "bg-slate-800" : "bg-white"}`}
       >
@@ -254,12 +350,10 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-          {/* CỘT TRÁI: REFERENCE PANEL */}
+          {/* CỘT TRÁI */}
           <div className="lg:col-span-5 flex flex-col gap-6">
-            {/* Prompt Card */}
             <div
               className={`p-6 rounded-2xl shadow-sm border ${darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"}`}
             >
@@ -272,14 +366,13 @@ export default function App() {
               </p>
             </div>
 
-            {/* IPA Section */}
             <div
               className={`p-6 rounded-2xl shadow-sm border ${darkMode ? "bg-indigo-900/20 border-indigo-800" : "bg-indigo-50 border-indigo-100"}`}
             >
               <div className="flex justify-between items-center mb-4">
                 <h2 className="font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
                   <Volume2 size={20} />
-                  Phonetic Transcription (IPA)
+                  Phonetic (IPA)
                 </h2>
                 <button
                   onClick={() => readText(currentExercise.transcript)}
@@ -293,9 +386,7 @@ export default function App() {
               </p>
             </div>
 
-            {/* Toggles */}
             <div className="flex flex-col gap-4">
-              {/* Transcript Toggle */}
               <div
                 className={`rounded-xl border overflow-hidden ${darkMode ? "border-slate-700 bg-slate-800" : "border-slate-200 bg-white"}`}
               >
@@ -319,7 +410,6 @@ export default function App() {
                 )}
               </div>
 
-              {/* Vietnamese Toggle */}
               <div
                 className={`rounded-xl border overflow-hidden ${darkMode ? "border-slate-700 bg-slate-800" : "border-slate-200 bg-white"}`}
               >
@@ -347,9 +437,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* CỘT PHẢI: WRITING & FEEDBACK PANEL */}
+          {/* CỘT PHẢI */}
           <div className="lg:col-span-7 flex flex-col gap-6">
-            {/* Writing Area */}
             <div
               className={`flex flex-col rounded-2xl shadow-sm border overflow-hidden ${darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"}`}
             >
@@ -399,9 +488,7 @@ export default function App() {
                     ) : (
                       <Sparkles size={16} />
                     )}
-                    {isGeneratingSample
-                      ? "Generating AI Email..."
-                      : "AI Sample Email"}
+                    {isGeneratingSample ? "Generating..." : "AI Sample Email"}
                   </button>
                 </div>
                 <button
@@ -416,7 +503,7 @@ export default function App() {
                   {isEvaluating ? (
                     <>
                       <Loader2 size={18} className="animate-spin" />
-                      Checking AI...
+                      Checking...
                     </>
                   ) : (
                     <>
@@ -428,7 +515,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* AI Generated Sample Email Section */}
             {aiSampleEmail && (
               <div
                 className={`p-6 rounded-2xl shadow-sm border animate-in fade-in slide-in-from-top-4 duration-500 ${darkMode ? "bg-emerald-900/20 border-emerald-800" : "bg-emerald-50 border-emerald-100"}`}
@@ -445,7 +531,6 @@ export default function App() {
               </div>
             )}
 
-            {/* AI Feedback Section */}
             {feedback && (
               <div
                 className={`p-6 rounded-2xl shadow-lg border animate-in fade-in slide-in-from-bottom-4 duration-500 ${darkMode ? "bg-slate-800 border-indigo-500/30" : "bg-white border-indigo-100"}`}
@@ -516,18 +601,37 @@ export default function App() {
               </div>
             )}
 
-            {/* Next Button */}
-            <button
-              onClick={handleNextExercise}
-              className={`mt-4 py-4 px-6 rounded-2xl border-2 border-dashed font-bold text-lg flex items-center justify-center gap-3 transition-colors ${
-                darkMode
-                  ? "border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 hover:bg-slate-800"
-                  : "border-slate-300 text-slate-500 hover:text-slate-800 hover:border-slate-400 hover:bg-slate-50"
-              }`}
-            >
-              <RefreshCw size={20} />
-              Next Exercise
-            </button>
+            {/* BUTTON ĐIỀU HƯỚNG BÀI TẬP */}
+            <div className="flex flex-col sm:flex-row gap-4 mt-4">
+              <button
+                onClick={handleNextExercise}
+                className={`flex-1 py-4 px-6 rounded-2xl border-2 border-dashed font-bold text-lg flex items-center justify-center gap-3 transition-colors ${
+                  darkMode
+                    ? "border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 hover:bg-slate-800"
+                    : "border-slate-300 text-slate-500 hover:text-slate-800 hover:border-slate-400 hover:bg-slate-50"
+                }`}
+              >
+                <RefreshCw size={20} />
+                Thử bài mẫu khác
+              </button>
+
+              <button
+                onClick={generateNewExerciseFromAI}
+                disabled={isGeneratingExercise}
+                className={`flex-1 py-4 px-6 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-colors shadow-sm ${
+                  isGeneratingExercise
+                    ? "bg-slate-300 text-slate-500 cursor-not-allowed dark:bg-slate-700"
+                    : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-300 dark:hover:bg-indigo-800/60"
+                }`}
+              >
+                {isGeneratingExercise ? (
+                  <Loader2 size={20} className="animate-spin" />
+                ) : (
+                  <Bot size={20} />
+                )}
+                {isGeneratingExercise ? "Đang tạo..." : "AI tự động tạo đề mới"}
+              </button>
+            </div>
           </div>
         </div>
       </main>
