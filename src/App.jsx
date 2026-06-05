@@ -39,6 +39,7 @@ import ExamSession from "./components/vsat/pages/ExamSession";
 import IpaToText from "./pages/IpaToText";
 import Page404 from "./pages/Page404";
 import ToeicPartSix from "./pages/toeic/ToeicPartSix";
+import WriteEmail from "./pages/writing/WriteEmail";
 // import VsatMath from "./pages/vsat/VsatMath";
 // import VsatHome from "./components/vsat/VsatHome";
 // import FlashcardGame from "./pages/FlashcardGame" ';
