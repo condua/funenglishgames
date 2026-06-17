@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
-// --- DATASET: 5 MẪU EMAIL TĨNH ----------------------
+// --- DATASET: 5 MẪU EMAIL TĨNH ---------------------------
 const exercises = [
   {
     id: 1,
