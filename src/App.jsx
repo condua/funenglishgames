@@ -40,13 +40,14 @@ import IpaToText from "./pages/IpaToText";
 import Page404 from "./pages/Page404";
 import ToeicPartSix from "./pages/toeic/ToeicPartSix";
 import WriteEmail from "./pages/writing/WriteEmail";
+import VocabConnect from "./pages/VocabConnect";
 // import VsatMath from "./pages/vsat/VsatMath";
 // import VsatHome from "./components/vsat/VsatHome";
 // import FlashcardGame from "./pages/FlashcardGame" ';
 function App() {
   const [darkMode, setDarkMode] = useState(false);
 
-  // Load MathJax Script Global ------------------
+  // Load MathJax Script Global ------------------------
   useEffect(() => {
     if (!document.getElementById("mathjax-script")) {
       const script = document.createElement("script");
@@ -120,6 +121,7 @@ function App() {
         <Route path="/practice-listening" element={<PracticeListening />} />
         <Route path="/ipa-to-text" element={<IpaToText />} />
         <Route path="/write-email" element={<WriteEmail />} />
+        <Route path="/vocab-connect" element={<VocabConnect />} />
         <Route
           path="/vsat-home"
           element={
