@@ -167,7 +167,7 @@ const applyTone = (syllable, toneKey) => {
     }
   }
 
-  return syllable; // Trả về mặc định nếu không thay đổi được
+  return syllable; // Trả về mặc định nếu không thay đổi được------
 };
 const INITIAL_WORDS = [
   "ba",
@@ -260,11 +260,11 @@ export default function SpellingApp() {
 
   const rawSyllable = useMemo(
     () => `${initial}${vowel}${finalC}`,
-    [initial, vowel, finalC]
+    [initial, vowel, finalC],
   );
   const finalSyllable = useMemo(
     () => applyTone(rawSyllable, tone),
-    [rawSyllable, tone]
+    [rawSyllable, tone],
   );
 
   // Bài luyện tập ngẫu nhiên (sử dụng state wordList)
@@ -274,7 +274,7 @@ export default function SpellingApp() {
     const opts = new Set([correct]);
     while (opts.size < 4 && opts.size < currentWordList.length) {
       opts.add(
-        currentWordList[Math.floor(Math.random() * currentWordList.length)]
+        currentWordList[Math.floor(Math.random() * currentWordList.length)],
       );
     }
     const options = Array.from(opts).sort(() => Math.random() - 0.5);
@@ -527,8 +527,8 @@ export default function SpellingApp() {
                           state === "correct"
                             ? "bg-emerald-100 border-emerald-300 text-emerald-700"
                             : state === "wrong"
-                            ? "bg-rose-100 border-rose-300 text-rose-700"
-                            : "bg-white border-slate-200 hover:shadow-md"
+                              ? "bg-rose-100 border-rose-300 text-rose-700"
+                              : "bg-white border-slate-200 hover:shadow-md"
                         }`}
                       >
                         {opt}
