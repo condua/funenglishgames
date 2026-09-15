@@ -204,7 +204,7 @@ const INITIAL_WORDS = [
 
 // ================================
 // UI PHỤ TRỢ
-// ==========================
+// ===========================
 const Section = ({ title, children }) => (
   <div className="bg-white/80 backdrop-blur rounded-2xl shadow p-4 md:p-6 border border-slate-200">
     <h2 className="text-xl md:text-2xl font-bold text-slate-800 mb-3">
@@ -218,10 +218,9 @@ const Chip = ({ selected, onClick, children }) => (
   <button
     onClick={onClick}
     className={`px-3 py-2 rounded-2xl border text-sm md:text-base transition shadow-sm hover:shadow 
-      ${
-        selected
-          ? "bg-indigo-600 text-white border-indigo-600"
-          : "bg-white border-slate-300 text-slate-700 hover:bg-slate-50"
+      ${selected
+        ? "bg-indigo-600 text-white border-indigo-600"
+        : "bg-white border-slate-300 text-slate-700 hover:bg-slate-50"
       }`}
   >
     {children}
@@ -233,10 +232,9 @@ const BigButton = ({ children, onClick, disabled }) => (
     onClick={onClick}
     disabled={disabled}
     className={`w-full md:w-auto px-5 py-3 rounded-2xl font-semibold border transition shadow 
-      ${
-        disabled
-          ? "bg-slate-100 text-slate-400 border-slate-200"
-          : "bg-emerald-600 text-white border-emerald-700 hover:brightness-110"
+      ${disabled
+        ? "bg-slate-100 text-slate-400 border-slate-200"
+        : "bg-emerald-600 text-white border-emerald-700 hover:brightness-110"
       }`}
   >
     {children}
@@ -343,11 +341,10 @@ export default function SpellingApp() {
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
-                className={`px-3 py-2 rounded-xl border transition text-sm md:text-base font-semibold ${
-                  tab === t.id
+                className={`px-3 py-2 rounded-xl border transition text-sm md:text-base font-semibold ${tab === t.id
                     ? "bg-indigo-600 text-white border-indigo-700 shadow"
                     : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
-                }`}
+                  }`}
               >
                 {t.label}
               </button>
@@ -523,13 +520,12 @@ export default function SpellingApp() {
                         key={opt}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => checkQuiz(opt)}
-                        className={`h-14 rounded-2xl border shadow flex items-center justify-center text-xl font-bold transition ${
-                          state === "correct"
+                        className={`h-14 rounded-2xl border shadow flex items-center justify-center text-xl font-bold transition ${state === "correct"
                             ? "bg-emerald-100 border-emerald-300 text-emerald-700"
                             : state === "wrong"
                               ? "bg-rose-100 border-rose-300 text-rose-700"
                               : "bg-white border-slate-200 hover:shadow-md"
-                        }`}
+                          }`}
                       >
                         {opt}
                       </motion.button>
@@ -543,11 +539,10 @@ export default function SpellingApp() {
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -6 }}
-                      className={`mt-4 px-4 py-3 rounded-xl inline-block ${
-                        result
+                      className={`mt-4 px-4 py-3 rounded-xl inline-block ${result
                           ? "bg-emerald-100 text-emerald-700"
                           : "bg-rose-100 text-rose-700"
-                      }`}
+                        }`}
                     >
                       {result
                         ? "Giỏi quá! Con chọn đúng rồi."
