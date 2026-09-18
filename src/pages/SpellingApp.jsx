@@ -204,7 +204,7 @@ const INITIAL_WORDS = [
 
 // ================================
 // UI PHỤ TRỢ
-// ================================
+// ====================================
 const Section = ({ title, children }) => (
   <div className="bg-white/80 backdrop-blur rounded-2xl shadow p-4 md:p-6 border border-slate-200">
     <h2 className="text-xl md:text-2xl font-bold text-slate-800 mb-3">
@@ -342,8 +342,8 @@ export default function SpellingApp() {
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 className={`px-3 py-2 rounded-xl border transition text-sm md:text-base font-semibold ${tab === t.id
-                    ? "bg-indigo-600 text-white border-indigo-700 shadow"
-                    : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
+                  ? "bg-indigo-600 text-white border-indigo-700 shadow"
+                  : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
                   }`}
               >
                 {t.label}
@@ -521,10 +521,10 @@ export default function SpellingApp() {
                         whileTap={{ scale: 0.97 }}
                         onClick={() => checkQuiz(opt)}
                         className={`h-14 rounded-2xl border shadow flex items-center justify-center text-xl font-bold transition ${state === "correct"
-                            ? "bg-emerald-100 border-emerald-300 text-emerald-700"
-                            : state === "wrong"
-                              ? "bg-rose-100 border-rose-300 text-rose-700"
-                              : "bg-white border-slate-200 hover:shadow-md"
+                          ? "bg-emerald-100 border-emerald-300 text-emerald-700"
+                          : state === "wrong"
+                            ? "bg-rose-100 border-rose-300 text-rose-700"
+                            : "bg-white border-slate-200 hover:shadow-md"
                           }`}
                       >
                         {opt}
@@ -540,8 +540,8 @@ export default function SpellingApp() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -6 }}
                       className={`mt-4 px-4 py-3 rounded-xl inline-block ${result
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-rose-100 text-rose-700"
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-rose-100 text-rose-700"
                         }`}
                     >
                       {result
