@@ -204,7 +204,7 @@ const INITIAL_WORDS = [
 
 // ================================
 // UI PHỤ TRỢ
-// ====================================
+// ================================
 const Section = ({ title, children }) => (
   <div className="bg-white/80 backdrop-blur rounded-2xl shadow p-4 md:p-6 border border-slate-200">
     <h2 className="text-xl md:text-2xl font-bold text-slate-800 mb-3">
