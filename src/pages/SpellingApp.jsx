@@ -203,7 +203,7 @@ const INITIAL_WORDS = [
 ];
 
 // ================================
-// UI PHỤ TRỢ===========
+// UI PHỤ TRỢ======================
 // ================================
 const Section = ({ title, children }) => (
   <div className="bg-white/80 backdrop-blur rounded-2xl shadow p-4 md:p-6 border border-slate-200">
